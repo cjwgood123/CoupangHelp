@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 판매자 데이터 분석기 | 쿠팡셀러 부업 정보 | 쿠팡 판매 대리구매</title>
+    <meta name="description" content="쿠팡셀러를 위한 인기 상품 데이터 분석. 쿠팡 부업, 쿠팡 판매, 쿠팡배달, 대리구매 정보 제공. 월별 구매자 수 기반 인기 상품 분석으로 쿠팡 판매 전략 수립에 도움을 드립니다.">
+    <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 판매, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 데이터, 쿠팡 인기상품, 쿠팡 분석">
+    <meta name="author" content="쿠팡 데이터 분석">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://helpcoupang.com/">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://helpcoupang.com/">
+    <meta property="og:title" content="쿠팡 판매자 데이터 분석기 | 쿠팡셀러 부업 정보">
+    <meta property="og:description" content="쿠팡셀러를 위한 인기 상품 데이터 분석. 쿠팡 부업, 쿠팡 판매, 쿠팡배달, 대리구매 정보 제공.">
+    <meta property="og:site_name" content="쿠팡 데이터 분석">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://helpcoupang.com/">
+    <meta property="twitter:title" content="쿠팡 판매자 데이터 분석기 | 쿠팡셀러 부업 정보">
+    <meta property="twitter:description" content="쿠팡셀러를 위한 인기 상품 데이터 분석. 쿠팡 부업, 쿠팡 판매, 쿠팡배달, 대리구매 정보 제공.">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "쿠팡 데이터 분석",
+      "url": "https://helpcoupang.com",
+      "description": "쿠팡셀러를 위한 인기 상품 데이터 분석 플랫폼",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://helpcoupang.com/2025-11/all/{search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "쿠팡 데이터 분석",
+      "url": "https://helpcoupang.com",
+      "description": "쿠팡셀러를 위한 데이터 분석 서비스"
+    }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --secondary-foreground: hsl(330, 80%, 40%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --success: hsl(140, 60%, 50%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-foreground);
+        }
+
+        .logo-text h2 {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .nav {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--foreground);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-toggle:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s;
+        }
+
+        .nav-toggle.active svg {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            display: none;
+            padding-left: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .nav-items.show {
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 0.25rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        .nav-item.muted {
+            color: var(--muted-foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .content-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .hero-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 64px;
+            height: 64px;
+            background-color: var(--primary);
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--primary-foreground);
+        }
+
+        .hero h1 {
+            font-size: 2.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .btn-primary {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: opacity 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-icon.secondary {
+            background-color: var(--secondary);
+        }
+
+        .card-icon.success {
+            background-color: hsla(140, 60%, 50%, 0.1);
+        }
+
+        .card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .card-icon.secondary svg {
+            stroke: var(--secondary-foreground);
+        }
+
+        .card-icon.success svg {
+            stroke: var(--success);
+        }
+
+        .card-content p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-content h3 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--foreground);
+        }
+
+        .card-content .growth {
+            font-size: 0.875rem;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        /* Quick Links */
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .quick-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .quick-link-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .quick-link-card:hover {
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .quick-link-icon {
+            width: 48px;
+            height: 48px;
+            background-color: var(--secondary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .quick-link-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--secondary-foreground);
+        }
+
+        .quick-link-card h3 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .quick-link-card p {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            line-height: 1.5;
+        }
+
+        /* CTA Banner */
+        .cta-banner {
+            background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%));
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--primary-foreground);
+        }
+
+        .cta-banner h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .cta-banner p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: var(--primary-foreground);
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+        }
+
+        .btn-secondary:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .hero h1 {
+                font-size: 1.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-links {
+                grid-template-columns: 1fr;
+            }
+
+            .cta-banner h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+     crossorigin="anonymous"></script>
+
+    </head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>쿠팡 데이터</h2>
+                        <p>판매 기록 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 2025-11월 -->
+                <div class="nav-section">
+                    <button class="nav-toggle active" onclick="toggleNav('nov2025')">
+                        <span>2025-11월</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items show" id="nov2025">
+                        <div class="nav-item">전체</div>
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Hero Section -->
+            <section class="hero">
+                <div class="hero-icon">
+                    <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                    </svg>
+                </div>
+                <h1>매출이 아쉬운 쿠팡 판매자라면 잘 오셨습니다!</h1>
+                <p>오직 쿠팡 판매자만을 위한 월별 판매</p>
+                <button class="btn-primary">데이터 분석기</button>
+            </section>
+
+            <!-- Stats Cards -->
+            <div class="stats-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon secondary">
+                            <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>분석 상품 수</p>
+                        <h3 th:text="${formattedProductCount}">0</h3>
+                        <p style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.25rem;">매일 업데이트 됩니다.</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon secondary">
+                            <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>누적 판매자</p>
+                        <h3>-</h3>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon success">
+                            <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <p>단기간 인기 상품</p>
+                        <h3>-</h3>
+                        <p class="growth">beta 오픈 예정</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <h2 class="section-title">빠른 링크</h2>
+            <div class="quick-links">
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0" />
+                        </svg>
+                    </div>
+                    <h3>베스트 상품 분석</h3>
+                    <p>beta 오픈 예정</p>
+                </a>
+
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+                        </svg>
+                    </div>
+                    <h3>실시간 매출 대시보드</h3>
+                    <p>beta 오픈 예정</p>
+                </a>
+
+                <a href="#" class="quick-link-card">
+                    <div class="quick-link-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                        </svg>
+                    </div>
+                    <h3>경쟁사 비교 분석</h3>
+                    <p>beta 오픈 예정</p>
+                </a>
+            </div>
+
+            <!-- CTA Banner -->
+            <div class="cta-banner">
+                <h2>지금 바로 시작하세요</h2>
+                <p>데이터 기반의 스마트한 쿠팡 판매 전략을 경험해보세요</p>
+                <a href="/2025-11/all/100" class="btn-secondary">무료로 시작하기</a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const button = event.currentTarget;
+
+        if (navItems.classList.contains('show')) {
+            navItems.classList.remove('show');
+            button.classList.remove('active');
+        } else {
+            navItems.classList.add('show');
+            button.classList.add('active');
+        }
+    }
+</script>
+
+</body>
+</html>
