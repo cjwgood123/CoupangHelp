@@ -12,8 +12,19 @@ public class ProductListDto {
     private String category;
     private String review; // 상품평 개수
     private Integer reviewIncrease; // 상품평 증가량 (이전 대비)
+    private Integer fromCount; // 시작 count
+    private Integer toCount; // 끝 count
+    private String fromTable; // 시작 테이블명
+    private String toTable; // 끝 테이블명
+    private LocalDate fromDate; // 시작 날짜
+    private LocalDate toDate; // 끝 날짜
+    private Integer daysDiff; // 일수 차이
 
     public ProductListDto(Long seq, int rowNum, String title, String productID, LocalDate regidate, String url, String category, String review, Integer reviewIncrease) {
+        this(seq, rowNum, title, productID, regidate, url, category, review, reviewIncrease, null, null, null, null, null, null, null);
+    }
+
+    public ProductListDto(Long seq, int rowNum, String title, String productID, LocalDate regidate, String url, String category, String review, Integer reviewIncrease, Integer fromCount, Integer toCount, String fromTable, String toTable, LocalDate fromDate, LocalDate toDate, Integer daysDiff) {
         this.seq = seq;
         this.rowNum = rowNum;
         this.title = title;
@@ -23,6 +34,13 @@ public class ProductListDto {
         this.category = category;
         this.review = review;
         this.reviewIncrease = reviewIncrease;
+        this.fromCount = fromCount;
+        this.toCount = toCount;
+        this.fromTable = fromTable;
+        this.toTable = toTable;
+        this.fromDate = fromDate;
+        this.toDate = toDate;
+        this.daysDiff = daysDiff;
     }
 
     public Long getSeq() {
@@ -95,6 +113,62 @@ public class ProductListDto {
 
     public void setReviewIncrease(Integer reviewIncrease) {
         this.reviewIncrease = reviewIncrease;
+    }
+
+    public Integer getFromCount() {
+        return fromCount;
+    }
+
+    public void setFromCount(Integer fromCount) {
+        this.fromCount = fromCount;
+    }
+
+    public Integer getToCount() {
+        return toCount;
+    }
+
+    public void setToCount(Integer toCount) {
+        this.toCount = toCount;
+    }
+
+    public String getFromTable() {
+        return fromTable;
+    }
+
+    public void setFromTable(String fromTable) {
+        this.fromTable = fromTable;
+    }
+
+    public String getToTable() {
+        return toTable;
+    }
+
+    public void setToTable(String toTable) {
+        this.toTable = toTable;
+    }
+
+    public LocalDate getFromDate() {
+        return fromDate;
+    }
+
+    public void setFromDate(LocalDate fromDate) {
+        this.fromDate = fromDate;
+    }
+
+    public LocalDate getToDate() {
+        return toDate;
+    }
+
+    public void setToDate(LocalDate toDate) {
+        this.toDate = toDate;
+    }
+
+    public Integer getDaysDiff() {
+        return daysDiff;
+    }
+
+    public void setDaysDiff(Integer daysDiff) {
+        this.daysDiff = daysDiff;
     }
 }
 

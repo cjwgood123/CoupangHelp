@@ -102,5 +102,313 @@ public class BoardController {
 
         return "board-mobile";
     }
+
+    @GetMapping("/star/all")
+    public String starAll(@RequestParam(defaultValue = "1") int page,
+                          @RequestParam(defaultValue = "20") int size,
+                          HttpServletRequest request,
+                          Model model) {
+        // 모바일 기기 감지 후 리다이렉트
+        if (MobileDetector.isMobile(request)) {
+            return "redirect:/mobile/star/all?page=" + page;
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회 (전체)
+        List<ProductListDto> products = boardService.getStarProducts(null, offset, size);
+        int totalCount = boardService.getTotalStarCount(null);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 사용 가능한 star 값 목록 조회
+        List<Integer> availableStars = boardService.getAvailableStarValues();
+
+        // 페이징 범위 계산 (10개씩 표시)
+        int pageGroupSize = 10;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("availableStars", availableStars);
+        model.addAttribute("selectedStar", null);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board-star";
+    }
+
+    @GetMapping("/star/{star}")
+    public String starFilter(@PathVariable Integer star,
+                             @RequestParam(defaultValue = "1") int page,
+                             @RequestParam(defaultValue = "20") int size,
+                             HttpServletRequest request,
+                             Model model) {
+        // 모바일 기기 감지 후 리다이렉트
+        if (MobileDetector.isMobile(request)) {
+            return "redirect:/mobile/star/" + star + "?page=" + page;
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회 (star 필터링)
+        List<ProductListDto> products = boardService.getStarProducts(star, offset, size);
+        int totalCount = boardService.getTotalStarCount(star);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 사용 가능한 star 값 목록 조회
+        List<Integer> availableStars = boardService.getAvailableStarValues();
+
+        // 페이징 범위 계산 (10개씩 표시)
+        int pageGroupSize = 10;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("availableStars", availableStars);
+        model.addAttribute("selectedStar", star);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board-star";
+    }
+
+    @GetMapping("/mobile/star/all")
+    public String starAllMobile(@RequestParam(defaultValue = "1") int page,
+                                 @RequestParam(defaultValue = "20") int size,
+                                 Model model) {
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회 (전체)
+        List<ProductListDto> products = boardService.getStarProducts(null, offset, size);
+        int totalCount = boardService.getTotalStarCount(null);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 사용 가능한 star 값 목록 조회
+        List<Integer> availableStars = boardService.getAvailableStarValues();
+
+        // 모바일에서는 페이징 범위를 5개씩 표시
+        int pageGroupSize = 5;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("availableStars", availableStars);
+        model.addAttribute("selectedStar", null);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board-star-mobile";
+    }
+
+    @GetMapping("/mobile/star/{star}")
+    public String starFilterMobile(@PathVariable Integer star,
+                                    @RequestParam(defaultValue = "1") int page,
+                                    @RequestParam(defaultValue = "20") int size,
+                                    Model model) {
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회 (star 필터링)
+        List<ProductListDto> products = boardService.getStarProducts(star, offset, size);
+        int totalCount = boardService.getTotalStarCount(star);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 사용 가능한 star 값 목록 조회
+        List<Integer> availableStars = boardService.getAvailableStarValues();
+
+        // 모바일에서는 페이징 범위를 5개씩 표시
+        int pageGroupSize = 5;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("availableStars", availableStars);
+        model.addAttribute("selectedStar", star);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board-star-mobile";
+    }
+
+    @GetMapping("/satisfied/{count}")
+    public String satisfied(@PathVariable String count,
+                            @RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "20") int size,
+                            HttpServletRequest request,
+                            Model model) {
+        // 모바일 기기 감지 후 리다이렉트
+        if (MobileDetector.isMobile(request)) {
+            return "redirect:/mobile/satisfied/" + count + "?page=" + page;
+        }
+        
+        int countInt;
+        try {
+            countInt = Integer.parseInt(count);
+        } catch (NumberFormatException e) {
+            return "redirect:/";
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 페이징 범위 계산 (10개씩 표시)
+        int pageGroupSize = 10;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("count", countInt);
+        model.addAttribute("month", "구매했어요");
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board";
+    }
+
+    @GetMapping("/mobile/satisfied/{count}")
+    public String satisfiedMobile(@PathVariable String count,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "20") int size,
+                                  Model model) {
+        int countInt;
+        try {
+            countInt = Integer.parseInt(count);
+        } catch (NumberFormatException e) {
+            return "redirect:/";
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt);
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 모바일에서는 페이징 범위를 5개씩 표시
+        int pageGroupSize = 5;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("count", countInt);
+        model.addAttribute("month", "구매했어요");
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+
+        return "board-mobile";
+    }
+
+    @GetMapping("/shortterm")
+    public String shortTerm(@RequestParam(required = false) String password,
+                            @RequestParam(defaultValue = "1") int page,
+                            @RequestParam(defaultValue = "20") int size,
+                            HttpServletRequest request,
+                            Model model) {
+        // 모바일 기기 감지 후 리다이렉트
+        if (MobileDetector.isMobile(request)) {
+            return "redirect:/mobile/shortterm?password=" + (password != null ? password : "") + "&page=" + page;
+        }
+
+        // 암호 확인
+        if (password == null || !password.equals("970515")) {
+            model.addAttribute("requirePassword", true);
+            model.addAttribute("errorMessage", password != null ? "관리자에게 문의하세요." : null);
+            return "board-shortterm";
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getShortTermPopularProducts(offset, size);
+        int totalCount = boardService.getShortTermPopularTotalCount();
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 페이징 범위 계산 (10개씩 표시)
+        int pageGroupSize = 10;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("requirePassword", false);
+
+        return "board-shortterm";
+    }
+
+    @GetMapping("/mobile/shortterm")
+    public String shortTermMobile(@RequestParam(required = false) String password,
+                                  @RequestParam(defaultValue = "1") int page,
+                                  @RequestParam(defaultValue = "20") int size,
+                                  Model model) {
+        // 암호 확인
+        if (password == null || !password.equals("970515")) {
+            model.addAttribute("requirePassword", true);
+            model.addAttribute("errorMessage", password != null ? "관리자에게 문의하세요." : null);
+            return "board-shortterm-mobile";
+        }
+
+        // 페이징 계산
+        int offset = (page - 1) * size;
+        
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getShortTermPopularProducts(offset, size);
+        int totalCount = boardService.getShortTermPopularTotalCount();
+        int totalPages = (int) Math.ceil((double) totalCount / size);
+
+        // 모바일에서는 페이징 범위를 5개씩 표시
+        int pageGroupSize = 5;
+        int currentPageGroup = (page - 1) / pageGroupSize;
+        int startPage = currentPageGroup * pageGroupSize + 1;
+        int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
+
+        model.addAttribute("products", products);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", totalPages);
+        model.addAttribute("totalCount", totalCount);
+        model.addAttribute("startPage", startPage);
+        model.addAttribute("endPage", endPage);
+        model.addAttribute("requirePassword", false);
+
+        return "board-shortterm-mobile";
+    }
 }
 

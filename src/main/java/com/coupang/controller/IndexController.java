@@ -25,6 +25,29 @@ public class IndexController {
         String formattedCount = NumberFormat.getNumberInstance(Locale.US).format(totalProductCount);
         model.addAttribute("totalProductCount", totalProductCount);
         model.addAttribute("formattedProductCount", formattedCount);
+        
+        // 오늘 업데이트된 상품 개수 조회
+        int todayPurchasedCount = boardService.getTodayPurchasedCount();
+        int todaySatisfiedCount = boardService.getTodaySatisfiedCount();
+        model.addAttribute("todayPurchasedCount", todayPurchasedCount);
+        model.addAttribute("todaySatisfiedCount", todaySatisfiedCount);
+        
+        // 단기간 인기 상품 개수 조회
+        try {
+            int shortTermPopularCount = boardService.getShortTermPopularTotalCount();
+            model.addAttribute("shortTermPopularCount", shortTermPopularCount);
+        } catch (Exception e) {
+            model.addAttribute("shortTermPopularCount", 0);
+        }
+        
+        // 상위 카테고리 10개 조회
+        try {
+            var topCategories = boardService.getTopCategories();
+            model.addAttribute("topCategories", topCategories);
+        } catch (Exception e) {
+            model.addAttribute("topCategories", new java.util.ArrayList<>());
+        }
+        
         return "index";
     }
 }
