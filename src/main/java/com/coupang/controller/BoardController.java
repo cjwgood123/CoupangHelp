@@ -285,12 +285,11 @@ public class BoardController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("count", countInt);
-        model.addAttribute("month", "구매했어요");
+        model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        return "board";
+        return "board-star";
     }
 
     @GetMapping("/mobile/satisfied/{count}")
@@ -323,12 +322,11 @@ public class BoardController {
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
-        model.addAttribute("count", countInt);
-        model.addAttribute("month", "구매했어요");
+        model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
-        return "board-mobile";
+        return "board-star-mobile";
     }
 
     @GetMapping("/shortterm")

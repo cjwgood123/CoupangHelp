@@ -425,8 +425,8 @@ public class BoardService {
     /**
      * 오늘 날짜에 업데이트된 구매했어요 상품 개수 조회
      * 오늘 날짜의 coupang_products_* 테이블에서 중복 제거된 productID 개수
+     * 캐시 제거: DB 업데이트 시마다 실시간으로 반영되도록 함
      */
-    @org.springframework.cache.annotation.Cacheable(value = "todayCounts", key = "'purchased'", unless = "#result == null")
     public int getTodayPurchasedCount() {
         // 오늘 날짜 형식: YYYYMMDD
         String today = LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -471,8 +471,8 @@ public class BoardService {
     /**
      * 오늘 날짜에 업데이트된 만족했어요 상품 개수 조회
      * 오늘 날짜의 coupang_satisfied_* 테이블에서 중복 제거된 productID 개수
+     * 캐시 제거: DB 업데이트 시마다 실시간으로 반영되도록 함
      */
-    @org.springframework.cache.annotation.Cacheable(value = "todayCounts", key = "'satisfied'", unless = "#result == null")
     public int getTodaySatisfiedCount() {
         // 오늘 날짜 형식: YYYYMMDD
         String today = LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
