@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
+    <meta name="description" th:content="|만족했어요 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" th:href="@{${selectedStar != null ? '/star/' + selectedStar : '/star/all'}}">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" th:content="@{${selectedStar != null ? 'https://helpcoupang.com/star/' + selectedStar : 'https://helpcoupang.com/star/all'}}">
+    <meta property="og:title" th:content="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'} + ' | 쿠팡셀러 인기상품'">
+    <meta property="og:description" th:content="|만족했어요 상품 리스트. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta property="og:site_name" content="쿠팡 데이터 분석">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" th:content="@{${selectedStar != null ? 'https://helpcoupang.com/star/' + selectedStar : 'https://helpcoupang.com/star/all'}}">
+    <meta property="twitter:title" th:content="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'}">
+    <meta property="twitter:description" th:content="|만족했어요 상품 리스트. 총 ${totalCount}건.|">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --secondary-foreground: hsl(330, 80%, 40%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --success: hsl(140, 60%, 50%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-foreground);
+        }
+
+        .logo-text h2 {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .nav {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background: none;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+            transition: background-color 0.2s;
+        }
+
+        .nav-toggle:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s;
+        }
+
+        .nav-toggle.active svg {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            display: none;
+            padding-left: 0.5rem;
+        }
+
+        .nav-items.show {
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            color: var(--foreground);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            text-decoration: none;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            font-weight: 600;
+        }
+
+        .nav-item.muted {
+            color: var(--muted-foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .page-header p {
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--foreground);
+        }
+
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .filter-tab {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: 1px solid var(--border);
+            background-color: var(--card);
+            color: var(--foreground);
+        }
+
+        .filter-tab:hover {
+            background-color: var(--muted);
+        }
+
+        .filter-tab.active {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-color: var(--primary);
+        }
+
+        /* Table */
+        .table-wrapper {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--muted);
+        }
+
+        th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--foreground);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.875rem;
+        }
+
+        tbody tr:hover {
+            background-color: var(--muted);
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .title-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        .title-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+
+        .product-id {
+            color: var(--muted-foreground);
+            font-family: monospace;
+            font-size: 0.8125rem;
+        }
+
+        .date {
+            color: var(--muted-foreground);
+        }
+
+        /* Pagination */
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination a,
+        .pagination span {
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: background-color 0.2s;
+        }
+
+        .pagination a {
+            color: var(--foreground);
+            background-color: var(--card);
+            border: 1px solid var(--border);
+        }
+
+        .pagination a:hover {
+            background-color: var(--muted);
+        }
+
+        .pagination .current {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: 1px solid var(--primary);
+        }
+
+        .pagination .disabled {
+            color: var(--muted-foreground);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .pagination-info {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.75rem;
+            }
+
+            th, td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            .filter-tabs {
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>쿠팡 데이터</h2>
+                        <p>판매 기록 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 구매했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
+                        <span>구매했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="nov2025">
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+                <!-- 만족했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle active" onclick="toggleNav('satisfied')">
+                        <span>만족했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items show" id="satisfied">
+                        <a href="/satisfied/100" class="nav-item" th:classappend="${selectedStar == 100} ? 'active' : ''">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item" th:classappend="${selectedStar == 200} ? 'active' : ''">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item" th:classappend="${selectedStar == 300} ? 'active' : ''">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item" th:classappend="${selectedStar == 400} ? 'active' : ''">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item" th:classappend="${selectedStar == 500} ? 'active' : ''">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item" th:classappend="${selectedStar == 600} ? 'active' : ''">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item" th:classappend="${selectedStar == 700} ? 'active' : ''">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item" th:classappend="${selectedStar == 800} ? 'active' : ''">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item" th:classappend="${selectedStar == 900} ? 'active' : ''">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item" th:classappend="${selectedStar == 1000} ? 'active' : ''">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item" th:classappend="${selectedStar == 2000} ? 'active' : ''">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item" th:classappend="${selectedStar == 3000} ? 'active' : ''">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item" th:classappend="${selectedStar == 4000} ? 'active' : ''">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item" th:classappend="${selectedStar == 5000} ? 'active' : ''">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item" th:classappend="${selectedStar == 6000} ? 'active' : ''">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item" th:classappend="${selectedStar == 7000} ? 'active' : ''">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item" th:classappend="${selectedStar == 8000} ? 'active' : ''">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item" th:classappend="${selectedStar == 9000} ? 'active' : ''">⚡ 9000명 이상 만족</a>
+                    </div>
+                </div>
+                <!-- 단기간 인기 상품 -->
+                <div class="nav-section">
+                    <a href="#" class="nav-item active" onclick="showPasswordModal(); return false;" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <a href="/" class="back-link">
+                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                </svg>
+                홈으로 돌아가기
+            </a>
+
+            <div class="page-header">
+                <h1 th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'}">만족 상품</h1>
+                <p th:if="${selectedStar != null}" th:text="|만족했어요 - 총 ${totalCount}건|">-</p>
+                <p th:if="${selectedStar == null}" th:text="|전체 상품 - 총 ${totalCount}건|">-</p>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">번호</th>
+                            <th>상품명</th>
+                            <th style="width: 150px;">상품ID</th>
+                            <th style="width: 120px;">상품평</th>
+                            <th style="width: 150px;">카테고리</th>
+                            <th style="width: 120px;">조회일자</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${products.isEmpty()}">
+                            <td colspan="6" style="text-align: center; padding: 3rem; color: var(--muted-foreground);">
+                                데이터가 없습니다.
+                            </td>
+                        </tr>
+                        <tr th:each="product : ${products}">
+                            <td th:text="${product.rowNum}">1</td>
+                            <td>
+                                <a th:href="${product.url}" 
+                                   th:text="${product.title}" 
+                                   class="title-link"
+                                   target="_blank"
+                                   rel="noopener noreferrer">상품명</a>
+                            </td>
+                            <td>
+                                <span class="product-id" th:text="${product.productID}">PRODUCT_ID</span>
+                            </td>
+                            <td>
+                                <span class="review-count">
+                                    <span th:if="${product.review != null and product.review != ''}">
+                                        <span th:if="${#strings.contains(product.review, '개')}" th:text="${product.review}">-</span>
+                                        <span th:unless="${#strings.contains(product.review, '개')}" th:text="${product.review + ' 개'}">-</span>
+                                    </span>
+                                    <span th:if="${product.review == null or product.review == ''}" th:text="'-'">-</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="category" th:text="${product.category != null and product.category != '' ? product.category : '-'}">-</span>
+                            </td>
+                            <td>
+                                <span class="date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" th:if="${totalPages > 1}">
+                <!-- 이전 그룹 -->
+                <a th:if="${startPage > 1}" 
+                   th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + (startPage - 1) : '/star/all?page=' + (startPage - 1)}}">이전</a>
+                <span th:if="${startPage == 1}" class="disabled">이전</span>
+
+                <!-- 현재 그룹의 페이지 번호들 (최대 10개) -->
+                <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
+                    <a th:if="${pageNum != currentPage}"
+                       th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + pageNum : '/star/all?page=' + pageNum}}"
+                       th:text="${pageNum}">1</a>
+                    <span th:if="${pageNum == currentPage}" 
+                          class="current"
+                          th:text="${pageNum}">1</span>
+                </span>
+
+                <!-- 다음 그룹 -->
+                <a th:if="${endPage < totalPages}" 
+                   th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + (endPage + 1) : '/star/all?page=' + (endPage + 1)}}">다음</a>
+                <span th:if="${endPage == totalPages}" class="disabled">다음</span>
+            </div>
+
+            <div class="pagination-info" th:if="${totalCount > 0}">
+                <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
+
+    function showPasswordModal() {
+        window.location.href = '/shortterm';
+    }
+</script>
+</body>
+</html>
+

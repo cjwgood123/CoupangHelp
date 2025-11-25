@@ -50,5 +50,10 @@ public class IndexController {
         
         return "index";
     }
+
+    @GetMapping("/about")
+    public String about() {
+        return "about";
+    }
 }
 

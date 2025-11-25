@@ -741,7 +741,7 @@ public class BoardService {
                 days_diff
             FROM latest_detail
             WHERE rn = 1
-            ORDER BY rise_count DESC, days_diff ASC, regidate DESC, seq ASC
+            ORDER BY regidate DESC, seq ASC, rise_count DESC, days_diff ASC
             LIMIT ? OFFSET ?
             """;
         

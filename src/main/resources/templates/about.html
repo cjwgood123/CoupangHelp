@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헬프쿠팡 소개 | 쿠팡셀러 데이터 분석기</title>
+    <meta name="description" content="헬프쿠팡은 쿠팡 셀러분들이 비싼 유료 멤버십에 가입하기 전에, 스스로 좋은 상품을 찾고 검증할 수 있도록 돕는 무료 데이터 분석 플랫폼입니다.">
+    <meta name="keywords" content="헬프쿠팡, helpcoupang, 쿠팡, 쿠팡셀러, 쿠팡 판매, 쿠팡 셀러, 스마트스토어, 쿠팡 데이터 분석, 쿠팡 인기상품">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/about">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --secondary-foreground: hsl(330, 80%, 40%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --success: hsl(140, 60%, 50%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 256px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-foreground);
+        }
+
+        .logo-text h2 {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .nav {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--foreground);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-toggle:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-toggle svg {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.2s;
+        }
+
+        .nav-toggle.active svg {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            display: none;
+            padding-left: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .nav-items.show {
+            display: block;
+        }
+
+        .nav-item {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 0.25rem;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .nav-item:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .content-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            margin-bottom: 2rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--foreground);
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .section-content {
+            font-size: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .menu-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .menu-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .menu-card p {
+            font-size: 0.9375rem;
+            color: var(--muted-foreground);
+            line-height: 1.6;
+            margin-bottom: 0;
+        }
+
+        .highlight {
+            background-color: var(--secondary);
+            padding: 2rem;
+            border-radius: var(--radius);
+            margin: 2rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .highlight p {
+            font-size: 1.125rem;
+            color: var(--foreground);
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    </head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>헬프쿠팡</h2>
+                        <p>쿠팡셀러 데이터 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 소개할게요 -->
+                <div class="nav-section">
+                    <a href="/about" class="nav-item active" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+                </div>
+                <!-- 구매했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
+                        <span>구매했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="nov2025">
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+                <!-- 만족했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('satisfied')">
+                        <span>만족했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="satisfied">
+                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 만족</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+        <div class="page-header">
+            <h1>헬프쿠팡 소개</h1>
+            <p>쿠팡 셀러분들을 위한 무료 데이터 분석 플랫폼</p>
+        </div>
+
+        <!-- 헬프쿠팡 소개 -->
+        <div class="section">
+            <div class="section-content">
+                <p>
+                    헬프쿠팡은<br>
+                    스스로 좋은 상품을 찾고 검증할 수 있도록 돕고 싶다는 마음에서 시작했습니다.
+                </p>
+                <p>
+                    매일 새로 등록되는 쿠팡 상품 데이터를 직접 수집·분석해<br>
+                    "지금 팔리는 것", "곧 뜰 것", "셀러에게 기회가 있는 것"을<br>
+                    누구나 쉽게 확인할 수 있게 만드는 것이 목표입니다.
+                </p>
+                <p>
+                    무엇보다 지금은<br>
+                    양질의 데이터를 더 정확하게 분석하고, 의미 있는 추천을 만들기 위한 서비스 개발에 집중하고 있습니다.
+                </p>
+            </div>
+        </div>
+
+        <!-- 메뉴 소개 -->
+        <div class="section">
+            <h2 class="section-title">메뉴 소개</h2>
+            
+            <div class="menu-grid">
+                <div class="menu-card">
+                    <h3>1. 분석 상품 수 (구매했어요 / 만족했어요)</h3>
+                    <p>
+                        헬프쿠팡은 매일 쿠팡에 신규 등록되는 상품들을 스크래핑하여 구매자 수가 100명 이상부터 9,000명 이상까지(또는 그 이상) 판매 흐름이 있는 상품 데이터를 지속적으로 업데이트합니다.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        "구매했어요"와 "만족했어요" 데이터를 통해 지금 시장에서 어떤 상품이 실제로 팔리고, 만족도가 높은지를 빠르게 확인할 수 있습니다.
+                    </p>
+                </div>
+
+                <div class="menu-card">
+                    <h3>2. 인기 카테고리 TOP 10</h3>
+                    <p>
+                        현재까지 수집한 전체 데이터 중 가장 많이 팔리는 상품들의 카테고리를 통계로 집계하여 쿠팡에서 "지금 가장 핫한 카테고리" 10개를 보여드립니다.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        셀러분들이 전체 시장 흐름을 한눈에 파악하고 어떤 분야에 수요가 몰리는지 빠르게 판단할 수 있게 돕는 메뉴입니다.
+                    </p>
+                </div>
+
+                <div class="menu-card">
+                    <h3>3. 단기간 인기 상품</h3>
+                    <p>
+                        현재 등록된 상품 중에서 구매자 수가 짧은 기간에 100명·1,000명 단위로 급상승한 상품을 모아 보여줍니다.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        메인 화면에서 보던 "급상승 상품"을 더 자세한 기준과 함께 따로 확인할 수 있는 메뉴라고 생각하시면 됩니다. 지금 막 떠오르는 상품을 가장 먼저 발견하고 싶을 때 유용합니다.
+                    </p>
+                </div>
+
+                <div class="menu-card">
+                    <h3>4. 베스트 상품 분석</h3>
+                    <p>
+                        "지금 쿠팡 셀러에게 가장 도움이 되는 상품은 무엇일까?"를 기준으로 헬프쿠팡만의 알고리즘을 계속 개선하고 있습니다.
+                    </p>
+                    <p style="margin-top: 0.75rem;">
+                        이 메뉴는 단순히 잘 팔리는 상품을 나열하는 게 아니라, 셀러 입장에서 진입했을 때 기회가 있는 상품을 더 정확하게 찾는 방향으로 발전 중이에요.
+                    </p>
+                    <p style="margin-top: 0.75rem; color: var(--primary); font-weight: 600;">
+                        아직은 개선 과정에 있고, 그래서 여러분의 의견이 정말 중요한 메뉴입니다. 써보시고 "이런 기준이 더 필요하다 / 이런 추천이 좋다" 같은 피드백을 꼭 들려주세요.
+                    </p>
+                </div>
+
+                <div class="menu-card">
+                    <h3>5. 실시간 매출 대시보드</h3>
+                    <p>
+                        수집된 데이터를 기반으로 카테고리·시간·판매 흐름을 실시간에 가깝게 확인할 수 있는 대시보드입니다.
+                    </p>
+                    <p style="margin-top: 0.75rem; color: var(--muted-foreground); font-style: italic;">
+                        (설명 확정되면 여기에 핵심 기능 한 줄 더 붙이면 완성!)
+                    </p>
+                </div>
+
+                <div class="menu-card">
+                    <h3>6. 경쟁사 비교 분석</h3>
+                    <p>
+                        내가 보려는 상품/카테고리에서 경쟁 셀러와 상품들이 어떤 가격, 리뷰, 성장 속도를 갖고 있는지 한눈에 비교할 수 있도록 준비 중입니다.
+                    </p>
+                    <p style="margin-top: 0.75rem; color: var(--muted-foreground); font-style: italic;">
+                        (여기도 기능 확정되면 포인트 2~3개로 더 강하게 써주면 좋아.)
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 헬프쿠팡이 전하고 싶은 메시지 -->
+        <div class="section">
+            <h2 class="section-title">헬프쿠팡이 전하고 싶은 메시지</h2>
+            <div class="highlight">
+                <p>
+                    헬프쿠팡은 "셀러에게 정말 도움이 되는 데이터를 제공하자"는 목표로 움직입니다.<br>
+                    누구나 부담 없이 들어와서 좋은 상품을 찾고, 시장을 읽고, 더 나은 결정을 할 수 있는 곳이 되었으면 합니다.
+                </p>
+                <p style="margin-top: 1.5rem;">
+                    지금도 매일 데이터를 더 모으고, 더 잘 분석하고, 더 정확히 추천하기 위해 서비스를 고도화하고 있어요.
+                </p>
+            </div>
+        </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
+</script>
+</body>
+</html>
+
