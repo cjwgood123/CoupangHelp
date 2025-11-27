@@ -85,5 +85,15 @@ public class IndexController {
     public String productFindingGuide() {
         return "product-finding-guide";
     }
+
+    @GetMapping("/faq")
+    public String faq() {
+        return "faq";
+    }
+
+    @GetMapping("/1688-sourcing-guide")
+    public String sourcingGuide1688() {
+        return "1688-sourcing-guide";
+    }
 }
 

@@ -3,19 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>쿠팡에서 잘 팔리는 상품 찾는 법 | 인기상품 분석 가이드 | 헬프쿠팡</title>
-    <meta name="description" content="쿠팡에서 잘 팔리는 상품 찾는 법: 초보 셀러를 위한 인기상품 + 내 상품 분석 실전 가이드. 판매자센터 인기상품 검색과 비즈니스 인사이트 활용법을 알아보세요.">
-    <meta name="keywords" content="쿠팡 인기상품, 쿠팡 잘 팔리는 상품, 쿠팡 판매자센터, 쿠팡 비즈니스 인사이트, 쿠팡 상품 분석, 쿠팡 판매 전략, 쿠팡 셀러 가이드">
+    <title>1688 중국 공장 소싱 완전 가이드 | 쿠팡 셀러 고마진 소싱 | 헬프쿠팡</title>
+    <meta name="description" content="1688 중국 공장 소싱 완전 가이드: 쿠팡 셀러가 고마진을 만드는 실전 프레임워크. 1688에서 공장가 찾기, 판매자 선별, 원가 계산, 로켓크로스 연결까지 한 번에 이해하세요.">
+    <meta name="keywords" content="1688 소싱, 중국 공장 소싱, 쿠팡 소싱, 1688 가이드, 중국 공장가, 쿠팡 고마진, 배대지, 구매대행, 로켓크로스">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
-    <link rel="canonical" href="https://helpcoupang.com/product-finding-guide">
+    <link rel="canonical" href="https://helpcoupang.com/1688-sourcing-guide">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     
     <!-- 공통 CSS -->
     <link rel="stylesheet" href="/css/common.css">
     
     <style>
-        /* 페이지별 고유 스타일 */
         .page-header {
             text-align: center;
             margin-bottom: 3rem;
@@ -125,6 +124,21 @@
             font-size: 1.125rem;
         }
 
+        .warning-box {
+            background-color: hsl(40, 80%, 95%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid hsl(40, 80%, 50%);
+        }
+
+        .warning-box strong {
+            color: hsl(40, 80%, 40%);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
         .card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -169,42 +183,37 @@
             color: var(--foreground);
         }
 
-        .path-box {
+        .process-box {
             background-color: var(--card);
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            padding: 1rem 1.5rem;
-            margin: 1rem 0;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9375rem;
-            color: var(--primary);
-            border-left: 4px solid var(--primary);
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
+            padding: 1.5rem;
             margin: 1.5rem 0;
-            background-color: var(--card);
+        }
+
+        .process-box ol {
+            margin-left: 1.5rem;
+        }
+
+        .process-box li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .formula-box {
+            background-color: hsl(280, 80%, 97%);
+            padding: 1.5rem;
             border-radius: var(--radius);
-            overflow: hidden;
+            margin: 1.5rem 0;
+            border-left: 4px solid hsl(280, 80%, 60%);
+            font-family: 'Courier New', monospace;
         }
 
-        .comparison-table th,
-        .comparison-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table th {
-            background-color: var(--secondary);
-            color: var(--secondary-foreground);
-            font-weight: 600;
-        }
-
-        .comparison-table tr:last-child td {
-            border-bottom: none;
+        .formula-box strong {
+            color: hsl(280, 80%, 40%);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
         }
 
         .conclusion {
@@ -228,6 +237,26 @@
             opacity: 0.95;
         }
 
+        .conclusion ul {
+            text-align: left;
+            max-width: 600px;
+            margin: 1.5rem auto;
+            list-style: none;
+        }
+
+        .conclusion li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .conclusion li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
         @media (max-width: 768px) {
             .page-header h1 {
                 font-size: 2rem;
@@ -247,15 +276,6 @@
 
             .conclusion h2 {
                 font-size: 1.5rem;
-            }
-
-            .comparison-table {
-                font-size: 0.875rem;
-            }
-
-            .comparison-table th,
-            .comparison-table td {
-                padding: 0.75rem;
             }
         }
     </style>
@@ -294,8 +314,8 @@
                     </button>
                     <div class="nav-items show" id="guide">
                         <a href="/seller-guide" class="nav-item">📚 쿠팡 판매 A to Z</a>
-                        <a href="/product-finding-guide" class="nav-item active">🔍 잘 팔리는 상품 찾는 법</a>
-                        <a href="/1688-sourcing-guide" class="nav-item">🏭 1688 중국 공장 소싱</a>
+                        <a href="/product-finding-guide" class="nav-item">🔍 잘 팔리는 상품 찾는 법</a>
+                        <a href="/1688-sourcing-guide" class="nav-item active">🏭 1688 중국 공장 소싱</a>
                     </div>
                 </div>
                 <!-- 구매했어요 -->
@@ -368,172 +388,270 @@
     <main class="main-content">
         <div class="content-wrapper">
             <div class="page-header">
-                <h1>쿠팡에서 잘 팔리는 상품 찾는 법</h1>
-                <p class="subtitle">초보 셀러를 위한 "인기상품 + 내 상품 분석" 실전 가이드</p>
+                <h1>1688 중국 공장 소싱 완전 가이드</h1>
+                <p class="subtitle">쿠팡 셀러가 고마진을 만드는 실전 프레임워크</p>
                 <p class="description">
-                    쿠팡 판매를 시작하면 가장 먼저 드는 고민이 있습니다. <strong>"대체 어떤 상품이 잘 팔리지?"</strong><br>
-                    카테고리는 많고 경쟁은 치열한데, 감으로만 상품을 고르다 보면 시간과 비용이 빠르게 새기 쉬워요.<br>
-                    그래서 초보 셀러일수록 쿠팡이 제공하는 '데이터' 기능을 먼저 활용하는 게 중요합니다.
+                    온라인에서 흔히 보이는 상품들 안에도 '숨은 수익'이 있습니다. 하지만 중국 소싱을 제대로 이해하지 못하면 
+                    파손·오배송·불량·환불불가 같은 리스크로 인해 돈만 날리고 끝나는 경우가 많습니다. 
+                    이 가이드는 쿠팡 셀러가 1688에서 공장가를 찾고, 안전한 판매자를 선별하고, 최종 원가와 마진을 계산해 
+                    로켓크로스까지 연결하는 전체 구조를 한 번에 이해할 수 있도록 정리했습니다.
                 </p>
             </div>
 
-            <!-- 1. 인기상품 검색으로 "시장 흐름"부터 잡자 -->
+            <!-- 1. 왜 1688 공장 소싱이 필요한가? -->
             <div class="section">
                 <h2 class="section-title">
                     <span class="section-number">1</span>
-                    <span>인기상품 검색으로 "시장 흐름"부터 잡자</span>
+                    <span>왜 1688 공장 소싱이 필요한가?</span>
                 </h2>
                 <div class="section-content">
                     <p>
-                        쿠팡 판매자센터에는 최근 잘 팔리는 상품을 카테고리별로 보여주는 기능이 있습니다.
+                        쿠팡에서 잘 팔리는 상품은 이미 수요가 검증된 아이템입니다. 문제는 그 상품의 진짜 원가가 어디서 결정되느냐인데, 
+                        대부분의 경우 국내 유통 단계가 여러 번 끼어 원가가 불필요하게 높아진 구조입니다.
                     </p>
+                    <p>
+                        1688은 중국 공장/도매가가 모이는 거대한 B2B 플랫폼입니다. 즉, 공장 직거래에 가까운 가격으로 같은 제품을 소싱할 수 있고 
+                        그 차이가 곧 마진(수익)으로 바뀝니다.
+                    </p>
+                    <div class="highlight-box">
+                        <h3>핵심은 단순합니다</h3>
+                        <p>
+                            "쿠팡 판매가를 기준으로, 공장가–최종원가–마진 구조를 정확히 계산할 수 있어야 합니다."
+                        </p>
+                    </div>
+                </div>
+            </div>
 
-                    <div class="path-box">
-                        경로: 판매자센터 → 상품관리 → 인기상품 검색
+            <!-- 2. 1688 소싱의 핵심 도구와 개념 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">2</span>
+                    <span>1688 소싱의 핵심 도구와 개념</span>
+                </h2>
+                <div class="section-content">
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">2-1. 1688 / 타오바오 차이</h3>
+                    
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>1688.com</h3>
+                            <p>공장·도매상 중심 B2B 플랫폼 → 셀러 소싱용</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>타오바오(Taobao)</h3>
+                            <p>중국 내수 소비자용 B2C 플랫폼 → 가격이 상대적으로 높음</p>
+                        </div>
                     </div>
 
                     <p>
-                        여기서는 다음과 같은 정보를 한눈에 확인할 수 있어요:
+                        소싱 목적이라면 기본 선택지는 1688입니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">2-2. 배대지(배송대행)·구매대행이 하는 일</h3>
+                    
+                    <p>
+                        중국 공장 상품이 한국에 들어오려면 다음 과정을 거칩니다:
+                    </p>
+
+                    <div class="process-box">
+                        <ol>
+                            <li>중국 내륙 운송</li>
+                            <li>국제 운송</li>
+                            <li>인천항 통관</li>
+                            <li>국내 배송</li>
+                            <li>로켓크로스 입고</li>
+                        </ol>
+                    </div>
+
+                    <p>
+                        초보에게 복잡해 보이지만, 배대지/구매대행이 대부분 자동 처리합니다.
                     </p>
 
                     <div class="highlight-box">
+                        <h3>배대지/구매대행 서비스</h3>
                         <ul>
-                            <li>어떤 카테고리에서 무엇이 잘 팔리는지</li>
-                            <li>상위 상품의 가격대/리뷰/브랜드는 어떤지</li>
-                        </ul>
-                    </div>
-
-                    <div class="tip-box">
-                        <strong>활용 팁</strong>
-                        <ul>
-                            <li>키워드로 검색해 "지금 뜨는 상품군"을 빠르게 파악</li>
-                            <li>상위권 상품들의 공통 요소(가격대, 옵션 구성, 리뷰 수준)를 메모</li>
-                            <li>이 데이터를 소싱 방향/아이템 검증에 활용</li>
+                            <li>중국 창고 보관/출고</li>
+                            <li>검수(사진/수량/파손 체크)</li>
+                            <li>통관/관부가세 처리</li>
+                            <li>국내 배송 및 로켓크로스 입고 지원</li>
                         </ul>
                     </div>
 
                     <p>
-                        시장 데이터를 먼저 읽으면, <strong>"팔릴만한 상품 후보"</strong>가 훨씬 선명해집니다.
+                        즉, 셀러는 공장 링크 찾고 결제하는 역할에 집중해도 됩니다.
                     </p>
                 </div>
             </div>
 
-            <!-- 2. 비즈니스 인사이트로 "내 상품 성적표" 확인 -->
+            <!-- 3. 실전 프로세스: 고마진 소싱의 전체 흐름 -->
             <div class="section">
                 <h2 class="section-title">
-                    <span class="section-number">2</span>
-                    <span>비즈니스 인사이트로 "내 상품 성적표" 확인</span>
+                    <span class="section-number">3</span>
+                    <span>실전 프로세스: 고마진 소싱의 전체 흐름</span>
                 </h2>
                 <div class="section-content">
                     <p>
-                        잘 팔리는 상품을 따라 올렸다고 자동으로 팔리진 않죠. 그래서 두 번째로 중요한 게 내 상품의 실적 분석입니다.
+                        아래 흐름이 1688 소싱의 표준 구조입니다.
                     </p>
 
-                    <div class="path-box">
-                        경로: 판매자센터 → 비즈니스 인사이트
+                    <div class="process-box">
+                        <ol>
+                            <li>쿠팡에서 잘 팔리는 상품 찾기</li>
+                            <li>상품 링크/이미지 확보</li>
+                            <li>1688 AI바로 공장가 추적</li>
+                            <li>판매자 검증(판매량/응답률/등급)</li>
+                            <li>최종 원가 계산</li>
+                            <li>구매대행/배대지로 수입 진행</li>
+                            <li>로켓크로스 입고 및 판매</li>
+                        </ol>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-1. AI바로 '공장가' 찾기</h3>
+                    
+                    <p>
+                        크롬 확장 프로그램 <strong>"1688 AI Bar(1688 AI바)"</strong>를 설치하면 쿠팡 상품 페이지에서 1688 공장/도매 가격을 바로 추적할 수 있습니다.
+                    </p>
+                    <p>
+                        이미지 검색/AI 추천 기능으로 유사 공장 리스트를 빠르게 확보 가능합니다.
+                    </p>
+                    <div class="tip-box">
+                        <strong>핵심 포인트</strong>
+                        <p>공장가를 모르면 마진 계산이 불가능합니다. 따라서 이 과정이 고마진 소싱의 시작점입니다.</p>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-2. 최종 원가(랜딩코스트) 계산법</h3>
+                    
+                    <div class="warning-box">
+                        <strong>주의사항</strong>
+                        <p>공장 기본가만 보고 "싸다" 판단하면 위험합니다. 수입 과정에서 물류·세금·수수료가 반드시 추가되기 때문입니다.</p>
+                    </div>
+
+                    <div class="formula-box">
+                        <strong>초보/소량 기준 (빠른 추정)</strong>
+                        <p>AI바에 찍힌 원화 공장가 × 1.3</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--muted-foreground);">
+                            국제물류 + 국내물류 + 관부가세 + 통관비까지 포함한 초기 최종 원가 추정 공식
+                        </p>
+                    </div>
+
+                    <div class="formula-box">
+                        <strong>대량(1000개 이상) 기준 (현실 배수)</strong>
+                        <p>위안화 가격 × 230~250</p>
+                        <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--muted-foreground);">
+                            대량 수입은 고정비가 분산되면서 실제 배수가 낮아지는 구조입니다.
+                        </p>
                     </div>
 
                     <p>
-                        여기서 꼭 봐야 할 두 가지는:
+                        즉, 초기엔 1.3으로 보수적으로, 잘 팔리는 아이템은 대량 기준 230~250으로 최적화하면 됩니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-3. 좋은 판매자 찾는 3가지 기준</h3>
+                    
+                    <p>
+                        1688에는 공장뿐 아니라 도매상/리셀러도 많습니다. 따라서 반드시 판매자 선별 기준이 있어야 합니다.
                     </p>
 
                     <div class="card-grid">
                         <div class="info-card">
-                            <h3>판매 분석</h3>
-                            <ul>
-                                <li>상품별 판매량/매출 추이</li>
-                                <li>환불률, 구매전환율</li>
-                                <li>시간대별 판매 패턴</li>
-                            </ul>
+                            <h3>1. 월간 판매량 높은 곳 우선</h3>
+                            <p>수만~수십만 개 판매 상품은 품질·출고·CS 경험이 안정적일 확률이 높습니다.</p>
                         </div>
 
                         <div class="info-card">
-                            <h3>유입경로 분석</h3>
-                            <ul>
-                                <li>고객이 내 상품을 어디서 발견했는지</li>
-                                <li>검색/추천/광고 등 채널별 비중</li>
-                            </ul>
+                            <h3>2. CS 응답률 80% 이상</h3>
+                            <p>파손/오배송 발생 시 소통 속도가 곧 손실을 막는 핵심입니다.</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>3. 등급: 빨강(실력상가) / 보라(슈퍼공장) 우선</h3>
+                            <p>슈퍼공장은 플랫폼 실사 인증 + 높은 연회비를 내는 상위 판매자로, 규모·신뢰도 측면에서 유리합니다.</p>
                         </div>
                     </div>
 
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-4. 초보가 바로 써먹는 소싱 전략</h3>
+                    
+                    <p>
+                        쿠팡에서는 마진 40% 이상이 사실상 필수입니다. 광고비를 확보해 상위 노출을 뚫어야 하기 때문입니다.
+                    </p>
+
                     <div class="highlight-box">
-                        <h3>이런 식으로 써먹기</h3>
+                        <h3>목표 마진: 최소 40%</h3>
+                        <p><strong>초반 추천 상품 특징:</strong></p>
                         <ul>
-                            <li><strong>유입은 많은데 구매율이 낮다</strong> → 썸네일/가격/상세페이지 점검</li>
-                            <li><strong>검색 유입 비중이 높다</strong> → 상위 키워드를 상품명/상세페이지에 반영</li>
-                            <li><strong>환불률이 높다</strong> → 옵션/상세 설명/품질 사유 점검</li>
+                            <li>작고 가벼운 제품(로켓크로스 수수료 절감)</li>
+                            <li>개당 원가가 낮은 상품(리스크 분산/소액 테스트 가능)</li>
+                        </ul>
+                        <p style="margin-top: 1rem;"><strong>초보에게 유리한 카테고리:</strong></p>
+                        <ul>
+                            <li>소형 패션잡화</li>
+                            <li>저단가 생활 소모품</li>
                         </ul>
                     </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-5. 물류/입고 비용을 더 낮추는 방법</h3>
+                    
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>구매대행/배대지 활용</h3>
+                            <p>검수/통관/로켓크로스 입고까지 한 번에 처리 가능합니다.</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>대량 시 LCL 요청</h3>
+                            <p>컨테이너 혼적(소량 합배송) 방식으로 국제물류 단가가 크게 줄어듭니다.</p>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">3-6. 아이템 위너(카피 경쟁) 방어</h3>
+                    
+                    <p>
+                        고수 셀러는 제품 자체보다 <strong>차별화된 "브랜드 형태"</strong>를 만듭니다.
+                    </p>
+
+                    <div class="highlight-box">
+                        <h3>차별화 전략</h3>
+                        <ul>
+                            <li><strong>로고 각인(제품/패키지):</strong> 동일 상품으로 위너 빼앗기기 어렵게 만들기</li>
+                            <li><strong>알리왕왕(1688 메신저) 활용:</strong> 단가 협상, 출고 전 실제 제품/포장 사진 확인, 불량 기준 합의</li>
+                        </ul>
+                    </div>
+
+                    <p>
+                        직접 소통이 어렵다면 구매대행 요청사항에 <strong>"협상/검수/포장 확인"</strong>을 명확히 적어 진행하면 됩니다.
+                    </p>
                 </div>
             </div>
 
-            <!-- 3. 인기상품(시장) + 인사이트(내 성과)를 연결하자 -->
+            <!-- 4. 결론: 1688 소싱에서 돈 버는 구조 -->
             <div class="section">
                 <h2 class="section-title">
-                    <span class="section-number">3</span>
-                    <span>인기상품(시장) + 인사이트(내 성과)를 연결하자</span>
+                    <span class="section-number">4</span>
+                    <span>결론: 1688 소싱에서 돈 버는 구조</span>
                 </h2>
                 <div class="section-content">
                     <p>
-                        진짜 성장은 <strong>"두 데이터를 같이 볼 때"</strong> 나와요.
+                        1688 소싱은 "중국에서 싸게 사는 법"이 아닙니다. 진짜 최종 원가를 계산하고, 리스크를 줄이며, 
+                        광고비까지 포함한 마진 구조를 만드는 시스템입니다.
                     </p>
-
                     <p>
-                        예를 들어 인기상품 검색에서 "휴대용 텀블러"가 상위권이라면, 다음을 비교해 보세요:
+                        정리하면 이 4가지만 지키면 됩니다:
                     </p>
-
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>비교 항목</th>
-                                <th>경쟁상품 (인기상품 검색)</th>
-                                <th>내 상품 (비즈니스 인사이트)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>리뷰/판매량</td>
-                                <td>상위권 상품의 평균 리뷰 수, 판매량</td>
-                                <td>내 상품의 현재 리뷰 수, 판매량</td>
-                            </tr>
-                            <tr>
-                                <td>가격</td>
-                                <td>인기 상품들의 가격대 범위</td>
-                                <td>내 상품의 현재 가격</td>
-                            </tr>
-                            <tr>
-                                <td>클릭/전환</td>
-                                <td>-</td>
-                                <td>내 상품의 클릭률, 전환율</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
-                    <p>
-                        그러면 다음이 구체적으로 보입니다:
-                    </p>
-
-                    <div class="highlight-box">
-                        <ul>
-                            <li>내가 어디서 밀리는지 (가격? 사진? 상세페이지? 옵션?)</li>
-                            <li>어떤 부분을 바꾸면 좋아질지</li>
-                            <li>혹은 비슷한 결의 신규 아이템을 더 소싱할지</li>
-                        </ul>
-                    </div>
                 </div>
             </div>
 
             <!-- 마무리 -->
             <div class="conclusion">
-                <h2>마무리</h2>
-                <p>
-                    쿠팡 판매는 "감"으로 오래 버티기 어렵습니다.<br>
-                    시장 트렌드 → 내 상품 성과 → 개선 반복 이 루프를 데이터로 돌릴 때<br>
-                    초보 셀러도 빠르게 성장할 수 있어요.
-                </p>
-                <p style="margin-top: 1rem; font-weight: 600;">
-                    오늘부터는 하루 5분만 투자해서 인기상품과 비즈니스 인사이트를 확인해보세요.<br>
-                    "데이터 보는 습관"이 결국 매출로 돌아옵니다.
+                <h2>1688 소싱 성공 체크리스트</h2>
+                <ul>
+                    <li>AI바로 공장가 추적</li>
+                    <li>판매자 검증(판매량·응답률·등급)</li>
+                    <li>최종 원가 계산(1.3 / 230~250 배수)</li>
+                    <li>배대지/구매대행으로 안전하게 로켓크로스 연결</li>
+                </ul>
+                <p style="margin-top: 2rem; font-weight: 600;">
+                    이 구조를 따르면 파손·오배송·환불불가 같은 실수를 줄이면서도,<br>
+                    확실한 고마진 상품을 안정적으로 확대할 수 있습니다.
                 </p>
             </div>
         </div>
@@ -567,6 +685,7 @@
                     <li><a href="/guide">사용 가이드</a></li>
                     <li><a href="/seller-guide">쿠팡 판매 가이드</a></li>
                     <li><a href="/product-finding-guide">인기상품 찾는 법</a></li>
+                    <li><a href="/1688-sourcing-guide">1688 중국 공장 소싱</a></li>
                     <li><a href="/2025-11/all/100">인기 상품 분석</a></li>
                 </ul>
             </div>

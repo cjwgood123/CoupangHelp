@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자주 묻는 질문 (FAQ) | 쿠팡 판매 FAQ | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 판매와 헬프쿠팡 서비스에 대한 자주 묻는 질문(FAQ). 쿠팡 셀러를 위한 실전 질문과 답변을 확인하세요.">
+    <meta name="keywords" content="쿠팡 FAQ, 쿠팡 판매 FAQ, 쿠팡 셀러 질문, 쿠팡 판매자 FAQ, 헬프쿠팡 FAQ, 쿠팡 판매 자주묻는질문">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/faq">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+        }
+
+        .faq-section {
+            margin-bottom: 3rem;
+        }
+
+        .faq-section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .faq-item {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-question {
+            padding: 1.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .faq-question:hover {
+            background-color: var(--muted);
+        }
+
+        .faq-question::after {
+            content: "+";
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 300;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-question::after {
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 1.5rem;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 2000px;
+            padding: 0 1.5rem 1.5rem 1.5rem;
+        }
+
+        .faq-answer-content {
+            padding-top: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .faq-answer-content p {
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content ul,
+        .faq-answer-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .faq-answer-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-contact-box {
+            background-color: var(--secondary);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .faq-contact-box p {
+            margin-bottom: 0.75rem;
+            font-size: 0.9375rem;
+        }
+
+        .faq-contact-btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 0.9375rem;
+            transition: opacity 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .faq-contact-btn:hover {
+            opacity: 0.9;
+        }
+
+        .search-box {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .faq-section-title {
+                font-size: 1.5rem;
+            }
+
+            .faq-question {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+
+            .faq-answer {
+                padding: 0 1rem;
+            }
+
+            .faq-item.active .faq-answer {
+                padding: 0 1rem 1rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>헬프쿠팡</h2>
+                        <p>쿠팡셀러 데이터 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 소개할게요 -->
+                <div class="nav-section">
+                    <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+                </div>
+                <!-- 쿠팡 판매 가이드 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('guide')">
+                        <span>쿠팡 판매 가이드</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="guide">
+                        <a href="/seller-guide" class="nav-item">📚 쿠팡 판매 A to Z</a>
+                        <a href="/product-finding-guide" class="nav-item">🔍 잘 팔리는 상품 찾는 법</a>
+                    </div>
+                </div>
+                <!-- 구매했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
+                        <span>구매했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="nov2025">
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+                <!-- 만족했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('satisfied')">
+                        <span>만족했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="satisfied">
+                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 만족</a>
+                    </div>
+                </div>
+                <!-- 단기간 인기 상품 -->
+                <div class="nav-section">
+                    <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>자주 묻는 질문 (FAQ)</h1>
+                <p>쿠팡 판매와 헬프쿠팡 서비스에 대한 자주 묻는 질문과 답변</p>
+            </div>
+
+            <!-- 검색 박스 -->
+            <div class="search-box">
+                <input type="text" id="faqSearch" placeholder="질문을 검색해보세요..." onkeyup="searchFAQ()">
+            </div>
+
+            <!-- 쿠팡 판매 관련 FAQ -->
+            <div class="faq-section">
+                <h2 class="faq-section-title">쿠팡 판매 관련</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        쿠팡 판매를 시작하려면 무엇이 필요한가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                쿠팡 판매를 시작하려면 다음이 필요합니다:
+                            </p>
+                            <ul>
+                                <li><strong>사업자 등록:</strong> 개인 또는 법인 사업자 등록이 필요합니다. 초보 셀러는 간이과세자/일반과세자 중 선택할 수 있습니다.</li>
+                                <li><strong>통신판매업 신고:</strong> 온라인 판매를 위한 필수 절차로, 정부24 또는 지자체 시스템에서 신청합니다.</li>
+                                <li><strong>쿠팡윙(판매자센터) 가입:</strong> 쿠팡 판매 전용 시스템으로, 상품 등록부터 정산까지 모든 과정을 관리합니다. 가입 후 1~3 영업일 내 승인됩니다.</li>
+                            </ul>
+                            <p>
+                                자세한 내용은 <a href="/seller-guide" style="color: var(--primary);">쿠팡 판매 A to Z 가이드</a>를 참고하세요.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <p>더 자세한 상담이 필요하시면 카카오톡 오픈채팅으로 문의해주세요.</p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        쿠팡 판매 방식은 어떤 것들이 있나요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                쿠팡 판매 방식은 크게 세 가지가 있습니다:
+                            </p>
+                            <ol>
+                                <li><strong>마켓플레이스(오픈마켓형):</strong> 셀러가 직접 상품 등록, 재고 관리, 배송 처리, 고객 응대를 담당합니다. 진입장벽이 낮아 초보 셀러에게 가장 적합합니다.</li>
+                                <li><strong>로켓배송(쿠팡 매입/배송형):</strong> 쿠팡이 상품을 매입해 보관·배송·CS를 운영합니다. 운영 부담은 줄지만 입점 심사가 엄격합니다.</li>
+                                <li><strong>로켓그로스(물류 대행형):</strong> 셀러가 쿠팡 물류센터에 입고하면, 이후 배송·CS는 쿠팡이 처리합니다. 마켓플레이스와 로켓배송의 중간 형태입니다.</li>
+                            </ol>
+                            <p>
+                                초보 셀러는 마켓플레이스로 시작해 구조를 익힌 후 확장하는 것을 권장합니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        쿠팡 수수료는 어떻게 계산되나요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                쿠팡 수수료는 카테고리별로 다르게 적용됩니다. 일반적으로:
+                            </p>
+                            <ul>
+                                <li>의류/패션: 약 10-15%</li>
+                                <li>전자제품: 약 8-12%</li>
+                                <li>생활용품: 약 10-13%</li>
+                                <li>식품: 약 8-10%</li>
+                            </ul>
+                            <p>
+                                정확한 수수료율은 쿠팡 판매자센터에서 카테고리별로 확인할 수 있으며, 판매 전 예상 수수료를 반영한 손익 계산이 필수입니다. 
+                                수수료 외에도 배송비, 광고비 등을 고려해야 합니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        잘 팔리는 상품을 어떻게 찾나요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                잘 팔리는 상품을 찾는 방법은 여러 가지가 있습니다:
+                            </p>
+                            <ol>
+                                <li><strong>쿠팡 판매자센터 인기상품 검색:</strong> 판매자센터 → 상품관리 → 인기상품 검색에서 카테고리별 인기 상품을 확인할 수 있습니다.</li>
+                                <li><strong>비즈니스 인사이트 활용:</strong> 판매자센터 → 비즈니스 인사이트에서 판매 분석과 유입경로를 확인해 시장 트렌드를 파악합니다.</li>
+                                <li><strong>헬프쿠팡 데이터 활용:</strong> 헬프쿠팡에서 구매자 수 기준 인기 상품과 단기간 급상승 상품을 확인할 수 있습니다.</li>
+                            </ol>
+                            <p>
+                                자세한 방법은 <a href="/product-finding-guide" style="color: var(--primary);">잘 팔리는 상품 찾는 법 가이드</a>를 참고하세요.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        쿠팡 상품 등록 시 주의사항은 무엇인가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                쿠팡 상품 등록 시 다음 사항을 주의해야 합니다:
+                            </p>
+                            <ul>
+                                <li><strong>상품명:</strong> 검색 키워드를 포함하되, 과도한 키워드 나열은 피해야 합니다.</li>
+                                <li><strong>카테고리:</strong> 정확한 카테고리 선택이 중요하며, 잘못된 카테고리는 노출에 악영향을 줍니다.</li>
+                                <li><strong>상세페이지:</strong> 상품 정보, 사용법, 주의사항을 명확하게 작성해야 합니다.</li>
+                                <li><strong>이미지:</strong> 고품질 이미지 사용과 쿠팡 정책에 맞는 이미지 구성이 필요합니다.</li>
+                                <li><strong>가격/재고:</strong> 정확한 가격과 재고 정보를 입력해야 합니다.</li>
+                            </ul>
+                            <p>
+                                등록 품질이 노출 순위에 직접 영향을 주므로, 처음부터 정책에 맞게 올리는 것이 중요합니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        쿠팡 정산은 언제 받을 수 있나요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                쿠팡 정산 주기는 선택할 수 있으며, 다음과 같은 옵션이 있습니다:
+                            </p>
+                            <ul>
+                                <li><strong>월 정산:</strong> 매월 정해진 날짜에 정산됩니다.</li>
+                                <li><strong>주 정산:</strong> 매주 정해진 날짜에 정산됩니다.</li>
+                                <li><strong>빠른 정산:</strong> 더 자주 정산받을 수 있는 옵션입니다.</li>
+                            </ul>
+                            <p>
+                                정산 주기는 매입 주기와 운영 규모를 고려해 선택해야 하며, 현금흐름에 직접 영향을 줍니다. 
+                                판매자센터에서 정산 설정을 확인하고 변경할 수 있습니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 헬프쿠팡 서비스 관련 FAQ -->
+            <div class="faq-section">
+                <h2 class="faq-section-title">헬프쿠팡 서비스 관련</h2>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        헬프쿠팡은 어떤 서비스인가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                헬프쿠팡은 쿠팡 셀러와 스마트스토어 판매자를 위한 인기 상품 데이터 분석 플랫폼입니다. 
+                                매일 새로 등록되는 쿠팡 상품 데이터를 수집·분석해 "지금 팔리는 것", "곧 뜰 것", "셀러에게 기회가 있는 것"을 
+                                누구나 쉽게 확인할 수 있게 제공합니다.
+                            </p>
+                            <p>
+                                주요 기능:
+                            </p>
+                            <ul>
+                                <li>구매자 수 기준 인기 상품 분석</li>
+                                <li>만족도 높은 상품 분석</li>
+                                <li>단기간 급상승 상품 모니터링</li>
+                                <li>카테고리별 트렌드 분석</li>
+                            </ul>
+                            <p>
+                                자세한 내용은 <a href="/about" style="color: var(--primary);">서비스 소개</a> 페이지를 참고하세요.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        헬프쿠팡 데이터는 얼마나 자주 업데이트되나요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                헬프쿠팡은 매일 새로 등록되는 쿠팡 상품 데이터를 수집하여 업데이트합니다. 
+                                메인 페이지에서 오늘 업데이트된 상품 수를 확인할 수 있으며, 
+                                구매자 수가 100명 이상부터 9,000명 이상까지(또는 그 이상) 판매 흐름이 있는 상품 데이터를 지속적으로 업데이트합니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        구매했어요와 만족했어요의 차이는 무엇인가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                <strong>구매했어요:</strong> 실제 구매가 이루어진 수를 나타냅니다. 이는 시장 수요를 파악하는 데 중요한 지표입니다.
+                            </p>
+                            <p>
+                                <strong>만족했어요:</strong> 구매 후 만족도가 높은 리뷰 수를 나타냅니다. 이는 상품의 품질과 고객 만족도를 판단하는 지표입니다.
+                            </p>
+                            <p>
+                                두 지표를 함께 보면 상품의 판매량과 품질을 종합적으로 판단할 수 있습니다. 
+                                구매했어요 수가 많지만 만족했어요 비율이 낮은 상품은 주의가 필요하며, 
+                                반대로 구매했어요 수는 적지만 만족했어요 비율이 높은 상품은 잠재력이 있는 상품일 수 있습니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        헬프쿠팡 서비스는 무료인가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                네, 헬프쿠팡은 현재 무료로 제공되는 서비스입니다. 
+                                누구나 부담 없이 들어와서 좋은 상품을 찾고, 시장을 읽고, 더 나은 결정을 할 수 있도록 제공하고 있습니다.
+                            </p>
+                            <p>
+                                앞으로 광고 기반으로 운영할지, 혹은 구독제/광고 제거형 멤버십 같은 모델로 갈지는 아직 고민 중입니다. 
+                                현재는 서비스 개발과 데이터 품질 향상에 집중하고 있습니다.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        단기간 인기 상품의 기준은 무엇인가요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                단기간 인기 상품은 짧은 기간 동안 구매자 수가 100명 단위 또는 1,000명 단위로 급상승한 상품을 의미합니다. 
+                                이는 트렌드가 급부상하고 있거나 시장에서 주목받기 시작한 상품을 의미합니다.
+                            </p>
+                            <p>
+                                단기간 인기 상품을 활용하면:
+                            </p>
+                            <ul>
+                                <li>지금 막 떠오르는 상품을 가장 먼저 발견할 수 있습니다.</li>
+                                <li>급상승 상품의 특징을 분석하여 다음 트렌드를 예측할 수 있습니다.</li>
+                                <li>경쟁이 아직 적은 초기 단계의 상품을 찾아 진입 기회를 잡을 수 있습니다.</li>
+                            </ul>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        헬프쿠팡 데이터를 어떻게 활용하면 좋을까요?
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">
+                            <p>
+                                헬프쿠팡 데이터를 활용하는 방법:
+                            </p>
+                            <ol>
+                                <li><strong>소싱 방향 결정:</strong> 인기 상품과 카테고리 데이터를 보고 소싱 방향을 결정합니다.</li>
+                                <li><strong>경쟁 분석:</strong> 상위 상품들의 가격대, 리뷰 수준을 분석해 경쟁 전략을 수립합니다.</li>
+                                <li><strong>트렌드 파악:</strong> 단기간 급상승 상품을 모니터링해 시장 트렌드를 빠르게 파악합니다.</li>
+                                <li><strong>상품 검증:</strong> 소싱한 상품이 실제로 수요가 있는지 구매자 수 데이터로 검증합니다.</li>
+                            </ol>
+                            <p>
+                                자세한 활용 방법은 <a href="/guide" style="color: var(--primary);">사용 가이드</a>를 참고하세요.
+                            </p>
+                            <div class="faq-contact-box">
+                                <p><strong>추가 문의가 있으신가요?</strong></p>
+                                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn">카카오톡 오픈채팅 열기</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 추가 문의 섹션 -->
+            <div style="background-color: var(--secondary); padding: 2rem; border-radius: var(--radius); margin-top: 3rem; text-align: center;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--foreground);">원하는 답변을 찾지 못하셨나요?</h2>
+                <p style="margin-bottom: 1.5rem; color: var(--foreground);">
+                    추가 문의사항이 있으시면 카카오톡 오픈채팅으로 언제든지 문의해주세요.
+                </p>
+                <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="faq-contact-btn" style="font-size: 1rem; padding: 1rem 2rem;">
+                    카카오톡 오픈채팅 열기
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const isActive = faqItem.classList.contains('active');
+        
+        // 모든 FAQ 닫기
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // 클릭한 항목만 열기/닫기
+        if (!isActive) {
+            faqItem.classList.add('active');
+        }
+    }
+
+    function searchFAQ() {
+        const searchTerm = document.getElementById('faqSearch').value.toLowerCase();
+        const faqItems = document.querySelectorAll('.faq-item');
+        
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question').textContent.toLowerCase();
+            const answer = item.querySelector('.faq-answer-content').textContent.toLowerCase();
+            
+            if (question.includes(searchTerm) || answer.includes(searchTerm)) {
+                item.style.display = 'block';
+            } else {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
+</script>
+
+<!-- Footer -->
+<footer>
+    <div class="content-wrapper">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <h3>헬프쿠팡</h3>
+                <p>
+                    쿠팡셀러와 스마트스토어 판매자를 위한 인기상품 분석 플랫폼입니다.
+                </p>
+            </div>
+            <div>
+                <h3>서비스</h3>
+                <ul>
+                    <li><a href="/about">서비스 소개</a></li>
+                    <li><a href="/guide">사용 가이드</a></li>
+                    <li><a href="/seller-guide">쿠팡 판매 가이드</a></li>
+                    <li><a href="/product-finding-guide">인기상품 찾는 법</a></li>
+                    <li><a href="/faq">자주 묻는 질문</a></li>
+                    <li><a href="/2025-11/all/100">인기 상품 분석</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>법적 고지</h3>
+                <ul>
+                    <li><a href="/privacy">개인정보처리방침</a></li>
+                    <li><a href="/terms">이용약관</a></li>
+                    <li><a href="/contact">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;">
+            <p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
+
