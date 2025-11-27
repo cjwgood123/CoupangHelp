@@ -1,10 +1,17 @@
 package com.coupang.controller;
 
 import com.coupang.service.BoardService;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -99,6 +106,23 @@ public class IndexController {
     @GetMapping("/rocket-gross-guide")
     public String rocketGrossGuide() {
         return "rocket-gross-guide";
+    }
+
+    @GetMapping("/sitemap.xml")
+    public ResponseEntity<String> sitemap() {
+        try {
+            Resource resource = new ClassPathResource("static/sitemap.xml");
+            String content = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType("application/xml; charset=UTF-8"));
+            
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(content);
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
 
