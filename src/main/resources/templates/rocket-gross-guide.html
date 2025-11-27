@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 로켓그로스 초보 소싱 A to Z | 빈 땅 찾기 실전 가이드 | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 로켓그로스 초보 소싱 A to Z: 빈 땅을 찾고 숫자로 검증하고 안전하게 테스트해 주력상품을 만드는 실전 프레임워크. 초보 셀러를 위한 완전 가이드.">
+    <meta name="keywords" content="로켓그로스, 쿠팡 로켓그로스, 로켓그로스 소싱, 쿠팡 초보 소싱, 쿠팡 그린벨트, 쿠팡 빈 땅 찾기, 쿠팡 소싱 가이드">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/rocket-gross-guide">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .description {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            font-size: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-box {
+            background-color: var(--secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .highlight-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .highlight-box ul {
+            margin-left: 1.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .highlight-box li {
+            margin-bottom: 0.5rem;
+        }
+
+        .tip-box {
+            background-color: hsl(200, 80%, 95%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--info);
+        }
+
+        .tip-box strong {
+            color: var(--info);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .warning-box {
+            background-color: hsl(40, 80%, 95%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid hsl(40, 80%, 50%);
+        }
+
+        .warning-box strong {
+            color: hsl(40, 80%, 40%);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card p {
+            font-size: 0.9375rem;
+            color: var(--foreground);
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-card ul {
+            margin-left: 1.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .info-card li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+            color: var(--foreground);
+        }
+
+        .process-box {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .process-box ol {
+            margin-left: 1.5rem;
+        }
+
+        .process-box li {
+            margin-bottom: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .formula-box {
+            background-color: hsl(280, 80%, 97%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid hsl(280, 80%, 60%);
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-box strong {
+            color: hsl(280, 80%, 40%);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .checklist-box {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .checklist-box h4 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+
+        .checklist-box ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .checklist-box li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist-box li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist-box li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .conclusion {
+            background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%));
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            color: var(--primary-foreground);
+            margin-top: 4rem;
+        }
+
+        .conclusion h2 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .conclusion p {
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+            opacity: 0.95;
+        }
+
+        .conclusion .formula {
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .page-header .subtitle {
+                font-size: 1.125rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .conclusion h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>헬프쿠팡</h2>
+                        <p>쿠팡셀러 데이터 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 소개할게요 -->
+                <div class="nav-section">
+                    <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+                </div>
+                <!-- 구매했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
+                        <span>구매했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="nov2025">
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+                <!-- 만족했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('satisfied')">
+                        <span>만족했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="satisfied">
+                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 만족</a>
+                    </div>
+                </div>
+                <!-- 단기간 인기 상품 -->
+                <div class="nav-section">
+                    <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+                <!-- 쿠팡 판매 가이드 -->
+                <div class="nav-section">
+                    <a href="/seller-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📚 쿠팡 판매 A to Z</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/product-finding-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🔍 잘 팔리는 상품 찾는 법</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/1688-sourcing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏭 1688 중국 공장 소싱</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/rocket-gross-guide" class="nav-item active" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 초보 소싱</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>쿠팡 로켓그로스 초보 소싱 A to Z</h1>
+                <p class="subtitle">"빈 땅을 찾고 → 숫자로 검증하고 → 안전하게 테스트해 주력상품을 만든다"</p>
+                <p class="description">
+                    쿠팡 로켓그로스는 초보에게 매우 유리한 구조입니다. 주력 상품 1개만 제대로 세팅하면, 추가 노동 없이도 매출이 유지되는 시스템이기 때문입니다. 
+                    하지만 초보가 이 구조를 못 살리는 이유도 명확합니다. 이 가이드는 유료 강의에서만 다뤄지는 수준의 소싱/마진/테스트 프레임워크를 
+                    초보가 바로 실전에서 쓰도록 정리한 실전 가이드입니다.
+                </p>
+            </div>
+
+            <!-- 1. 초보가 쿠팡에서 실패하는 진짜 이유 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">1</span>
+                    <span>초보가 쿠팡에서 실패하는 진짜 이유</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        많은 초보 셀러가 "상품만 좋으면 된다"고 생각합니다. 하지만 쿠팡은 <strong>상품 퀄리티 게임이 아니라 '시장 선택 + 숫자 게임'</strong>입니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">초보 실패의 3대 원인</h3>
+
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>1. 이미 땅이 다 먹힌 곳(고수 시장)에서 시작</h3>
+                            <ul>
+                                <li>무지 양말 / 기본 백팩 / 쿨토시 같은 "너무 뻔한 인기 키워드"</li>
+                                <li>리뷰 1만 개 이상 영역</li>
+                                <li>파란 뱃지(로켓배송) 고수들이 자리 잡은 곳</li>
+                            </ul>
+                            <p style="margin-top: 0.75rem; color: var(--muted-foreground); font-size: 0.875rem;">
+                                → 여기서 초보는 광고비만 소모하고 지칩니다.
+                            </p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>2. 최종 원가(착지 원가)를 모르고 시작</h3>
+                            <ul>
+                                <li>판매가만 보고 판단</li>
+                                <li>광고비, 쿠팡 수수료, 반품/교환, 입출고/배송비를 모르고 가격을 맞춤</li>
+                            </ul>
+                            <p style="margin-top: 0.75rem; color: var(--muted-foreground); font-size: 0.875rem;">
+                                → 팔수록 적자나는 구조가 생깁니다.
+                            </p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>3. 재고를 먼저 사서 '도박'한다</h3>
+                            <ul>
+                                <li>팔릴지 확신도 없는데 5~10만 원, 50만 원씩 먼저 사입</li>
+                                <li>결과가 안 나오면 자본이 말라서 끝</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>결론: 초보가 살아남는 길</h3>
+                        <p>
+                            초보가 살아남는 길은 "좋은 상품 찾기"가 아니라<br>
+                            <strong>이길 수 있는 시장을 고르고, 숫자로 검증하고, 리스크 없이 테스트하는 것</strong>입니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 초보가 싸워야 할 "놀이터(레벨)" 먼저 선택하라 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">2</span>
+                    <span>초보가 싸워야 할 "놀이터(레벨)" 먼저 선택하라</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡은 판매 방식에 따라 셀러 레벨과 경쟁 강도가 완전히 다릅니다. 초보는 그 구조부터 이해해야 합니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">쿠팡 셀러 놀이터 3단계</h3>
+
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>① 판매자배송<br>(왕초보 구간)</h3>
+                            <ul>
+                                <li>내가 직접 포장/출고</li>
+                                <li>위탁/드랍쉬핑 테스트에 최적</li>
+                                <li>"일단 올려보고 반응을 보는 구간"</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>② 로켓그로스<br>(초보~중급 구간)</h3>
+                            <ul>
+                                <li>쿠팡 창고에 2~5개 소량 입고 가능</li>
+                                <li>주문/배송 자동 처리</li>
+                                <li>한번 세팅하면 병원에 누워 있어도 매출이 유지되는 구조</li>
+                            </ul>
+                            <p style="margin-top: 0.75rem; color: var(--primary); font-weight: 600;">
+                                초보가 주력상품 만들기 가장 좋은 구간
+                            </p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>③ 로켓배송<br>(중수 이상 구간, 파란 뱃지)</h3>
+                            <ul>
+                                <li>쿠팡 심사/승인 필요</li>
+                                <li>물량·자본이 큰 셀러가 움직이는 영역</li>
+                                <li>리뷰/브랜드 방어·광고 파워가 이미 구축됨</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>초보의 목표</strong>
+                        <p>
+                            판매자배송으로 테스트 → 로켓그로스로 승급<br>
+                            이 한 줄만 지켜도 소싱 난이도가 반으로 떨어집니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. "그린벨트(빈 땅)"을 찾는 실전 소싱 공식 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">3</span>
+                    <span>"그린벨트(빈 땅)"을 찾는 실전 소싱 공식</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡 소싱은 "남들이 잘 파는 것 따라가기"가 아니라 고수들이 아직 다 먹지 못한 땅을 먼저 점령하는 게임입니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">그린벨트(빈 땅) 소싱 3단계</h3>
+
+                    <div class="process-box">
+                        <h4 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--primary);">[1단계] 카테고리는 무조건 4~6단계까지 깊게 내려간다</h4>
+                        <p>
+                            3차 카테고리까지만 보고 "판매량순 정렬"을 하면 거의 100% 파란 뱃지 고수만 뜹니다.
+                        </p>
+                        <p>
+                            초보가 갈 곳은 세부 카테고리의 세부 카테고리입니다. 4~6차까지 내려갈수록 시장이 작아지고 → 고수가 줄고 → 초보가 버틸 공간이 생깁니다.
+                        </p>
+                        <div class="tip-box">
+                            <strong>핵심</strong>
+                            <p>넓은 바다에서 상어랑 싸우지 말고 작은 만(灣)으로 들어가라는 뜻입니다.</p>
+                        </div>
+                    </div>
+
+                    <div class="process-box">
+                        <h4 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--primary);">[2단계] 판매량순 정렬 후 리뷰 500개 미만만 본다</h4>
+                        <p>
+                            주황 뱃지라고 다 초보가 아닙니다. 초보를 가르는 "숨은 레벨 지표"는 따로 있습니다.
+                        </p>
+                        <div class="highlight-box">
+                            <h3>리뷰 수가 실력이다</h3>
+                            <ul>
+                                <li><strong>리뷰 500개 이하:</strong> 초보 시장</li>
+                                <li><strong>리뷰 수천~만 단위:</strong> 고수 시장(들어가면 안 됨)</li>
+                            </ul>
+                            <p style="margin-top: 1rem;">
+                                초보는 <strong>"리뷰 500 이하의 1등"</strong>을 노려야 합니다. 그게 그린벨트의 신호입니다.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="process-box">
+                        <h4 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--primary);">[3단계] 리뷰×30으로 경쟁자 '실제 판매력'을 역산한다</h4>
+                        <p>
+                            이게 진짜 핵심이자, 초보가 돈 되는 시장을 찾는 "숫자 지도"입니다.
+                        </p>
+                        <div class="formula-box">
+                            <strong>총 판매량 계산 공식</strong>
+                            <p>총 판매량 ≈ 리뷰 수 × 30</p>
+                            <p style="font-size: 0.875rem; margin-top: 0.5rem; color: var(--muted-foreground);">
+                                (최근엔 리뷰가 잘 달려서 20~30대가 현실적)
+                            </p>
+                        </div>
+                        <div class="card-grid">
+                            <div class="info-card">
+                                <h3>예시 1: 고수 시장</h3>
+                                <p>리뷰 2,849개</p>
+                                <ul>
+                                    <li>2,849 × 30 ≈ 85,000개 판매</li>
+                                    <li>단가 8,900원</li>
+                                    <li>매출 7억 이상</li>
+                                </ul>
+                                <p style="margin-top: 0.75rem; color: var(--muted-foreground); font-size: 0.875rem;">
+                                    → 초보 시장 아님 = "성(城)이 이미 세워진 땅"
+                                </p>
+                            </div>
+
+                            <div class="info-card">
+                                <h3>예시 2: 초보 시장</h3>
+                                <p>리뷰 100~300개인데 판매량순 상위에 떠 있다?</p>
+                                <ul>
+                                    <li>"아직 땅이 안 먹힌 곳에서 혼자 잘 파는 초보 1등"</li>
+                                    <li>우리가 들어가면 이길 확률이 높습니다</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">조회수로 경쟁자 월매출·순익까지 계산한다</h3>
+                    
+                    <p>
+                        "좋아 보이는 상품"이 아니라 팔리고 있다는 증거로 판단해야 합니다.
+                    </p>
+
+                    <div class="process-box">
+                        <ol>
+                            <li><strong>Seller Life 확장프로그램</strong>으로 조회수(방문자수) 확인</li>
+                            <li><strong>전환율 가정:</strong> 1만원 미만 상품은 8~10% (보수적으로 8% 사용)</li>
+                            <li><strong>월 구매수</strong> = 조회수 × 전환율</li>
+                            <li><strong>월매출</strong> = 월 구매수 × 판매가</li>
+                            <li><strong>순익</strong> = 월매출 × (로켓그로스 평균 15~20%)</li>
+                        </ol>
+                    </div>
+
+                    <div class="formula-box">
+                        <strong>실전 계산 예시</strong>
+                        <p>조회수 36,000 / 전환율 8% / 판매가 7,770원</p>
+                        <p>→ 월 구매 2,900개</p>
+                        <p>→ 월 매출 2,250만원</p>
+                        <p>→ 순익 15%면 월 340만원 구조</p>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>핵심</strong>
+                        <p>
+                            이 계산이 되면, "내가 들어가서 먹을 수 있는 시장인지" 눈으로 보이지 않아도 숫자로 명확해집니다.
+                        </p>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">초보가 가격경쟁에서 지는 이유와 해결법: "구성 전략"</h3>
+                    
+                    <p>
+                        초보가 마진 40~50% 잡으면 경쟁사보다 비싸 보일 수 있습니다. 그럴 때 초보는 가격을 내리며 망합니다.
+                    </p>
+
+                    <div class="highlight-box">
+                        <h3>정답은 가격이 아니라 구성입니다</h3>
+                        <ul>
+                            <li>경쟁사: 5켤레 7,770원</li>
+                            <li>나: 10켤레/12켤레 구성으로 설계</li>
+                        </ul>
+                        <p style="margin-top: 1rem;">
+                            1만원 아래 구간은 쿠팡 비용 구조가 낮아져 마진을 유지하면서도 체감 가격경쟁력을 만들 수 있습니다.
+                        </p>
+                        <p>
+                            쿠팡은 "동일 상품 최저가 검색"이 아니라 광고·썸네일·구성으로 먼저 클릭된 상품이 이기는 구조라는 점이 포인트입니다.
+                        </p>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">"컨텍스트(상황) 이미지"가 매출을 폭발시킨다</h3>
+                    
+                    <p>
+                        쿠팡 상세페이지는 단순 제품 설명이 아니라 "이걸 왜 지금 사야 하는지"를 설득하는 공간입니다.
+                    </p>
+
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>나쁜 예: 제품컷만</h3>
+                            <p>잠자리채 → 흰 배경 제품컷만 있으면 그냥 물건</p>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>좋은 예: 상황 이미지</h3>
+                            <p>산/들판에서 잠자리채 들고 있는 장면 한 컷</p>
+                            <p style="margin-top: 0.75rem; color: var(--success); font-weight: 600;">
+                                → "당장 나도 저렇게 써야겠다"는 감정이 생김<br>
+                                → 클릭률/전환율 상승 → 광고 효율 상승 → 노출 알고리즘 선순환
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <strong>실전 사례</strong>
+                        <p>러닝조끼도 똑같아요.</p>
+                        <p>그냥 조끼 사진: 월매출 600만원</p>
+                        <p>러닝하며 착용한 장면: 월매출 6천만원까지 뛴 사례</p>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>핵심</strong>
+                        <p>
+                            초보가 "상품 자체 스펙"으로 이기려 하면 힘듭니다. 초보가 이기는 길은 쓰는 장면(상황) 한 컷으로 차별화하는 것입니다.
+                        </p>
+                    </div>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">직접 촬영이 어려우면 AI·1688 이미지로 해결</h3>
+                    
+                    <p>
+                        요즘은 "촬영 기획"이 아니라 이미지 설계가 실력입니다.
+                    </p>
+
+                    <div class="highlight-box">
+                        <h3>이미지 해결 방법</h3>
+                        <ul>
+                            <li><strong>AI 썸네일/상세페이지:</strong> 상품 1개 월매출 10억 사례 존재</li>
+                            <li><strong>1688 공장 이미지:</strong> 공장 이미지 조합으로도 충분히 판매 가능</li>
+                        </ul>
+                        <p style="margin-top: 1rem;">
+                            초보에게 중요한 건 "내가 찍었는가"가 아니라 고객이 사고 싶게 보이도록 만들었는가입니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 재고 리스크 0%로 주력상품을 만드는 "초보 안전 루프" -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">4</span>
+                    <span>재고 리스크 0%로 주력상품을 만드는 "초보 안전 루프"</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        초보가 절대 하면 안 되는 행동은 미검증 상품 재고 매입입니다. 그래서 초보는 아래 루프로 시작해야 합니다.
+                    </p>
+
+                    <h3 style="font-size: 1.25rem; margin-top: 2rem; margin-bottom: 1rem; color: var(--foreground);">위탁(판매자배송) + AI 광고 테스트 루프</h3>
+
+                    <div class="process-box">
+                        <h4 style="font-size: 1.125rem; margin-bottom: 1rem; color: var(--primary);">[Step 1] 위탁 상품을 먼저 등록한다</h4>
+                        <ul>
+                            <li>주 10개 정도</li>
+                            <li>이미지/상세는 AI or 1688 자료 활용 가능</li>
+                        </ul>
+
+                        <h4 style="font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary);">[Step 2] AI 스마트 광고를 아주 보수적으로 돌린다</h4>
+                        <ul>
+                            <li>일 예산 10,000원</li>
+                            <li>목표 ROAS 1,000% (AI가 "팔릴 것 같은 키워드"만 조금씩 찍게 하는 세팅)</li>
+                        </ul>
+
+                        <h4 style="font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary);">[Step 3] 신호가 나오면 그때만 사입한다</h4>
+                        <ul>
+                            <li>판매 2건 이상</li>
+                            <li>ROAS 300% 이상</li>
+                        </ul>
+                        <p style="margin-top: 0.75rem;">
+                            → 이 조건이면 이미 흑자 구조일 확률이 높음 → 5~10만원 소량 사입
+                        </p>
+
+                        <h4 style="font-size: 1.125rem; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--primary);">[Step 4] 로켓그로스로 소량 입고하고 확대한다</h4>
+                        <ul>
+                            <li>10개만 입고해도 충분</li>
+                            <li>자동 배송 구조에서 매출이 유지되면 그게 주력상품입니다</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>이 루프의 장점</h3>
+                        <p>
+                            <strong>"되는 상품만 돈을 써서 키우게 된다"</strong>는 것. 초보가 실패할 확률이 급격히 낮아집니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 체크리스트 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">5</span>
+                    <span>초보 쿠팡 소싱·마진·테스트 핵심 체크리스트</span>
+                </h2>
+                <div class="section-content">
+                    <div class="checklist-box">
+                        <h4>✅ 소싱 체크</h4>
+                        <ul>
+                            <li>카테고리 4~6차까지 내려갔는가?</li>
+                            <li>판매량순 정렬했는가?</li>
+                            <li>상위 셀러 리뷰 500개 미만인가?</li>
+                            <li>리뷰×30으로 경쟁자 규모를 역산했는가?</li>
+                            <li>Seller Life로 조회수 확인했는가?</li>
+                            <li>조회수×전환율로 월매출/순익을 계산했는가?</li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-box">
+                        <h4>✅ 마진 체크</h4>
+                        <ul>
+                            <li>국내 도매: 40% 마진 기준 잡았는가?</li>
+                            <li>1688 중국 소싱: 50% 마진 기준 잡았는가?</li>
+                            <li>가격을 내리기 전에 구성을 바꿔봤는가?</li>
+                            <li>쿠팡 비용(입출고·배송·수수료)을 반영했는가?</li>
+                        </ul>
+                    </div>
+
+                    <div class="checklist-box">
+                        <h4>✅ 테스트 체크</h4>
+                        <ul>
+                            <li>위탁으로 먼저 등록했는가?</li>
+                            <li>AI 스마트 광고(예산 1만/ROAS 1000%)로 테스트했는가?</li>
+                            <li>2건 판매 + ROAS 300% 이상에서만 사입했는가?</li>
+                            <li>로켓그로스로 소량 입고 후 확대하고 있는가?</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 마무리 -->
+            <div class="conclusion">
+                <h2>쿠팡 초보가 돈 버는 공식</h2>
+                <div class="formula">
+                    깊은 카테고리에서 '리뷰 500 이하' 그린벨트를 찾고 →<br>
+                    리뷰×조회수로 숫자 검증하고 →<br>
+                    위탁+AI광고로 안전하게 테스트해 주력상품을 만든다.
+                </div>
+                <p style="margin-top: 2rem; font-weight: 600;">
+                    이 흐름만 제대로 지키면 초보도 "한 상품 자동 매출 구조"를 만들어낼 수 있습니다.
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
+</script>
+
+<!-- Footer -->
+<footer>
+    <div class="content-wrapper">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <h3>헬프쿠팡</h3>
+                <p>
+                    쿠팡셀러와 스마트스토어 판매자를 위한 인기상품 분석 플랫폼입니다.
+                </p>
+            </div>
+            <div>
+                <h3>서비스</h3>
+                <ul>
+                    <li><a href="/about">서비스 소개</a></li>
+                    <li><a href="/guide">사용 가이드</a></li>
+                    <li><a href="/seller-guide">쿠팡 판매 A to Z</a></li>
+                    <li><a href="/product-finding-guide">인기상품 찾는 법</a></li>
+                    <li><a href="/1688-sourcing-guide">1688 중국 공장 소싱</a></li>
+                    <li><a href="/rocket-gross-guide">로켓그로스 초보 소싱</a></li>
+                    <li><a href="/2025-11/all/100">인기 상품 분석</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3>법적 고지</h3>
+                <ul>
+                    <li><a href="/privacy">개인정보처리방침</a></li>
+                    <li><a href="/terms">이용약관</a></li>
+                    <li><a href="/contact">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;">
+            <p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
+

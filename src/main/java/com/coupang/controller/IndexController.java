@@ -95,5 +95,10 @@ public class IndexController {
     public String sourcingGuide1688() {
         return "1688-sourcing-guide";
     }
+
+    @GetMapping("/rocket-gross-guide")
+    public String rocketGrossGuide() {
+        return "rocket-gross-guide";
+    }
 }
 
