@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헬프쿠팡 사용 가이드 | 쿠팡셀러 데이터 분석 활용법</title>
+    <meta name="description" content="헬프쿠팡 사용 가이드: 쿠팡 인기상품 데이터를 활용한 판매 전략 수립 방법, 구매했어요/만족했어요 데이터 분석 팁, 단기간 인기 상품 활용법을 안내합니다.">
+    <meta name="keywords" content="헬프쿠팡, helpcoupang, 쿠팡셀러, 쿠팡 판매, 쿠팡 데이터 분석, 쿠팡 인기상품, 쿠팡 판매 전략, 쿠팡 셀러 가이드">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --secondary-foreground: hsl(330, 80%, 40%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .content-section h3 {
+            font-size: 1.25rem;
+            color: var(--foreground);
+            margin-top: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .content-section p {
+            margin-bottom: 1rem;
+            color: var(--foreground);
+            font-size: 1rem;
+        }
+
+        .content-section ul, .content-section ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .content-section li {
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            color: var(--primary);
+            margin-top: 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>헬프쿠팡 사용 가이드</h1>
+            <p>쿠팡셀러를 위한 데이터 분석 플랫폼 활용 방법</p>
+        </div>
+
+        <div class="content-section">
+            <h2>헬프쿠팡이란?</h2>
+            <p>
+                헬프쿠팡은 쿠팡 셀러분들이 비싼 유료 멤버십에 가입하기 전에, 스스로 좋은 상품을 찾고 검증할 수 있도록 돕고 싶다는 마음에서 시작했습니다. 
+                매일 새로 등록되는 쿠팡 상품 데이터를 직접 수집·분석해 "지금 팔리는 것", "곧 뜰 것", "셀러에게 기회가 있는 것"을 누구나 쉽게 확인할 수 있게 만드는 것이 목표입니다.
+            </p>
+            <p>
+                헬프쿠팡은 "셀러에게 정말 도움이 되는 데이터를 제공하자"는 목표로 움직입니다. 
+                누구나 부담 없이 들어와서 좋은 상품을 찾고, 시장을 읽고, 더 나은 결정을 할 수 있는 곳이 되었으면 합니다.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>주요 기능 활용법</h2>
+            
+            <div class="card">
+                <h3>1. 분석 상품 수 (구매했어요 / 만족했어요)</h3>
+                <p>
+                    헬프쿠팡은 매일 쿠팡에 신규 등록되는 상품들을 스크래핑하여 구매자 수가 100명 이상부터 9,000명 이상까지(또는 그 이상) 
+                    판매 흐름이 있는 상품 데이터를 지속적으로 업데이트합니다.
+                </p>
+                <p>
+                    <strong>활용 방법:</strong>
+                </p>
+                <ul>
+                    <li><strong>구매했어요</strong>: 실제 구매가 이루어진 상품을 확인하여 시장 수요를 파악하세요.</li>
+                    <li><strong>만족했어요</strong>: 구매 후 만족도가 높은 상품을 찾아 품질이 검증된 아이템을 선택하세요.</li>
+                    <li>메인 페이지에서 오늘 업데이트된 상품 수를 확인하여 최신 트렌드를 파악하세요.</li>
+                </ul>
+                <a href="/2025-11/all/100" class="btn">구매했어요 데이터 보기</a>
+            </div>
+
+            <div class="card">
+                <h3>2. 인기 카테고리 TOP 10</h3>
+                <p>
+                    현재까지 수집한 전체 데이터 중 가장 많이 팔리는 상품들의 카테고리를 통계로 집계하여 
+                    쿠팡에서 "지금 가장 핫한 카테고리" 10개를 보여드립니다.
+                </p>
+                <p>
+                    <strong>활용 방법:</strong>
+                </p>
+                <ul>
+                    <li>전체 시장 흐름을 한눈에 파악하고 어떤 분야에 수요가 몰리는지 빠르게 판단하세요.</li>
+                    <li>새로운 진입 카테고리를 찾을 때 참고하세요.</li>
+                    <li>경쟁이 치열한 카테고리인지 확인하여 진입 전략을 수립하세요.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3>3. 단기간 인기 상품</h3>
+                <p>
+                    현재 등록된 상품 중에서 구매자 수가 짧은 기간에 100명·1,000명 단위로 급상승한 상품을 모아 보여줍니다.
+                </p>
+                <p>
+                    <strong>활용 방법:</strong>
+                </p>
+                <ul>
+                    <li>지금 막 떠오르는 상품을 가장 먼저 발견하고 싶을 때 유용합니다.</li>
+                    <li>급상승 상품의 특징을 분석하여 다음 트렌드를 예측하세요.</li>
+                    <li>경쟁이 아직 적은 초기 단계의 상품을 찾아 진입 기회를 잡으세요.</li>
+                </ul>
+                <a href="/shortterm" class="btn">단기간 인기 상품 보기</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>데이터 분석 전략</h2>
+            
+            <h3>구매했어요 vs 만족했어요 비교 분석</h3>
+            <p>
+                구매했어요 수가 많지만 만족했어요 비율이 낮은 상품은 주의가 필요합니다. 
+                반대로 구매했어요 수는 적지만 만족했어요 비율이 높은 상품은 잠재력이 있는 상품일 수 있습니다.
+            </p>
+
+            <h3>카테고리별 트렌드 파악</h3>
+            <p>
+                인기 카테고리 TOP 10을 통해 현재 시장의 관심사가 어디에 집중되어 있는지 확인하세요. 
+                계절성, 이벤트, 사회적 트렌드에 따라 카테고리 순위가 변동될 수 있습니다.
+            </p>
+
+            <h3>단기간 급상승 상품 모니터링</h3>
+            <p>
+                단기간 인기 상품 목록을 정기적으로 확인하여 빠르게 성장하는 상품의 패턴을 파악하세요. 
+                유사한 상품이나 카테고리에 진입할 기회를 찾을 수 있습니다.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>자주 묻는 질문 (FAQ)</h2>
+            
+            <div class="card">
+                <h3>Q: 데이터는 얼마나 자주 업데이트되나요?</h3>
+                <p>A: 헬프쿠팡은 매일 새로 등록되는 쿠팡 상품 데이터를 수집하여 업데이트합니다. 메인 페이지에서 오늘 업데이트된 상품 수를 확인할 수 있습니다.</p>
+            </div>
+
+            <div class="card">
+                <h3>Q: 구매했어요와 만족했어요의 차이는 무엇인가요?</h3>
+                <p>
+                    A: 구매했어요는 실제 구매가 이루어진 수를 나타내며, 만족했어요는 구매 후 만족도가 높은 리뷰 수를 나타냅니다. 
+                    두 지표를 함께 보면 상품의 판매량과 품질을 종합적으로 판단할 수 있습니다.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Q: 단기간 인기 상품의 기준은 무엇인가요?</h3>
+                <p>
+                    A: 단기간 인기 상품은 짧은 기간 동안 구매자 수가 100명 단위 또는 1,000명 단위로 급상승한 상품을 의미합니다. 
+                    이는 트렌드가 급부상하고 있거나 시장에서 주목받기 시작한 상품을 의미합니다.
+                </p>
+            </div>
+
+            <div class="card">
+                <h3>Q: 서비스는 무료인가요?</h3>
+                <p>
+                    A: 네, 헬프쿠팡은 현재 무료로 제공되는 서비스입니다. 
+                    앞으로 광고 기반으로 운영할지, 혹은 구독제/광고 제거형 멤버십 같은 모델로 갈지는 아직 고민 중입니다.
+                </p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>시작하기</h2>
+            <p>
+                헬프쿠팡을 활용하여 쿠팡 판매 전략을 수립해보세요. 
+                메인 페이지에서 인기 상품을 확인하거나, 구매했어요/만족했어요 데이터를 분석하여 
+                자신만의 판매 기회를 찾아보세요.
+            </p>
+            <a href="/" class="btn">메인 페이지로 이동</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>
+            <a href="/">홈</a> | 
+            <a href="/about">서비스 소개</a> | 
+            <a href="/privacy">개인정보처리방침</a> | 
+            <a href="/terms">이용약관</a> | 
+            <a href="/contact">문의하기</a>
+        </p>
+        <p style="margin-top: 1rem;">&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
+    </footer>
+</body>
+</html>
+

@@ -330,21 +330,13 @@ public class BoardController {
     }
 
     @GetMapping("/shortterm")
-    public String shortTerm(@RequestParam(required = false) String password,
-                            @RequestParam(defaultValue = "1") int page,
+    public String shortTerm(@RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "20") int size,
                             HttpServletRequest request,
                             Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            return "redirect:/mobile/shortterm?password=" + (password != null ? password : "") + "&page=" + page;
-        }
-
-        // 암호 확인
-        if (password == null || !password.equals("970515")) {
-            model.addAttribute("requirePassword", true);
-            model.addAttribute("errorMessage", password != null ? "관리자에게 문의하세요." : null);
-            return "board-shortterm";
+            return "redirect:/mobile/shortterm?page=" + page;
         }
 
         // 페이징 계산
@@ -367,23 +359,14 @@ public class BoardController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("requirePassword", false);
 
         return "board-shortterm";
     }
 
     @GetMapping("/mobile/shortterm")
-    public String shortTermMobile(@RequestParam(required = false) String password,
-                                  @RequestParam(defaultValue = "1") int page,
+    public String shortTermMobile(@RequestParam(defaultValue = "1") int page,
                                   @RequestParam(defaultValue = "20") int size,
                                   Model model) {
-        // 암호 확인
-        if (password == null || !password.equals("970515")) {
-            model.addAttribute("requirePassword", true);
-            model.addAttribute("errorMessage", password != null ? "관리자에게 문의하세요." : null);
-            return "board-shortterm-mobile";
-        }
-
         // 페이징 계산
         int offset = (page - 1) * size;
         
@@ -404,7 +387,6 @@ public class BoardController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("requirePassword", false);
 
         return "board-shortterm-mobile";
     }

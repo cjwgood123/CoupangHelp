@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>문의하기 | 헬프쿠팡</title>
+    <meta name="description" content="헬프쿠팡 문의하기: 서비스 이용 문의, 제안사항, 버그 신고, 기타 문의사항을 카카오톡 오픈채팅 또는 이메일로 접수받습니다.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://helpcoupang.com/contact">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --card: hsl(0, 0%, 100%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            line-height: 1.8;
+            color: var(--foreground);
+            padding: 2rem;
+            background-color: hsl(220, 15%, 98%);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+
+        .card p {
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: opacity 0.2s;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .contact-info {
+            background-color: hsl(330, 100%, 97%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin-top: 1rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--muted-foreground);
+            font-size: 0.875rem;
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>문의하기</h1>
+            <p style="color: var(--muted-foreground);">헬프쿠팡에 대한 문의사항을 남겨주세요</p>
+        </div>
+
+        <div class="card">
+            <h2>카카오톡 오픈채팅</h2>
+            <p>
+                헬프쿠팡에 대한 문의사항, 제안사항, 버그 신고, 기타 문의는 카카오톡 오픈채팅을 통해 접수받고 있습니다.
+            </p>
+            <div class="contact-info">
+                <p><strong>카카오톡 오픈채팅:</strong></p>
+                <p>아래 버튼을 클릭하시면 카카오톡 오픈채팅방으로 이동합니다.</p>
+            </div>
+            <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" class="btn">
+                카카오톡 오픈채팅 열기
+            </a>
+        </div>
+
+        <div class="card">
+            <h2>이메일 문의</h2>
+            <p>
+                카카오톡이 불편하신 경우 이메일로도 문의하실 수 있습니다.
+            </p>
+            <div class="contact-info">
+                <p><strong>이메일 주소:</strong></p>
+                <p style="font-size: 1.125rem; font-weight: 600; color: var(--primary);">
+                    <a href="mailto:cjwgood999@gmail.com" style="color: var(--primary); text-decoration: none;">cjwgood999@gmail.com</a>
+                </p>
+            </div>
+            <a href="mailto:cjwgood999@gmail.com" class="btn">
+                이메일 보내기
+            </a>
+        </div>
+
+        <div class="card">
+            <h2>문의 유형</h2>
+            <p>다음과 같은 문의사항을 접수받고 있습니다:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li>서비스 이용 문의</li>
+                <li>데이터 분석 방법 안내 요청</li>
+                <li>버그 신고 및 오류 제보</li>
+                <li>기능 제안 및 개선 의견</li>
+                <li>기타 서비스 관련 문의</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>응답 시간</h2>
+            <p>
+                문의사항에 대해서는 가능한 빠른 시일 내에 답변드리도록 노력하고 있습니다. 
+                다만, 주말 및 공휴일에는 응답이 지연될 수 있습니다.
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>자주 묻는 질문</h2>
+            <p>
+                일반적인 문의사항은 <a href="/guide" style="color: var(--primary);">사용 가이드</a> 페이지에서 
+                확인하실 수 있습니다. 가이드 페이지를 먼저 확인해주시면 더 빠르게 문제를 해결하실 수 있습니다.
+            </p>
+            <a href="/guide" class="btn" style="margin-top: 1rem;">사용 가이드 보기</a>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>
+            <a href="/">홈</a> | 
+            <a href="/about">서비스 소개</a> | 
+            <a href="/guide">사용 가이드</a> | 
+            <a href="/privacy">개인정보처리방침</a> | 
+            <a href="/terms">이용약관</a>
+        </p>
+        <p style="margin-top: 1rem;">&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
+    </footer>
+</body>
+</html>
+

@@ -561,33 +561,13 @@
             </div>
         </div>
         <div class="nav-section">
-            <a href="#" class="nav-item active" onclick="showPasswordModal(); return false;">⚡ 단기간 인기 상품</a>
+            <a href="/mobile/shortterm" class="nav-item active">⚡ 단기간 인기 상품</a>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main class="content-wrapper">
-        <!-- Password Modal -->
-        <div class="password-modal" id="passwordModal" th:classappend="${requirePassword == true} ? 'show' : ''">
-            <div class="password-content">
-                <h2>암호를 입력하세요</h2>
-                <p>이 페이지에 접근하려면 암호가 필요합니다.</p>
-                <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 1rem; text-align: center;">
-                    <a href="https://open.kakao.com/o/pkdF7q3h" target="_blank" rel="noopener noreferrer" style="color: var(--primary); text-decoration: underline;">관리자에게 문의하세요</a>
-                </p>
-                <p class="password-error" id="passwordError" th:classappend="${errorMessage != null} ? 'show' : ''" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
-                <form method="get" action="/mobile/shortterm">
-                    <input type="password" name="password" class="password-input" id="passwordInput" placeholder="암호를 입력하세요" autofocus>
-                    <input type="hidden" name="page" value="1">
-                    <div class="password-buttons">
-                        <button type="submit" class="btn-submit">확인</button>
-                        <button type="button" class="btn-cancel" onclick="closePasswordModal()">취소</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <div th:if="${requirePassword != true}">
+        <div>
             <div class="page-header">
                 <h1>단기간 인기 상품</h1>
                 <p th:text="|총 ${totalCount}건|">-</p>
@@ -646,13 +626,13 @@
             <!-- Pagination -->
             <div class="pagination" th:if="${totalPages > 1}">
                 <a th:if="${startPage > 1}" 
-                   th:href="@{/mobile/shortterm(password='970515', page=${startPage - 1})}"
+                   th:href="@{/mobile/shortterm(page=${startPage - 1})}"
                    class="pagination-nav">이전</a>
                 <span th:if="${startPage == 1}" class="disabled pagination-nav">이전</span>
 
                 <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
                     <a th:if="${p != currentPage}"
-                       th:href="@{/mobile/shortterm(password='970515', page=${p})}"
+                       th:href="@{/mobile/shortterm(page=${p})}"
                        th:text="${p}">1</a>
                     <span th:if="${p == currentPage}" 
                           class="current"
@@ -660,7 +640,7 @@
                 </span>
 
                 <a th:if="${endPage < totalPages}" 
-                   th:href="@{/mobile/shortterm(password='970515', page=${endPage + 1})}"
+                   th:href="@{/mobile/shortterm(page=${endPage + 1})}"
                    class="pagination-nav">다음</a>
                 <span th:if="${endPage == totalPages}" class="disabled pagination-nav">다음</span>
             </div>
@@ -685,20 +665,6 @@
         toggle.classList.toggle('active');
     }
 
-    function showPasswordModal() {
-        document.getElementById('passwordModal').classList.add('show');
-        document.getElementById('passwordInput').focus();
-    }
-
-    function closePasswordModal() {
-        document.getElementById('passwordModal').classList.remove('show');
-        window.location.href = '/';
-    }
-
-    // 페이지 로드 시 암호가 필요하면 모달 표시
-    if (document.getElementById('passwordModal').classList.contains('show')) {
-        document.getElementById('passwordInput').focus();
-    }
 
     // 메뉴 외부 클릭 시 닫기
     document.addEventListener('click', function(event) {

@@ -55,5 +55,35 @@ public class IndexController {
     public String about() {
         return "about";
     }
+
+    @GetMapping("/guide")
+    public String guide() {
+        return "guide";
+    }
+
+    @GetMapping("/privacy")
+    public String privacy() {
+        return "privacy";
+    }
+
+    @GetMapping("/terms")
+    public String terms() {
+        return "terms";
+    }
+
+    @GetMapping("/contact")
+    public String contact() {
+        return "contact";
+    }
+
+    @GetMapping("/seller-guide")
+    public String sellerGuide() {
+        return "seller-guide";
+    }
+
+    @GetMapping("/product-finding-guide")
+    public String productFindingGuide() {
+        return "product-finding-guide";
+    }
 }
 
