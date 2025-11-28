@@ -108,6 +108,11 @@ public class IndexController {
         return "rocket-gross-guide";
     }
 
+    @GetMapping("/roi-system-guide")
+    public String roiSystemGuide() {
+        return "roi-system-guide";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {
