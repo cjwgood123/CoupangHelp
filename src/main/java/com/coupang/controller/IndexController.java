@@ -113,6 +113,11 @@ public class IndexController {
         return "roi-system-guide";
     }
 
+    @GetMapping("/rocket-gross-registration-guide")
+    public String rocketGrossRegistrationGuide() {
+        return "rocket-gross-registration-guide";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {
