@@ -491,6 +491,31 @@
             <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
         </div>
 
+        <!-- 검색 영역 -->
+        <div style="margin-bottom: 1rem; padding: 0.75rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+            <form method="get" th:action="@{/mobile/2025-11/all/{count}(count=${count})}" style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" 
+                       name="search" 
+                       th:value="${search != null ? search : ''}"
+                       placeholder="상품명 검색" 
+                       style="flex: 1; padding: 0.625rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem;"
+                       autocomplete="off">
+                <button type="submit" 
+                        style="padding: 0.625rem 1rem; background-color: var(--primary); color: var(--primary-foreground); border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; white-space: nowrap; font-size: 0.875rem;">
+                    검색
+                </button>
+                <a th:if="${search != null and !search.isEmpty()}" 
+                   th:href="@{/mobile/2025-11/all/{count}(count=${count})}"
+                   style="padding: 0.625rem 0.75rem; background-color: var(--muted); color: var(--foreground); text-decoration: none; border-radius: var(--radius); font-weight: 600; white-space: nowrap; font-size: 0.75rem;">
+                    초기화
+                </a>
+            </form>
+            <p th:if="${search != null and !search.isEmpty()}" 
+               style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted-foreground);">
+                "<span th:text="${search}" style="font-weight: 600; color: var(--primary);"></span>" 검색 결과: <span th:text="${totalCount}" style="font-weight: 600;"></span>건
+            </p>
+        </div>
+
         <!-- Product List -->
         <div class="product-list" th:if="${!products.isEmpty()}">
             <div class="product-card" th:each="product : ${products}">

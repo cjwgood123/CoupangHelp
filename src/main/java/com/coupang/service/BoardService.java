@@ -26,6 +26,16 @@ public class BoardService {
     }
 
     /**
+     * 여러 월을 조회하여 데이터를 반환 (11월, 12월 등) - 검색 기능 포함
+     */
+    public List<ProductListDto> getProducts(List<String> months, int count, int offset, int limit, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return getProductsWithSearch(months, count, offset, limit, search.trim());
+        }
+        return getProducts(months, count, offset, limit);
+    }
+
+    /**
      * 여러 월을 조회하여 데이터를 반환 (11월, 12월 등)
      */
     public List<ProductListDto> getProducts(List<String> months, int count, int offset, int limit) {
@@ -125,6 +135,16 @@ public class BoardService {
     }
 
     /**
+     * 전체 개수 조회 (중복 제거된 productID 개수) - 여러 월 - 검색 기능 포함
+     */
+    public int getTotalCount(List<String> months, int count, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return getTotalCountWithSearch(months, count, search.trim());
+        }
+        return getTotalCount(months, count);
+    }
+
+    /**
      * 전체 개수 조회 (중복 제거된 productID 개수) - 여러 월
      */
     public int getTotalCount(List<String> months, int count) {
@@ -152,6 +172,144 @@ public class BoardService {
             """;
 
         Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
+        return result != null ? result : 0;
+    }
+
+    /**
+     * 검색어로 상품 조회 (띄어쓰기 무시)
+     * REPLACE 함수로 띄어쓰기를 제거한 후 LIKE 검색
+     */
+    private List<ProductListDto> getProductsWithSearch(List<String> months, int count, int offset, int limit, String search) {
+        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
+        
+        if (tableNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        // 검색어에서 띄어쓰기 제거
+        String searchWithoutSpace = search.replaceAll("\\s+", "");
+
+        // UNION ALL 쿼리 생성
+        StringBuilder unionSql = new StringBuilder();
+        for (int i = 0; i < tableNames.size(); i++) {
+            if (i > 0) {
+                unionSql.append(" UNION ALL ");
+            }
+            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
+        }
+
+        // 띄어쓰기 무시 검색 쿼리
+        String sql = """
+            WITH all_data AS (
+                """ + unionSql.toString() + """
+            ),
+            latest_data AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
+                FROM all_data
+            ),
+            previous_review AS (
+                SELECT 
+                    l.productID,
+                    l.regidate as current_regidate,
+                    (
+                        SELECT review 
+                        FROM all_data 
+                        WHERE productID = l.productID 
+                          AND regidate < l.regidate
+                          AND review IS NOT NULL 
+                          AND review != ''
+                        ORDER BY regidate DESC 
+                        LIMIT 1
+                    ) as prev_review
+                FROM latest_data l
+                WHERE l.rn = 1
+            )
+            SELECT 
+                l.seq,
+                l.title,
+                l.productID,
+                l.regidate,
+                l.url,
+                l.category,
+                l.review,
+                CASE 
+                    WHEN l.review IS NOT NULL AND l.review != '' 
+                         AND p.prev_review IS NOT NULL AND p.prev_review != ''
+                         AND CAST(l.review AS UNSIGNED) > CAST(p.prev_review AS UNSIGNED)
+                    THEN CAST(l.review AS UNSIGNED) - CAST(p.prev_review AS UNSIGNED)
+                    ELSE NULL
+                END as review_increase
+            FROM latest_data l
+            LEFT JOIN previous_review p ON l.productID = p.productID AND l.regidate = p.current_regidate
+            WHERE l.rn = 1
+              AND REPLACE(l.title, ' ', '') LIKE ?
+            ORDER BY l.regidate DESC, l.seq ASC
+            LIMIT ? OFFSET ?
+            """;
+
+        final int startRowNum = offset + 1;
+        String searchPattern = "%" + searchWithoutSpace + "%";
+        
+        return jdbcTemplate.query(sql, 
+            (rs, index) -> {
+                Long seq = rs.getLong("seq");
+                int rowNum = startRowNum + index;
+                String title = rs.getString("title");
+                String productID = rs.getString("productID");
+                LocalDate regidate = rs.getDate("regidate") != null 
+                    ? rs.getDate("regidate").toLocalDate() 
+                    : null;
+                String url = rs.getString("url");
+                String category = rs.getString("category");
+                String review = rs.getString("review");
+                Integer reviewIncrease = rs.getObject("review_increase") != null 
+                    ? rs.getInt("review_increase") 
+                    : null;
+                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, reviewIncrease);
+            },
+            searchPattern, limit, offset);
+    }
+
+    /**
+     * 검색어로 총 개수 조회 (띄어쓰기 무시)
+     */
+    private int getTotalCountWithSearch(List<String> months, int count, String search) {
+        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
+        
+        if (tableNames.isEmpty()) {
+            return 0;
+        }
+
+        // 검색어에서 띄어쓰기 제거
+        String searchWithoutSpace = search.replaceAll("\\s+", "");
+
+        // UNION ALL 쿼리 생성
+        StringBuilder unionSql = new StringBuilder();
+        for (int i = 0; i < tableNames.size(); i++) {
+            if (i > 0) {
+                unionSql.append(" UNION ALL ");
+            }
+            unionSql.append("SELECT seq, title, productID, regidate FROM ").append(tableNames.get(i));
+        }
+
+        String sql = """
+            WITH all_data AS (
+                """ + unionSql.toString() + """
+            ),
+            latest_data AS (
+                SELECT productID, title,
+                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
+                FROM all_data
+            )
+            SELECT COUNT(DISTINCT productID) 
+            FROM latest_data
+            WHERE rn = 1
+              AND REPLACE(title, ' ', '') LIKE ?
+            """;
+
+        String searchPattern = "%" + searchWithoutSpace + "%";
+        Integer result = jdbcTemplate.queryForObject(sql, Integer.class, searchPattern);
         return result != null ? result : 0;
     }
 
@@ -334,6 +492,16 @@ public class BoardService {
     }
 
     /**
+     * coupang_satisfied 테이블에서 특정 count에 해당하는 상품 조회 - 검색 기능 포함
+     */
+    public List<ProductListDto> getSatisfiedProducts(int count, int offset, int limit, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return getSatisfiedProductsWithSearch(count, offset, limit, search.trim());
+        }
+        return getSatisfiedProducts(count, offset, limit);
+    }
+
+    /**
      * coupang_satisfied 테이블에서 특정 count에 해당하는 상품 조회
      * 예: coupang_satisfied_100_20251120, coupang_satisfied_200_20251120 등
      */
@@ -399,6 +567,16 @@ public class BoardService {
     }
 
     /**
+     * coupang_satisfied 테이블에서 특정 count에 해당하는 총 개수 조회 - 검색 기능 포함
+     */
+    public int getTotalSatisfiedCount(int count, String search) {
+        if (search != null && !search.trim().isEmpty()) {
+            return getTotalSatisfiedCountWithSearch(count, search.trim());
+        }
+        return getTotalSatisfiedCount(count);
+    }
+
+    /**
      * coupang_satisfied 테이블에서 특정 count에 해당하는 총 개수 조회
      */
     public int getTotalSatisfiedCount(int count) {
@@ -426,6 +604,111 @@ public class BoardService {
             """;
 
         Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
+        return result != null ? result : 0;
+    }
+
+    /**
+     * 만족했어요 상품 검색 (띄어쓰기 무시)
+     */
+    private List<ProductListDto> getSatisfiedProductsWithSearch(int count, int offset, int limit, String search) {
+        List<String> tableNames = findExistingSatisfiedTables(count);
+        
+        if (tableNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        String searchWithoutSpace = search.replaceAll("\\s+", "");
+
+        StringBuilder unionSql = new StringBuilder();
+        for (int i = 0; i < tableNames.size(); i++) {
+            if (i > 0) {
+                unionSql.append(" UNION ALL ");
+            }
+            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
+        }
+
+        String sql = """
+            WITH all_data AS (
+                """ + unionSql.toString() + """
+            ),
+            latest_data AS (
+                SELECT *,
+                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
+                FROM all_data
+            )
+            SELECT 
+                l.seq,
+                l.title,
+                l.productID,
+                l.regidate,
+                l.url,
+                l.category,
+                l.review,
+                NULL as review_increase
+            FROM latest_data l
+            WHERE l.rn = 1
+              AND REPLACE(l.title, ' ', '') LIKE ?
+            ORDER BY l.regidate DESC, l.seq ASC
+            LIMIT ? OFFSET ?
+            """;
+
+        final int startRowNum = offset + 1;
+        String searchPattern = "%" + searchWithoutSpace + "%";
+        
+        return jdbcTemplate.query(sql, 
+            (rs, index) -> {
+                Long seq = rs.getLong("seq");
+                int rowNum = startRowNum + index;
+                String title = rs.getString("title");
+                String productID = rs.getString("productID");
+                LocalDate regidate = rs.getDate("regidate") != null 
+                    ? rs.getDate("regidate").toLocalDate() 
+                    : null;
+                String url = rs.getString("url");
+                String category = rs.getString("category");
+                String review = rs.getString("review");
+                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, null);
+            },
+            searchPattern, limit, offset);
+    }
+
+    /**
+     * 만족했어요 총 개수 검색 (띄어쓰기 무시)
+     */
+    private int getTotalSatisfiedCountWithSearch(int count, String search) {
+        List<String> tableNames = findExistingSatisfiedTables(count);
+        
+        if (tableNames.isEmpty()) {
+            return 0;
+        }
+
+        String searchWithoutSpace = search.replaceAll("\\s+", "");
+
+        StringBuilder unionSql = new StringBuilder();
+        for (int i = 0; i < tableNames.size(); i++) {
+            if (i > 0) {
+                unionSql.append(" UNION ALL ");
+            }
+            unionSql.append("SELECT seq, title, productID, regidate FROM ").append(tableNames.get(i));
+        }
+
+        String sql = """
+            WITH all_data AS (
+                """ + unionSql.toString() + """
+            ),
+            latest_data AS (
+                SELECT productID, title,
+                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
+                FROM all_data
+            )
+            SELECT COUNT(DISTINCT productID) 
+            FROM latest_data
+            WHERE rn = 1
+              AND REPLACE(title, ' ', '') LIKE ?
+            """;
+
+        String searchPattern = "%" + searchWithoutSpace + "%";
+        Integer result = jdbcTemplate.queryForObject(sql, Integer.class, searchPattern);
         return result != null ? result : 0;
     }
 

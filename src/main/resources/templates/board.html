@@ -517,6 +517,31 @@
                 <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
             </div>
 
+            <!-- 검색 영역 -->
+            <div style="margin-bottom: 1.5rem; padding: 1rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+                <form method="get" th:action="@{/2025-11/all/{count}(count=${count})}" style="display: flex; gap: 0.75rem; align-items: center;">
+                    <input type="text" 
+                           name="search" 
+                           th:value="${search != null ? search : ''}"
+                           placeholder="상품명 검색" 
+                           style="flex: 1; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem;"
+                           autocomplete="off">
+                    <button type="submit" 
+                            style="padding: 0.75rem 1.5rem; background-color: var(--primary); color: var(--primary-foreground); border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; white-space: nowrap;">
+                        검색
+                    </button>
+                    <a th:if="${search != null and !search.isEmpty()}" 
+                       th:href="@{/2025-11/all/{count}(count=${count})}"
+                       style="padding: 0.75rem 1rem; background-color: var(--muted); color: var(--foreground); text-decoration: none; border-radius: var(--radius); font-weight: 600; white-space: nowrap;">
+                        초기화
+                    </a>
+                </form>
+                <p th:if="${search != null and !search.isEmpty()}" 
+                   style="margin-top: 0.75rem; font-size: 0.875rem; color: var(--muted-foreground);">
+                    "<span th:text="${search}" style="font-weight: 600; color: var(--primary);"></span>" 검색 결과: <span th:text="${totalCount}" style="font-weight: 600;"></span>건
+                </p>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -574,13 +599,13 @@
             <div class="pagination" th:if="${totalPages > 1}">
                 <!-- 이전 그룹 -->
                 <a th:if="${startPage > 1}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${startPage - 1})}">이전</a>
+                   th:href="${(search != null and !search.isEmpty()) ? '/2025-11/all/' + count + '?page=' + (startPage - 1) + '&search=' + #strings.replace(search, ' ', '%20') : '/2025-11/all/' + count + '?page=' + (startPage - 1)}">이전</a>
                 <span th:if="${startPage == 1}" class="disabled">이전</span>
 
                 <!-- 현재 그룹의 페이지 번호들 (최대 10개) -->
                 <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
                     <a th:if="${pageNum != currentPage}"
-                       th:href="@{/2025-11/all/{count}(count=${count}, page=${pageNum})}"
+                       th:href="${(search != null and !search.isEmpty()) ? '/2025-11/all/' + count + '?page=' + pageNum + '&search=' + #strings.replace(search, ' ', '%20') : '/2025-11/all/' + count + '?page=' + pageNum}"
                        th:text="${pageNum}">1</a>
                     <span th:if="${pageNum == currentPage}" 
                           class="current"
@@ -589,7 +614,7 @@
 
                 <!-- 다음 그룹 -->
                 <a th:if="${endPage < totalPages}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${endPage + 1})}">다음</a>
+                   th:href="${(search != null and !search.isEmpty()) ? '/2025-11/all/' + count + '?page=' + (endPage + 1) + '&search=' + #strings.replace(search, ' ', '%20') : '/2025-11/all/' + count + '?page=' + (endPage + 1)}">다음</a>
                 <span th:if="${endPage == totalPages}" class="disabled">다음</span>
             </div>
 

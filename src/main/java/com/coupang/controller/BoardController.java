@@ -25,11 +25,16 @@ public class BoardController {
     public String board(@PathVariable String count,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(required = false) String search,
                         HttpServletRequest request,
                         Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            return "redirect:/mobile/2025-11/all/" + count + "?page=" + page;
+            String redirectUrl = "/mobile/2025-11/all/" + count + "?page=" + page;
+            if (search != null && !search.trim().isEmpty()) {
+                redirectUrl += "&search=" + java.net.URLEncoder.encode(search.trim(), java.nio.charset.StandardCharsets.UTF_8);
+            }
+            return "redirect:" + redirectUrl;
         }
         
         int countInt;
@@ -44,8 +49,8 @@ public class BoardController {
         
         // 데이터 조회 (11월과 12월 모두 포함)
         List<String> months = List.of("2025-11", "2025-12");
-        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size);
-        int totalCount = boardService.getTotalCount(months, countInt);
+        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size, search);
+        int totalCount = boardService.getTotalCount(months, countInt, search);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -62,6 +67,7 @@ public class BoardController {
         model.addAttribute("month", "2025-11, 2025-12");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("search", search != null ? search : "");
 
         return "board";
     }
@@ -70,6 +76,7 @@ public class BoardController {
     public String boardMobile(@PathVariable String count,
                               @RequestParam(defaultValue = "1") int page,
                               @RequestParam(defaultValue = "20") int size,
+                              @RequestParam(required = false) String search,
                               Model model) {
         int countInt;
         try {
@@ -83,8 +90,8 @@ public class BoardController {
         
         // 데이터 조회 (11월과 12월 모두 포함)
         List<String> months = List.of("2025-11", "2025-12");
-        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size);
-        int totalCount = boardService.getTotalCount(months, countInt);
+        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size, search);
+        int totalCount = boardService.getTotalCount(months, countInt, search);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
@@ -101,6 +108,7 @@ public class BoardController {
         model.addAttribute("month", "2025-11");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("search", search != null ? search : "");
 
         return "board-mobile";
     }
@@ -255,11 +263,16 @@ public class BoardController {
     public String satisfied(@PathVariable String count,
                             @RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "20") int size,
+                            @RequestParam(required = false) String search,
                             HttpServletRequest request,
                             Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            return "redirect:/mobile/satisfied/" + count + "?page=" + page;
+            String redirectUrl = "/mobile/satisfied/" + count + "?page=" + page;
+            if (search != null && !search.trim().isEmpty()) {
+                redirectUrl += "&search=" + java.net.URLEncoder.encode(search.trim(), java.nio.charset.StandardCharsets.UTF_8);
+            }
+            return "redirect:" + redirectUrl;
         }
         
         int countInt;
@@ -273,8 +286,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
-        int totalCount = boardService.getTotalSatisfiedCount(countInt);
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size, search);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt, search);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -290,6 +303,7 @@ public class BoardController {
         model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("search", search != null ? search : "");
 
         return "board-star";
     }
@@ -298,6 +312,7 @@ public class BoardController {
     public String satisfiedMobile(@PathVariable String count,
                                   @RequestParam(defaultValue = "1") int page,
                                   @RequestParam(defaultValue = "20") int size,
+                                  @RequestParam(required = false) String search,
                                   Model model) {
         int countInt;
         try {
@@ -310,8 +325,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
-        int totalCount = boardService.getTotalSatisfiedCount(countInt);
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size, search);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt, search);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
@@ -327,6 +342,7 @@ public class BoardController {
         model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("search", search != null ? search : "");
 
         return "board-star-mobile";
     }
