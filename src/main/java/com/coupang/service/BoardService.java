@@ -22,8 +22,15 @@ public class BoardService {
      * 예: 2025-11월, 100명 이상 구매 → coupang_products_100_20251117, coupang_products_100_20251118 등
      */
     public List<ProductListDto> getProducts(String month, int count, int offset, int limit) {
-        // 존재하는 테이블 목록 조회
-        List<String> tableNames = findExistingTables(month, count);
+        return getProducts(List.of(month), count, offset, limit);
+    }
+
+    /**
+     * 여러 월을 조회하여 데이터를 반환 (11월, 12월 등)
+     */
+    public List<ProductListDto> getProducts(List<String> months, int count, int offset, int limit) {
+        // 존재하는 테이블 목록 조회 (여러 월)
+        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
         
         if (tableNames.isEmpty()) {
             return new ArrayList<>();
@@ -111,10 +118,17 @@ public class BoardService {
     }
 
     /**
-     * 전체 개수 조회 (중복 제거된 productID 개수)
+     * 전체 개수 조회 (중복 제거된 productID 개수) - 단일 월
      */
     public int getTotalCount(String month, int count) {
-        List<String> tableNames = findExistingTables(month, count);
+        return getTotalCount(List.of(month), count);
+    }
+
+    /**
+     * 전체 개수 조회 (중복 제거된 productID 개수) - 여러 월
+     */
+    public int getTotalCount(List<String> months, int count) {
+        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
         
         if (tableNames.isEmpty()) {
             return 0;
@@ -192,6 +206,18 @@ public class BoardService {
             """;
         
         return jdbcTemplate.queryForList(sql, String.class, tablePattern);
+    }
+
+    /**
+     * 여러 월을 조회하여 존재하는 테이블 목록 반환
+     * 예: ["2025-11", "2025-12"], 100 → 11월과 12월의 모든 테이블
+     */
+    private List<String> findExistingTablesMultipleMonths(List<String> months, int count) {
+        List<String> allTables = new ArrayList<>();
+        for (String month : months) {
+            allTables.addAll(findExistingTables(month, count));
+        }
+        return allTables;
     }
 
     /**

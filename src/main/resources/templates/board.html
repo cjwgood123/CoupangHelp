@@ -15,13 +15,21 @@
     <meta property="og:url" th:content="@{'https://helpcoupang.com/2025-11/all/' + ${count}}">
     <meta property="og:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품'">
     <meta property="og:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건의 상품 정보 제공.|">
-    <meta property="og:site_name" content="쿠팡 데이터 분석">
+    <meta property="og:image" content="https://helpcoupang.com/images/og-image.png">
+    <meta property="og:image:secure_url" content="https://helpcoupang.com/images/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="헬프쿠팡 - 쿠팡셀러 데이터 분석 플랫폼">
+    <meta property="og:site_name" content="헬프쿠팡 (helpcoupang.com)">
+    <meta property="og:locale" content="ko_KR">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" th:content="@{'https://helpcoupang.com/2025-11/all/' + ${count}}">
     <meta property="twitter:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month}">
     <meta property="twitter:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건.|">
+    <meta property="twitter:image" content="https://helpcoupang.com/images/og-image.png">
     
     <!-- Structured Data (JSON-LD) -->
     <th:block th:with="pageName=${count} + '명 이상 구매 상품 - ' + ${month}, pageDesc=${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건의 상품 정보 제공.', pageUrl=@{'https://helpcoupang.com/2025-11/all/' + ${count}}">

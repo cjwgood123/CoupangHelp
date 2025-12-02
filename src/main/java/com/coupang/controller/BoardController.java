@@ -42,9 +42,10 @@ public class BoardController {
         // 페이징 계산
         int offset = (page - 1) * size;
         
-        // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-11", countInt);
+        // 데이터 조회 (11월과 12월 모두 포함)
+        List<String> months = List.of("2025-11", "2025-12");
+        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size);
+        int totalCount = boardService.getTotalCount(months, countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -58,7 +59,7 @@ public class BoardController {
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("count", countInt);
-        model.addAttribute("month", "2025-11");
+        model.addAttribute("month", "2025-11, 2025-12");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
 
@@ -80,9 +81,10 @@ public class BoardController {
         // 페이징 계산
         int offset = (page - 1) * size;
         
-        // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-11", countInt);
+        // 데이터 조회 (11월과 12월 모두 포함)
+        List<String> months = List.of("2025-11", "2025-12");
+        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size);
+        int totalCount = boardService.getTotalCount(months, countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
