@@ -577,31 +577,27 @@
 
     <div th:replace="~{fragments/sidebar :: nav-script}"></div>
     <script>
-        // board-mobile.html 전용: 현재 count에 맞는 active 클래스 추가
+        // board-mobile.html 전용: 현재 경로에 맞는 active 클래스 추가
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const pathParts = window.location.pathname.split('/');
-            const countFromPath = pathParts[pathParts.length - 1];
-            const count = countFromPath || urlParams.get('count');
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-item');
             
-            if (count) {
-                const navLinks = document.querySelectorAll('.nav-item');
-                navLinks.forEach(link => {
-                    const href = link.getAttribute('href');
-                    if (href && href.includes('/' + count)) {
-                        link.classList.add('active');
-                        // 부모 섹션 펼치기
-                        const navSection = link.closest('.nav-items');
-                        if (navSection) {
-                            navSection.classList.add('show');
-                            const toggleButton = navSection.previousElementSibling;
-                            if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
-                                toggleButton.classList.add('active');
-                            }
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                // 정확한 경로 매칭만 사용
+                if (href === currentPath) {
+                    link.classList.add('active');
+                    // 부모 섹션 펼치기
+                    const navSection = link.closest('.nav-items');
+                    if (navSection) {
+                        navSection.classList.add('show');
+                        const toggleButton = navSection.previousElementSibling;
+                        if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
+                            toggleButton.classList.add('active');
                         }
                     }
-                });
-            }
+                }
+            });
         })();
 
     // 메뉴 외부 클릭 시 닫기

@@ -400,6 +400,7 @@ public class BoardController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("isHubPage", page == 1); // 첫 페이지만 허브 콘텐츠 표시
 
         return "board-shortterm";
     }

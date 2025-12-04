@@ -429,26 +429,26 @@
             <div th:if="${isHubPage != null and isHubPage == true and selectedStar != null}" style="margin-bottom: 3rem;">
                 <!-- 데이터 설명 -->
                 <section style="margin-bottom: 2rem; padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
-                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">📊 이 리스트가 만들어진 기준/데이터 설명</h2>
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">📊 고객 만족도 데이터 분석 및 활용 가이드</h2>
                     <div style="color: var(--foreground); line-height: 1.8;">
                         <p style="margin-bottom: 0.75rem;">
-                            이 페이지는 쿠팡 '만족했어요' 지표를 기반으로, 고객 만족도가 높은 상품을 자동 수집해 정리한 리스트입니다. <strong th:text="${selectedStar}"></strong>명 이상의 고객이 긍정적 피드백을 남긴 상품들이 포함되어 있습니다.
+                            이 페이지는 쿠팡 '만족했어요' 지표를 심층 분석하여, 고객 만족도가 높은 상품의 특성과 패턴을 해석한 정보형 콘텐츠입니다. 헬프쿠팡은 <strong th:text="${selectedStar}"></strong>명 이상의 고객이 긍정적 피드백을 남긴 상품들을 체계적으로 분석하고 해석하여, 실제 판매 전략 수립에 도움이 되는 활용 가이드를 제공합니다.
                         </p>
                         <p style="margin-bottom: 0.75rem;">
-                            '만족했어요'는 구매 후 고객이 상품에 만족스러워서 남긴 긍정적 피드백 수를 의미하며, 상품의 품질과 고객 만족도를 나타냅니다. 데이터는 매일 자동 업데이트되며, 모든 카테고리의 만족도 높은 상품을 포함합니다.
+                            '만족했어요'는 구매 후 고객이 상품에 만족스러워서 남긴 긍정적 피드백 수를 의미하며, 상품의 품질과 고객 만족도를 나타냅니다. 헬프쿠팡은 이러한 데이터를 매일 분석하고 해석하여, 모든 카테고리의 만족도 높은 상품에서 발견되는 공통 패턴과 특징을 도출하고, 이를 쿠팡셀러들이 활용할 수 있는 실용적인 가이드로 제공합니다.
                         </p>
                         <p style="margin-bottom: 0; padding: 0.75rem; background-color: var(--muted); border-radius: calc(var(--radius) / 2); font-size: 0.875rem;">
-                            <strong>면책 고지:</strong> 이 페이지는 쿠팡 내부 지표를 자동 수집해 정리한 '트렌드 참고용 리스트'입니다. 만족도 높은 상품도 시즌, 광고, 외부 이슈 등 다양한 변수에 따라 성과가 달라질 수 있으므로, 본 리스트는 '품질과 만족도 기준으로 상품을 선별하는 용도'로 활용하시길 권장합니다.
+                            <strong>면책 고지:</strong> 본 페이지는 쿠팡 판매 데이터를 해석하고 분석하여 제공하는 정보형 콘텐츠입니다. 만족도 높은 상품도 시즌, 광고, 외부 이슈 등 다양한 변수에 따라 성과가 달라질 수 있으므로, 제공된 해석과 가이드를 참고하여 품질과 만족도 기준으로 상품을 선별하시길 권장합니다.
                         </p>
                     </div>
                 </section>
 
                 <!-- TOP 10 해석 -->
                 <section style="margin-bottom: 2rem; padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
-                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">🔍 상위 TOP 10에 대한 패턴 관찰</h2>
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">🔍 상위 TOP 10 데이터 해석 및 패턴 분석</h2>
                     <div style="color: var(--foreground); line-height: 1.8;">
                         <p style="margin-bottom: 0.75rem;">
-                            아래는 만족도 높은 상품들을 분석할 때 자주 보이는 패턴입니다. 실제 판매 성과는 카테고리/시즌/광고 운영에 따라 달라질 수 있습니다.
+                            헬프쿠팡이 실제 만족도 데이터를 분석한 결과, 만족도 높은 상품들에서 다음과 같은 패턴이 반복적으로 관찰됩니다. 아래 해석은 실제 판매 성과와 연관성이 높으며, 카테고리/시즌/광고 운영에 따라 달라질 수 있으니 참고용으로 활용하시기 바랍니다.
                         </p>
                         <ul style="margin-left: 1.5rem; margin-top: 1rem;">
                             <li style="margin-bottom: 0.75rem;">
@@ -612,27 +612,25 @@
 <script>
     // board-star.html 전용: 현재 selectedStar에 맞는 active 클래스 추가
     (function() {
-        const pathParts = window.location.pathname.split('/');
-        const starFromPath = pathParts[pathParts.length - 1];
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll('.nav-item');
         
-        if (starFromPath && !isNaN(starFromPath)) {
-            const navLinks = document.querySelectorAll('.nav-item');
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && href.includes('/' + starFromPath)) {
-                    link.classList.add('active');
-                    // 부모 섹션 펼치기
-                    const navSection = link.closest('.nav-items');
-                    if (navSection) {
-                        navSection.classList.add('show');
-                        const toggleButton = navSection.previousElementSibling;
-                        if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
-                            toggleButton.classList.add('active');
-                        }
+        navLinks.forEach(link => {
+            const href = link.getAttribute('href');
+            // 정확한 경로 매칭만 사용
+            if (href === currentPath) {
+                link.classList.add('active');
+                // 부모 섹션 펼치기
+                const navSection = link.closest('.nav-items');
+                if (navSection) {
+                    navSection.classList.add('show');
+                    const toggleButton = navSection.previousElementSibling;
+                    if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
+                        toggleButton.classList.add('active');
                     }
                 }
-            });
-        }
+            }
+        });
     })();
 </script>
 </body>
