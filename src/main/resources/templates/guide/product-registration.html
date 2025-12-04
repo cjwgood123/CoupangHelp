@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 상품 등록 방법 | 쿠팡 상품 등록 가이드 | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 상품 등록 방법 완벽 가이드: 쿠팡윙에서 상품을 등록하는 단계별 방법과 주의사항을 알아보세요.">
+    <meta name="keywords" content="쿠팡 상품 등록, 쿠팡 상품 등록 방법, 쿠팡 상품 등록 가이드, 쿠팡 상품 등록 절차">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide/product-registration">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        .page-header { text-align: center; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+        .page-header h1 { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem; }
+        .page-header .subtitle { font-size: 1.25rem; color: var(--muted-foreground); margin-bottom: 0.5rem; }
+        .page-header .description { font-size: 1rem; color: var(--muted-foreground); max-width: 800px; margin: 0 auto; }
+        .section { margin-bottom: 4rem; }
+        .section-title { font-size: 1.75rem; font-weight: bold; color: var(--foreground); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+        .section-number { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: 50%; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; }
+        .section-content { font-size: 1rem; color: var(--foreground); line-height: 1.8; }
+        .section-content p { margin-bottom: 1.5rem; }
+        .highlight-box { background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; border-left: 4px solid var(--primary); }
+        .highlight-box h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
+        .tip-box { background-color: hsl(200, 80%, 95%); padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; border-left: 4px solid var(--info); }
+        .tip-box strong { color: var(--info); display: block; margin-bottom: 0.5rem; font-size: 1.125rem; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .info-card { background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: box-shadow 0.2s; }
+        .info-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .info-card h3 { font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 0.75rem; }
+        .info-card ul { margin-left: 1.5rem; margin-top: 0.75rem; }
+        .info-card li { margin-bottom: 0.5rem; font-size: 0.9375rem; color: var(--foreground); }
+        @media (max-width: 768px) { .page-header h1 { font-size: 2rem; } .section-title { font-size: 1.5rem; } .card-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>쿠팡 상품 등록 방법</h1>
+                <p class="subtitle">쿠팡윙에서 상품을 등록하는 단계별 가이드</p>
+                <p class="description">쿠팡 상품 등록은 판매의 핵심 단계입니다. 정확한 정보 입력과 적절한 카테고리 선택이 중요합니다.</p>
+            </div>
+            <div class="section">
+                <h2 class="section-title"><span class="section-number">1</span><span>상품 등록 절차</span></h2>
+                <div class="section-content">
+                    <p>쿠팡윙에서 상품을 등록하는 기본 절차를 알아보세요.</p>
+                    <div class="highlight-box">
+                        <h3>📝 등록 단계</h3>
+                        <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                            <li><strong>상품 관리 메뉴:</strong> 쿠팡윙에서 "상품 관리" 선택</li>
+                            <li><strong>상품 등록:</strong> "신규 상품 등록" 클릭</li>
+                            <li><strong>기본 정보 입력:</strong> 상품명, 카테고리, 가격 등 입력</li>
+                            <li><strong>상품 이미지 업로드:</strong> 대표 이미지 및 상세 이미지 업로드</li>
+                            <li><strong>상품 설명 작성:</strong> 상품 상세 설명 입력</li>
+                            <li><strong>재고 정보 입력:</strong> 재고 수량 및 옵션 설정</li>
+                            <li><strong>등록 완료:</strong> 심사 후 판매 시작</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2 class="section-title"><span class="section-number">2</span><span>필수 입력 항목</span></h2>
+                <div class="section-content">
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>📝 기본 정보</h3>
+                            <ul>
+                                <li>상품명 (정확하고 검색 가능한 키워드 포함)</li>
+                                <li>카테고리 선택</li>
+                                <li>판매 가격</li>
+                                <li>배송 정보</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <h3>🖼️ 이미지</h3>
+                            <ul>
+                                <li>대표 이미지 (최소 1장)</li>
+                                <li>상세 이미지 (여러 장 권장)</li>
+                                <li>이미지 품질 및 해상도</li>
+                            </ul>
+                        </div>
+                        <div class="info-card">
+                            <h3>📄 상세 정보</h3>
+                            <ul>
+                                <li>상품 상세 설명</li>
+                                <li>제품 사양</li>
+                                <li>배송 및 교환 정책</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <h2 class="section-title"><span class="section-number">3</span><span>주의사항</span></h2>
+                <div class="section-content">
+                    <div class="tip-box">
+                        <strong>⚠️ 등록 시 주의사항</strong>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.75rem;">
+                            <li>상품명에 검색 키워드를 포함하되 과도한 키워드 삽입은 피하세요</li>
+                            <li>카테고리는 정확하게 선택해야 합니다</li>
+                            <li>이미지는 실제 상품과 일치해야 합니다</li>
+                            <li>가격은 경쟁 상품과 비교하여 적절하게 설정하세요</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div style="background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%)); border-radius: var(--radius); padding: 3rem 2rem; text-align: center; color: var(--primary-foreground); margin-top: 4rem;">
+                <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">마무리</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 0.5rem; opacity: 0.95;">정확한 정보 입력이 판매 성공의 기반입니다.</p>
+                <p style="font-size: 1.125rem; margin-top: 1rem; font-weight: 600;">상품 등록 시 필수 항목을 빠짐없이 입력하세요.</p>
+            </div>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+<footer style="margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border); background-color: var(--muted);">
+    <div class="content-wrapper" style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div><h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">헬프쿠팡</h3><p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.6;">쿠팡셀러와 스마트스토어 판매자를 위한 인기상품 분석 플랫폼입니다.</p></div>
+            <div><h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">서비스</h3><ul style="list-style: none; padding: 0; margin: 0;"><li style="margin-bottom: 0.5rem;"><a href="/about" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem;">서비스 소개</a></li><li style="margin-bottom: 0.5rem;"><a href="/guide" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem;">사용 가이드</a></li><li style="margin-bottom: 0.5rem;"><a href="/seller-guide" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem;">쿠팡 판매 가이드</a></li></ul></div>
+            <div><h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">법적 고지</h3><ul style="list-style: none; padding: 0; margin: 0;"><li style="margin-bottom: 0.5rem;"><a href="/privacy" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem;">개인정보처리방침</a></li><li style="margin-bottom: 0.5rem;"><a href="/terms" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem;">이용약관</a></li></ul></div>
+        </div>
+        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;"><p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p></div>
+    </div>
+</footer>
+</body>
+</html>
+

@@ -6,7 +6,7 @@
     <title th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|만족했어요 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" th:content="${(isHubPage != null and isHubPage == true) ? 'index, follow' : 'noindex, nofollow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{${selectedStar != null ? '/star/' + selectedStar : '/star/all'}}">
     
@@ -407,112 +407,7 @@
 </head>
 <body>
 <div class="container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
-                <div class="logo">
-                    <div class="logo-icon">
-                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                        </svg>
-                    </div>
-                    <div class="logo-text">
-                        <h2>헬프쿠팡</h2>
-                        <p>쿠팡셀러 데이터 분석</p>
-                    </div>
-                </div>
-            </a>
-
-            <nav class="nav">
-                <!-- 소개할게요 -->
-                <div class="nav-section">
-                    <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
-                </div>
-                <!-- 구매했어요 -->
-                <div class="nav-section">
-                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
-                        <span>구매했어요</span>
-                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div class="nav-items" id="nov2025">
-                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
-                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
-                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
-                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
-                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
-                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
-                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
-                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
-                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
-                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
-                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
-                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
-                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
-                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
-                    </div>
-                </div>
-                <!-- 만족했어요 -->
-                <div class="nav-section">
-                    <button class="nav-toggle active" onclick="toggleNav('satisfied')">
-                        <span>만족했어요</span>
-                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div class="nav-items show" id="satisfied">
-                        <a href="/satisfied/100" class="nav-item" th:classappend="${selectedStar == 100} ? 'active' : ''">⚡ 100명 이상 만족</a>
-                        <a href="/satisfied/200" class="nav-item" th:classappend="${selectedStar == 200} ? 'active' : ''">⚡ 200명 이상 만족</a>
-                        <a href="/satisfied/300" class="nav-item" th:classappend="${selectedStar == 300} ? 'active' : ''">⚡ 300명 이상 만족</a>
-                        <a href="/satisfied/400" class="nav-item" th:classappend="${selectedStar == 400} ? 'active' : ''">⚡ 400명 이상 만족</a>
-                        <a href="/satisfied/500" class="nav-item" th:classappend="${selectedStar == 500} ? 'active' : ''">⚡ 500명 이상 만족</a>
-                        <a href="/satisfied/600" class="nav-item" th:classappend="${selectedStar == 600} ? 'active' : ''">⚡ 600명 이상 만족</a>
-                        <a href="/satisfied/700" class="nav-item" th:classappend="${selectedStar == 700} ? 'active' : ''">⚡ 700명 이상 만족</a>
-                        <a href="/satisfied/800" class="nav-item" th:classappend="${selectedStar == 800} ? 'active' : ''">⚡ 800명 이상 만족</a>
-                        <a href="/satisfied/900" class="nav-item" th:classappend="${selectedStar == 900} ? 'active' : ''">⚡ 900명 이상 만족</a>
-                        <a href="/satisfied/1000" class="nav-item" th:classappend="${selectedStar == 1000} ? 'active' : ''">⚡ 1000명 이상 만족</a>
-                        <a href="/satisfied/2000" class="nav-item" th:classappend="${selectedStar == 2000} ? 'active' : ''">⚡ 2000명 이상 만족</a>
-                        <a href="/satisfied/3000" class="nav-item" th:classappend="${selectedStar == 3000} ? 'active' : ''">⚡ 3000명 이상 만족</a>
-                        <a href="/satisfied/4000" class="nav-item" th:classappend="${selectedStar == 4000} ? 'active' : ''">⚡ 4000명 이상 만족</a>
-                        <a href="/satisfied/5000" class="nav-item" th:classappend="${selectedStar == 5000} ? 'active' : ''">⚡ 5000명 이상 만족</a>
-                        <a href="/satisfied/6000" class="nav-item" th:classappend="${selectedStar == 6000} ? 'active' : ''">⚡ 6000명 이상 만족</a>
-                        <a href="/satisfied/7000" class="nav-item" th:classappend="${selectedStar == 7000} ? 'active' : ''">⚡ 7000명 이상 만족</a>
-                        <a href="/satisfied/8000" class="nav-item" th:classappend="${selectedStar == 8000} ? 'active' : ''">⚡ 8000명 이상 만족</a>
-                        <a href="/satisfied/9000" class="nav-item" th:classappend="${selectedStar == 9000} ? 'active' : ''">⚡ 9000명 이상 만족</a>
-                    </div>
-                </div>
-                <!-- 단기간 인기 상품 -->
-                <div class="nav-section">
-                    <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
-                </div>
-                <!-- 쿠팡 판매 가이드 -->
-                <div class="nav-section">
-                    <a href="/seller-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📚 쿠팡 판매 A to Z</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/rocket-gross-registration-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 상품등록 A to Z</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/product-finding-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🔍 잘 팔리는 상품 찾는 법</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/1688-sourcing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏭 1688 중국 공장 소싱</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/rocket-gross-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 초보 소싱</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/roi-system-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">💰 ROI 회전 시스템</a>
-                </div>
-            </nav>
-        </div>
-    </aside>
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -528,6 +423,85 @@
                 <h1 th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'}">만족 상품</h1>
                 <p th:if="${selectedStar != null}" th:text="|만족했어요 - 총 ${totalCount}건|">-</p>
                 <p th:if="${selectedStar == null}" th:text="|전체 상품 - 총 ${totalCount}건|">-</p>
+            </div>
+
+            <!-- 허브 콘텐츠 섹션 (1페이지만 표시) -->
+            <div th:if="${isHubPage != null and isHubPage == true and selectedStar != null}" style="margin-bottom: 3rem;">
+                <!-- 데이터 설명 -->
+                <section style="margin-bottom: 2rem; padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">📊 이 리스트가 만들어진 기준/데이터 설명</h2>
+                    <div style="color: var(--foreground); line-height: 1.8;">
+                        <p style="margin-bottom: 0.75rem;">
+                            이 페이지는 쿠팡 '만족했어요' 지표를 기반으로, 고객 만족도가 높은 상품을 자동 수집해 정리한 리스트입니다. <strong th:text="${selectedStar}"></strong>명 이상의 고객이 긍정적 피드백을 남긴 상품들이 포함되어 있습니다.
+                        </p>
+                        <p style="margin-bottom: 0.75rem;">
+                            '만족했어요'는 구매 후 고객이 상품에 만족스러워서 남긴 긍정적 피드백 수를 의미하며, 상품의 품질과 고객 만족도를 나타냅니다. 데이터는 매일 자동 업데이트되며, 모든 카테고리의 만족도 높은 상품을 포함합니다.
+                        </p>
+                        <p style="margin-bottom: 0; padding: 0.75rem; background-color: var(--muted); border-radius: calc(var(--radius) / 2); font-size: 0.875rem;">
+                            <strong>면책 고지:</strong> 이 페이지는 쿠팡 내부 지표를 자동 수집해 정리한 '트렌드 참고용 리스트'입니다. 만족도 높은 상품도 시즌, 광고, 외부 이슈 등 다양한 변수에 따라 성과가 달라질 수 있으므로, 본 리스트는 '품질과 만족도 기준으로 상품을 선별하는 용도'로 활용하시길 권장합니다.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- TOP 10 해석 -->
+                <section style="margin-bottom: 2rem; padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">🔍 상위 TOP 10에 대한 패턴 관찰</h2>
+                    <div style="color: var(--foreground); line-height: 1.8;">
+                        <p style="margin-bottom: 0.75rem;">
+                            아래는 만족도 높은 상품들을 분석할 때 자주 보이는 패턴입니다. 실제 판매 성과는 카테고리/시즌/광고 운영에 따라 달라질 수 있습니다.
+                        </p>
+                        <ul style="margin-left: 1.5rem; margin-top: 1rem;">
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong>품질 중심 카테고리:</strong> 만족도 상위권에는 생활용품, 주방용품, 뷰티/화장품 등 실제 사용감이 중요한 카테고리가 자주 보입니다. 제품의 품질이 직접적으로 고객 만족에 영향을 미치기 때문입니다.
+                            </li>
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong>구매 대비 만족 비율:</strong> 구매 수 대비 만족도가 높은 상품은 실제 품질이 좋거나 가성비가 우수할 가능성이 높습니다. 리뷰를 꼼꼼히 확인해 반복 구매 가능성을 파악하는 것이 중요합니다.
+                            </li>
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong>CS 대응 품질:</strong> 만족도가 높은 상품은 판매자의 고객 서비스 대응도 좋을 가능성이 있습니다. 초보 셀러라면 이런 상품의 판매자 운영 방식을 참고해볼 수 있습니다.
+                            </li>
+                            <li style="margin-bottom: 0.75rem;">
+                                <strong>재구매 신호:</strong> 만족도가 높고 리뷰 내용이 긍정적인 상품은 재구매 가능성이 높습니다. 꾸준한 수요가 형성되어 있어 안정적인 매출을 기대할 수 있는 신호입니다.
+                            </li>
+                            <li>
+                                <strong>경쟁 우위:</strong> 만족도가 높은 상품이면서 동시에 구매 수도 높은 상품은 강력한 경쟁 우위를 가진 상품일 수 있습니다. 진입 시 차별화 포인트를 명확히 해야 합니다.
+                            </li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- 셀러 상황별 추천 -->
+                <section style="padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">💡 셀러 상황별 추천</h2>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+                        <!-- 초보 테스트용 -->
+                        <div style="padding: 1.25rem; background-color: var(--muted); border-radius: var(--radius);">
+                            <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--primary); margin-bottom: 0.75rem;">🌱 초보 테스트용 선택 기준</h3>
+                            <p style="font-size: 0.875rem; color: var(--foreground); line-height: 1.7; margin-bottom: 0.75rem;">
+                                만족도 높은 상품 중에서도 리스크를 최소화하면서 테스트해볼 수 있는 상품을 선택하는 것이 좋습니다.
+                            </p>
+                            <ul style="margin-left: 1.25rem; font-size: 0.875rem; color: var(--foreground); line-height: 1.7;">
+                                <li style="margin-bottom: 0.5rem;">만족도와 함께 리뷰가 충분히 쌓여 있는 상품 (300개 이상)</li>
+                                <li style="margin-bottom: 0.5rem;">부정적 리뷰가 적고 긍정적 리뷰 비율이 높은 상품</li>
+                                <li style="margin-bottom: 0.5rem;">옵션이 단순해서 입고/CS가 쉬운 상품</li>
+                                <li>부피/파손 리스크가 낮아 물류 스트레스가 적은 상품</li>
+                            </ul>
+                        </div>
+                        <!-- 중급 확장용 -->
+                        <div style="padding: 1.25rem; background-color: var(--muted); border-radius: var(--radius);">
+                            <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--primary); margin-bottom: 0.75rem;">🚀 중급 확장용 선택 기준</h3>
+                            <p style="font-size: 0.875rem; color: var(--foreground); line-height: 1.7; margin-bottom: 0.75rem;">
+                                매출 규모를 키우고 싶은 셀러는 만족도와 확장 가능성을 모두 고려해야 합니다.
+                            </p>
+                            <ul style="margin-left: 1.25rem; font-size: 0.875rem; color: var(--foreground); line-height: 1.7;">
+                                <li style="margin-bottom: 0.5rem;">만족도가 높으면서 옵션/세트 구성이 다양해서 객단가 업셀 여지가 있는 상품</li>
+                                <li style="margin-bottom: 0.5rem;">재구매 가능성이 높아 꾸준한 수요가 예상되는 상품</li>
+                                <li style="margin-bottom: 0.5rem;">경쟁이 치열하지만 품질 차별화로 승부할 수 있는 상품</li>
+                                <li>시즌성/트렌드성이 있어 단기간 폭발적 성장 가능성이 있는 상품</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
             </div>
 
             <!-- 검색 영역 -->
@@ -634,15 +608,32 @@
     </main>
 </div>
 
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
 <script>
-    function toggleNav(id) {
-        const navItems = document.getElementById(id);
-        const toggle = navItems.previousElementSibling;
+    // board-star.html 전용: 현재 selectedStar에 맞는 active 클래스 추가
+    (function() {
+        const pathParts = window.location.pathname.split('/');
+        const starFromPath = pathParts[pathParts.length - 1];
         
-        navItems.classList.toggle('show');
-        toggle.classList.toggle('active');
-    }
-
+        if (starFromPath && !isNaN(starFromPath)) {
+            const navLinks = document.querySelectorAll('.nav-item');
+            navLinks.forEach(link => {
+                const href = link.getAttribute('href');
+                if (href && href.includes('/' + starFromPath)) {
+                    link.classList.add('active');
+                    // 부모 섹션 펼치기
+                    const navSection = link.closest('.nav-items');
+                    if (navSection) {
+                        navSection.classList.add('show');
+                        const toggleButton = navSection.previousElementSibling;
+                        if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
+                            toggleButton.classList.add('active');
+                        }
+                    }
+                }
+            });
+        }
+    })();
 </script>
 </body>
 </html>

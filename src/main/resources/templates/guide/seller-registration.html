@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 판매자 등록 및 가입 가이드 | 쿠팡 셀러 시작하기 | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 판매자 등록 및 가입 완벽 가이드: 초보 셀러를 위한 쿠팡 판매자 가입 방법, 필요한 서류, 가입 절차, 주의사항까지 한 번에 이해하세요.">
+    <meta name="keywords" content="쿠팡 판매자 등록, 쿠팡 판매자 가입, 쿠팡 셀러 가입, 쿠팡 판매자 신청, 쿠팡 판매자 등록 방법, 쿠팡 판매자 가입 조건, 쿠팡 판매자 서류">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide/seller-registration">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://helpcoupang.com/guide/seller-registration">
+    <meta property="og:title" content="쿠팡 판매자 등록 및 가입 가이드 | 쿠팡 셀러 시작하기">
+    <meta property="og:description" content="쿠팡 판매자 등록 및 가입 완벽 가이드: 초보 셀러를 위한 쿠팡 판매자 가입 방법, 필요한 서류, 가입 절차까지.">
+    <meta property="og:image" content="https://helpcoupang.com/images/og-image.png">
+    <meta property="og:site_name" content="헬프쿠팡 (helpcoupang.com)">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://helpcoupang.com/guide/seller-registration">
+    <meta property="twitter:title" content="쿠팡 판매자 등록 및 가입 가이드">
+    <meta property="twitter:description" content="쿠팡 판매자 등록 및 가입 완벽 가이드: 초보 셀러를 위한 쿠팡 판매자 가입 방법.">
+    <meta property="twitter:image" content="https://helpcoupang.com/images/og-image.png">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "쿠팡 판매자 등록 및 가입 가이드",
+      "description": "쿠팡 판매자 등록 및 가입 완벽 가이드: 초보 셀러를 위한 쿠팡 판매자 가입 방법, 필요한 서류, 가입 절차까지.",
+      "image": "https://helpcoupang.com/images/og-image.png",
+      "author": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "url": "https://helpcoupang.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://helpcoupang.com/images/hero-icon.png"
+        }
+      },
+      "datePublished": "2025-12-27",
+      "dateModified": "2025-12-27",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://helpcoupang.com/guide/seller-registration"
+      },
+      "keywords": "쿠팡 판매자 등록, 쿠팡 판매자 가입, 쿠팡 셀러 가입",
+      "inLanguage": "ko-KR",
+      "articleSection": "쿠팡 판매 가이드"
+    }
+    </script>
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .description {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            font-size: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .highlight-box {
+            background-color: var(--secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .highlight-box h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+
+        .tip-box {
+            background-color: hsl(200, 80%, 95%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--info);
+        }
+
+        .tip-box strong {
+            color: var(--info);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: box-shadow 0.2s;
+        }
+
+        .info-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-card h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card ul {
+            margin-left: 1.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .info-card li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9375rem;
+            color: var(--foreground);
+        }
+
+        .checklist {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .checklist h4 {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+
+        .checklist ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .checklist li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .checklist li:last-child {
+            border-bottom: none;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .card-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>쿠팡 판매자 등록 및 가입 가이드</h1>
+                <p class="subtitle">초보 셀러를 위한 쿠팡 판매자 가입 완벽 가이드</p>
+                <p class="description">
+                    쿠팡 판매를 시작하기 위한 첫 번째 단계인 판매자 등록 및 가입 방법을 단계별로 안내합니다. 
+                    필요한 서류부터 가입 절차, 주의사항까지 한 번에 이해하세요.
+                </p>
+            </div>
+
+            <!-- 1. 쿠팡 판매자 가입 조건 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">1</span>
+                    <span>쿠팡 판매자 가입 조건</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡 판매자로 가입하기 위해서는 몇 가지 기본 조건을 만족해야 합니다.
+                    </p>
+
+                    <div class="checklist">
+                        <h4>✅ 필수 조건</h4>
+                        <ul>
+                            <li>만 19세 이상의 대한민국 국민 또는 내국인</li>
+                            <li>사업자등록증 (개인사업자 또는 법인사업자)</li>
+                            <li>통장 (정산을 받을 계좌)</li>
+                            <li>휴대폰 인증 가능한 번호</li>
+                            <li>이메일 주소</li>
+                        </ul>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>💡 초보 셀러 팁</strong>
+                        <p>
+                            처음 시작하는 경우 개인사업자로 등록하는 것이 가장 간단합니다. 
+                            사업자등록증이 없어도 쿠팡 판매자 가입은 가능하지만, 
+                            정산을 받기 위해서는 반드시 사업자등록증이 필요합니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 가입 절차 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">2</span>
+                    <span>가입 절차</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡 판매자 가입은 온라인으로 간단하게 진행할 수 있습니다.
+                    </p>
+
+                    <div class="highlight-box">
+                        <h3>📝 단계별 가입 절차</h3>
+                        <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                            <li><strong>쿠팡 판매자센터 접속:</strong> seller.coupang.com 접속</li>
+                            <li><strong>회원가입:</strong> 이메일 또는 휴대폰 번호로 가입</li>
+                            <li><strong>본인인증:</strong> 휴대폰 인증 또는 공동인증서 인증</li>
+                            <li><strong>사업자 정보 입력:</strong> 사업자등록번호, 사업자명 등 입력</li>
+                            <li><strong>정산 정보 입력:</strong> 정산 받을 계좌 정보 입력</li>
+                            <li><strong>약관 동의:</strong> 판매자 약관 및 개인정보 처리방침 동의</li>
+                            <li><strong>가입 완료:</strong> 심사 후 판매자 승인 (보통 1-2일 소요)</li>
+                        </ol>
+                    </div>
+
+                    <div class="tip-box">
+                        <strong>⏰ 심사 기간</strong>
+                        <p>
+                            쿠팡 판매자 가입 심사는 보통 1-2일 정도 소요됩니다. 
+                            심사 중에는 상품 등록이 불가능하니, 미리 계획을 세워두는 것이 좋습니다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. 필요한 서류 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">3</span>
+                    <span>필요한 서류</span>
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡 판매자 가입 시 준비해야 할 서류들을 미리 확인하세요.
+                    </p>
+
+                    <div class="card-grid">
+                        <div class="info-card">
+                            <h3>📄 사업자등록증</h3>
+                            <p><strong>용도:</strong> 사업자 정보 확인</p>
+                            <ul>
+                                <li>개인사업자 또는 법인사업자</li>
+                                <li>사업자등록번호 필요</li>
+                                <li>사업자등록증 사본 업로드</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>🏦 통장 사본</h3>
+                            <p><strong>용도:</strong> 정산 계좌 확인</p>
+                            <ul>
+                                <li>정산 받을 계좌 정보</li>
+                                <li>예금주명 확인</li>
+                                <li>통장 사본 또는 계좌 확인서</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-card">
+                            <h3>📱 본인인증</h3>
+                            <p><strong>용도:</strong> 본인 확인</p>
+                            <ul>
+                                <li>휴대폰 인증</li>
+                                <li>공동인증서 인증</li>
+                                <li>간편인증 (카드, 계좌)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 주의사항 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">4</span>
+                    <span>주의사항</span>
+                </h2>
+                <div class="section-content">
+                    <div class="tip-box">
+                        <strong>⚠️ 가입 시 주의사항</strong>
+                        <ul style="margin-left: 1.5rem; margin-top: 0.75rem;">
+                            <li>사업자등록증의 사업자명과 통장 예금주명이 일치해야 합니다</li>
+                            <li>한 사람당 하나의 판매자 계정만 가입 가능합니다</li>
+                            <li>가입 정보는 정확하게 입력해야 심사가 거절될 수 있습니다</li>
+                            <li>심사 거절 시 재가입까지 일정 기간이 소요될 수 있습니다</li>
+                        </ul>
+                    </div>
+
+                    <div class="highlight-box">
+                        <h3>✅ 가입 성공 팁</h3>
+                        <p>
+                            모든 정보를 정확하게 입력하고, 필요한 서류를 미리 준비해두면 
+                            심사가 빠르게 진행됩니다. 특히 사업자등록증과 통장 정보는 
+                            정확히 일치하는지 반드시 확인하세요.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 마무리 -->
+            <div style="background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%)); border-radius: var(--radius); padding: 3rem 2rem; text-align: center; color: var(--primary-foreground); margin-top: 4rem;">
+                <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">마무리</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 0.5rem; opacity: 0.95;">
+                    쿠팡 판매자 가입은 생각보다 간단합니다.
+                </p>
+                <p style="font-size: 1.125rem; margin-top: 1rem; font-weight: 600;">
+                    필요한 서류를 미리 준비하고 정확한 정보를 입력하면 빠르게 가입할 수 있습니다.
+                </p>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Navigation Script -->
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+
+<!-- Footer -->
+<footer style="margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border); background-color: var(--muted);">
+    <div class="content-wrapper" style="max-width: 1280px; margin: 0 auto;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">헬프쿠팡</h3>
+                <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.6;">
+                    쿠팡셀러와 스마트스토어 판매자를 위한 인기상품 분석 플랫폼입니다.
+                </p>
+            </div>
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">서비스</h3>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="/about" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">서비스 소개</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/guide" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">사용 가이드</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/seller-guide" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">쿠팡 판매 가이드</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/2025-11/all/100" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">인기 상품 분석</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">법적 고지</h3>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 0.5rem;"><a href="/privacy" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">개인정보처리방침</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/terms" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">이용약관</a></li>
+                    <li style="margin-bottom: 0.5rem;"><a href="/contact" style="color: var(--muted-foreground); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--muted-foreground)'">문의하기</a></li>
+                </ul>
+            </div>
+        </div>
+        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;">
+            <p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
+

@@ -11,14 +11,33 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Set;
 
 @Controller
 public class BoardController {
 
     private final BoardService boardService;
+    
+    // 대표 허브 구간 (index 유지)
+    private static final Set<Integer> HUB_PURCHASE_COUNTS = Set.of(100, 300, 500, 1000, 3000, 5000);
+    private static final Set<Integer> HUB_SATISFIED_COUNTS = Set.of(100, 500, 1000);
 
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
+    }
+    
+    /**
+     * 구매 페이지가 허브 콘텐츠인지 확인
+     */
+    private boolean isHubPurchasePage(int count, int page) {
+        return HUB_PURCHASE_COUNTS.contains(count) && page == 1;
+    }
+    
+    /**
+     * 만족 페이지가 허브 콘텐츠인지 확인
+     */
+    private boolean isHubSatisfiedPage(int count, int page) {
+        return HUB_SATISFIED_COUNTS.contains(count) && page == 1;
     }
 
     @GetMapping("/2025-11/all/{count}")
@@ -68,6 +87,7 @@ public class BoardController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
 
         return "board";
     }
@@ -109,6 +129,7 @@ public class BoardController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
 
         return "board-mobile";
     }
@@ -304,6 +325,7 @@ public class BoardController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
 
         return "board-star";
     }
@@ -343,6 +365,7 @@ public class BoardController {
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
+        model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
 
         return "board-star-mobile";
     }

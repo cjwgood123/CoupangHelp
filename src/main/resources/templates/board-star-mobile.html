@@ -6,7 +6,7 @@
     <title th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|만족했어요 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" th:content="${(isHubPage != null and isHubPage == true) ? 'index, follow' : 'noindex, nofollow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{${selectedStar != null ? '/mobile/star/' + selectedStar : '/mobile/star/all'}}">
     
@@ -127,18 +127,52 @@
             height: 16px;
         }
 
-        /* Mobile Menu */
-        .mobile-menu {
-            display: none;
+        /* Mobile Sidebar */
+        .mobile-sidebar-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
             background-color: var(--card);
-            border-bottom: 1px solid var(--border);
+            border-right: 1px solid var(--border);
+            z-index: 1000;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-sidebar-wrapper.show {
+            transform: translateX(0);
+        }
+
+        .mobile-menu {
             padding: 1rem;
-            max-height: 70vh;
+            height: 100%;
             overflow-y: auto;
         }
 
-        .mobile-menu.show {
+        .mobile-sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-sidebar-overlay.show {
             display: block;
+            opacity: 1;
+        }
+
+        body.sidebar-open {
+            overflow: hidden;
         }
 
         .nav-section {
@@ -446,68 +480,15 @@
         </a>
     </header>
 
-    <!-- Mobile Menu -->
-    <nav class="mobile-menu" id="mobileMenu">
-        <div class="nav-section">
-            <button class="nav-toggle" onclick="toggleNav('nov2025')">
-                <span>구매했어요</span>
-                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-            </button>
-            <div class="nav-items" id="nov2025">
-                <a href="/mobile/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
-                <a href="/mobile/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
-                <a href="/mobile/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
-                <a href="/mobile/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
-                <a href="/mobile/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
-                <a href="/mobile/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
-                <a href="/mobile/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
-                <a href="/mobile/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
-                <a href="/mobile/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
-                <a href="/mobile/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
-            </div>
+    <!-- Mobile Sidebar Overlay -->
+    <div class="mobile-sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
+    
+    <!-- Mobile Sidebar -->
+    <div class="mobile-sidebar-wrapper" id="mobileSidebar">
+        <div class="mobile-menu">
+            <div th:replace="~{fragments/sidebar :: mobile-menu}"></div>
         </div>
-        <div class="nav-section">
-            <button class="nav-toggle active" onclick="toggleNav('satisfied')">
-                <span>만족했어요</span>
-                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                </svg>
-            </button>
-            <div class="nav-items show" id="satisfied">
-                <a href="/mobile/satisfied/100" class="nav-item" th:classappend="${selectedStar == 100} ? 'active' : ''">⚡ 100명 이상 만족</a>
-                <a href="/mobile/satisfied/200" class="nav-item" th:classappend="${selectedStar == 200} ? 'active' : ''">⚡ 200명 이상 만족</a>
-                <a href="/mobile/satisfied/300" class="nav-item" th:classappend="${selectedStar == 300} ? 'active' : ''">⚡ 300명 이상 만족</a>
-                <a href="/mobile/satisfied/400" class="nav-item" th:classappend="${selectedStar == 400} ? 'active' : ''">⚡ 400명 이상 만족</a>
-                <a href="/mobile/satisfied/500" class="nav-item" th:classappend="${selectedStar == 500} ? 'active' : ''">⚡ 500명 이상 만족</a>
-                <a href="/mobile/satisfied/600" class="nav-item" th:classappend="${selectedStar == 600} ? 'active' : ''">⚡ 600명 이상 만족</a>
-                <a href="/mobile/satisfied/700" class="nav-item" th:classappend="${selectedStar == 700} ? 'active' : ''">⚡ 700명 이상 만족</a>
-                <a href="/mobile/satisfied/800" class="nav-item" th:classappend="${selectedStar == 800} ? 'active' : ''">⚡ 800명 이상 만족</a>
-                <a href="/mobile/satisfied/900" class="nav-item" th:classappend="${selectedStar == 900} ? 'active' : ''">⚡ 900명 이상 만족</a>
-                <a href="/mobile/satisfied/1000" class="nav-item" th:classappend="${selectedStar == 1000} ? 'active' : ''">⚡ 1000명 이상 만족</a>
-                <a href="/mobile/satisfied/2000" class="nav-item" th:classappend="${selectedStar == 2000} ? 'active' : ''">⚡ 2000명 이상 만족</a>
-                <a href="/mobile/satisfied/3000" class="nav-item" th:classappend="${selectedStar == 3000} ? 'active' : ''">⚡ 3000명 이상 만족</a>
-                <a href="/mobile/satisfied/4000" class="nav-item" th:classappend="${selectedStar == 4000} ? 'active' : ''">⚡ 4000명 이상 만족</a>
-                <a href="/mobile/satisfied/5000" class="nav-item" th:classappend="${selectedStar == 5000} ? 'active' : ''">⚡ 5000명 이상 만족</a>
-                <a href="/mobile/satisfied/6000" class="nav-item" th:classappend="${selectedStar == 6000} ? 'active' : ''">⚡ 6000명 이상 만족</a>
-                <a href="/mobile/satisfied/7000" class="nav-item" th:classappend="${selectedStar == 7000} ? 'active' : ''">⚡ 7000명 이상 만족</a>
-                <a href="/mobile/satisfied/8000" class="nav-item" th:classappend="${selectedStar == 8000} ? 'active' : ''">⚡ 8000명 이상 만족</a>
-                <a href="/mobile/satisfied/9000" class="nav-item" th:classappend="${selectedStar == 9000} ? 'active' : ''">⚡ 9000명 이상 만족</a>
-            </div>
-        </div>
-        <div class="nav-section">
-            <a href="/shortterm" class="nav-item">⚡ 단기간 인기 상품</a>
-        </div>
-    </nav>
+    </div>
 
     <!-- Main Content -->
     <main class="content-wrapper">
@@ -606,29 +587,56 @@
 
 <script>
     function toggleMobileMenu() {
-        const menu = document.getElementById('mobileMenu');
-        menu.classList.toggle('show');
+        const sidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        const body = document.body;
+        
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        body.classList.toggle('sidebar-open');
     }
 
-    function toggleNav(id) {
-        const navItems = document.getElementById(id);
-        const toggle = navItems.previousElementSibling;
-        
-        navItems.classList.toggle('show');
-        toggle.classList.toggle('active');
-    }
+    <div th:replace="~{fragments/sidebar :: nav-script}"></div>
+    <script>
+        // board-star-mobile.html 전용: 현재 selectedStar에 맞는 active 클래스 추가
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const pathParts = window.location.pathname.split('/');
+            const starFromPath = pathParts[pathParts.length - 1];
+            const star = starFromPath || urlParams.get('star');
+            
+            if (star && star !== 'all') {
+                const navLinks = document.querySelectorAll('.nav-item');
+                navLinks.forEach(link => {
+                    const href = link.getAttribute('href');
+                    if (href && href.includes('/' + star)) {
+                        link.classList.add('active');
+                        // 부모 섹션 펼치기
+                        const navSection = link.closest('.nav-items');
+                        if (navSection) {
+                            navSection.classList.add('show');
+                            const toggleButton = navSection.previousElementSibling;
+                            if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
+                                toggleButton.classList.add('active');
+                            }
+                        }
+                    }
+                });
+            }
+        })();
 
-    // 메뉴 외부 클릭 시 닫기
-    document.addEventListener('click', function(event) {
-        const menu = document.getElementById('mobileMenu');
-        const menuToggle = document.querySelector('.menu-toggle');
-        
-        if (menu.classList.contains('show') && 
-            !menu.contains(event.target) && 
-            !menuToggle.contains(event.target)) {
-            menu.classList.remove('show');
-        }
-    });
+        // 메뉴 외부 클릭 시 닫기
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('mobileMenu');
+            const menuToggle = document.querySelector('.menu-toggle');
+            
+            if (menu.classList.contains('show') && 
+                !menu.contains(event.target) && 
+                !menuToggle.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    </script>
 
 </script>
 </body>

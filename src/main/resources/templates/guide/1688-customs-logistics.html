@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1688 통관 및 물류 처리 | 1688 통관 가이드 | 헬프쿠팡</title>
+    <meta name="description" content="1688 통관 및 물류 처리 완벽 가이드: 중국에서 구매한 상품의 통관 절차와 물류 처리 방법을 알아보세요.">
+    <meta name="keywords" content="1688 통관, 통관 절차, 물류 처리, 수입 통관">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide/1688-customs-logistics">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/css/common.css">
+    <style>
+        .page-header { text-align: center; margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 2px solid var(--border); }
+        .page-header h1 { font-size: 2.5rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem; }
+        .page-header .subtitle { font-size: 1.25rem; color: var(--muted-foreground); margin-bottom: 0.5rem; }
+        .page-header .description { font-size: 1rem; color: var(--muted-foreground); max-width: 800px; margin: 0 auto; }
+        .section { margin-bottom: 4rem; }
+        .section-title { font-size: 1.75rem; font-weight: bold; color: var(--foreground); margin-bottom: 1.5rem; padding-bottom: 0.75rem; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 0.75rem; }
+        .section-number { display: inline-flex; align-items: center; justify-content: center; width: 2.5rem; height: 2.5rem; background-color: var(--primary); color: var(--primary-foreground); border-radius: 50%; font-weight: bold; font-size: 1.25rem; flex-shrink: 0; }
+        .section-content { font-size: 1rem; color: var(--foreground); line-height: 1.8; }
+        .section-content p { margin-bottom: 1.5rem; }
+        .highlight-box { background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; border-left: 4px solid var(--primary); }
+        .highlight-box h3 { color: var(--primary); margin-bottom: 1rem; font-size: 1.25rem; }
+        .tip-box { background-color: hsl(200, 80%, 95%); padding: 1.5rem; border-radius: var(--radius); margin: 1.5rem 0; border-left: 4px solid var(--info); }
+        .tip-box strong { color: var(--info); display: block; margin-bottom: 0.5rem; font-size: 1.125rem; }
+        .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .info-card { background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: box-shadow 0.2s; }
+        .info-card:hover { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+        .info-card h3 { font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 0.75rem; }
+        .info-card ul { margin-left: 1.5rem; margin-top: 0.75rem; }
+        .info-card li { margin-bottom: 0.5rem; font-size: 0.9375rem; color: var(--foreground); }
+        @media (max-width: 768px) { .page-header h1 { font-size: 2rem; } .section-title { font-size: 1.5rem; } .card-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>1688 통관 및 물류 처리</h1>
+                <p class="subtitle">통관 절차와 물류 처리 방법</p>
+                <p class="description">중국에서 구매한 상품의 통관 절차와 물류 처리 방법을 알아보세요.</p>
+            </div>
+            <div class="section">
+                <h2 class="section-title"><span class="section-number">1</span><span>통관 절차</span></h2>
+                <div class="section-content">
+                    <div class="highlight-box">
+                        <h3>📋 통관 단계</h3>
+                        <ol style="margin-left: 1.5rem; margin-top: 1rem;">
+                            <li><strong>서류 준비:</strong> 인보이스, 패킹리스트 등</li>
+                            <li><strong>통관 신고:</strong> 세관에 수입 신고</li>
+                            <li><strong>관세 납부:</strong> 관세 및 부가세 납부</li>
+                            <li><strong>검사:</strong> 필요 시 세관 검사</li>
+                            <li><strong>통관 완료:</strong> 국내 배송 시작</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div style="background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%)); border-radius: var(--radius); padding: 3rem 2rem; text-align: center; color: var(--primary-foreground); margin-top: 4rem;">
+                <h2 style="font-size: 2rem; font-weight: bold; margin-bottom: 1rem;">마무리</h2>
+                <p style="font-size: 1.125rem; margin-bottom: 0.5rem; opacity: 0.95;">통관 절차를 이해하면 물류 처리가 원활해집니다.</p>
+            </div>
+        </div>
+    </main>
+</div>
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+<footer style="margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border); background-color: var(--muted);">
+    <div class="content-wrapper" style="max-width: 1280px; margin: 0 auto;">
+        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;"><p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p></div>
+    </div>
+</footer>
+</body>
+</html>
+

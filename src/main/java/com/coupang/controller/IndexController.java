@@ -118,6 +118,186 @@ public class IndexController {
         return "rocket-gross-registration-guide";
     }
 
+    @GetMapping("/rocket-gross-warehouse-guide")
+    public String rocketGrossWarehouseGuide() {
+        return "rocket-gross-warehouse-guide";
+    }
+
+    @GetMapping("/guide/rocket-gross-warehouse-supplies")
+    public String rocketGrossWarehouseSupplies() {
+        return "guide/rocket-gross-warehouse-supplies";
+    }
+
+    @GetMapping("/guide/rocket-gross-warehouse-process")
+    public String rocketGrossWarehouseProcess() {
+        return "guide/rocket-gross-warehouse-process";
+    }
+
+    @GetMapping("/guide/rocket-gross-label-printer")
+    public String rocketGrossLabelPrinter() {
+        return "guide/rocket-gross-label-printer";
+    }
+
+    @GetMapping("/guide/rocket-gross-label-attachment")
+    public String rocketGrossLabelAttachment() {
+        return "guide/rocket-gross-label-attachment";
+    }
+
+    @GetMapping("/guide/rocket-gross-box-packing")
+    public String rocketGrossBoxPacking() {
+        return "guide/rocket-gross-box-packing";
+    }
+
+    @GetMapping("/guide/rocket-gross-pc-application")
+    public String rocketGrossPcApplication() {
+        return "guide/rocket-gross-pc-application";
+    }
+
+    @GetMapping("/guide/rocket-gross-warehouse-center")
+    public String rocketGrossWarehouseCenter() {
+        return "guide/rocket-gross-warehouse-center";
+    }
+
+    @GetMapping("/guide/rocket-gross-delivery-method")
+    public String rocketGrossDeliveryMethod() {
+        return "guide/rocket-gross-delivery-method";
+    }
+
+    @GetMapping("/guide/rocket-gross-return-prevention")
+    public String rocketGrossReturnPrevention() {
+        return "guide/rocket-gross-return-prevention";
+    }
+
+    // 쿠팡 판매 A to Z 가이드
+    @GetMapping("/guide/seller-registration")
+    public String sellerRegistration() {
+        return "guide/seller-registration";
+    }
+
+    @GetMapping("/guide/coupang-wing-usage")
+    public String coupangWingUsage() {
+        return "guide/coupang-wing-usage";
+    }
+
+    @GetMapping("/guide/product-registration")
+    public String productRegistration() {
+        return "guide/product-registration";
+    }
+
+    @GetMapping("/guide/settlement-fees")
+    public String settlementFees() {
+        return "guide/settlement-fees";
+    }
+
+    @GetMapping("/guide/sales-strategy")
+    public String salesStrategy() {
+        return "guide/sales-strategy";
+    }
+
+    // 잘 팔리는 상품 찾는 법 가이드
+    @GetMapping("/guide/popular-product-search")
+    public String popularProductSearch() {
+        return "guide/popular-product-search";
+    }
+
+    @GetMapping("/guide/business-insight")
+    public String businessInsight() {
+        return "guide/business-insight";
+    }
+
+    @GetMapping("/guide/competitor-analysis")
+    public String competitorAnalysis() {
+        return "guide/competitor-analysis";
+    }
+
+    @GetMapping("/guide/margin-calculation")
+    public String marginCalculation() {
+        return "guide/margin-calculation";
+    }
+
+    @GetMapping("/guide/category-trends")
+    public String categoryTrends() {
+        return "guide/category-trends";
+    }
+
+    // 1688 중국 공장 소싱 가이드
+    @GetMapping("/guide/1688-registration")
+    public String sourcing1688Registration() {
+        return "guide/1688-registration";
+    }
+
+    @GetMapping("/guide/1688-factory-price")
+    public String sourcing1688FactoryPrice() {
+        return "guide/1688-factory-price";
+    }
+
+    @GetMapping("/guide/1688-cost-calculation")
+    public String sourcing1688CostCalculation() {
+        return "guide/1688-cost-calculation";
+    }
+
+    @GetMapping("/guide/1688-purchasing-agent")
+    public String sourcing1688PurchasingAgent() {
+        return "guide/1688-purchasing-agent";
+    }
+
+    @GetMapping("/guide/1688-customs-logistics")
+    public String sourcing1688CustomsLogistics() {
+        return "guide/1688-customs-logistics";
+    }
+
+    // 로켓그로스 초보 소싱 가이드
+    @GetMapping("/guide/empty-land-finding")
+    public String emptyLandFinding() {
+        return "guide/empty-land-finding";
+    }
+
+    @GetMapping("/guide/green-belt-products")
+    public String greenBeltProducts() {
+        return "guide/green-belt-products";
+    }
+
+    @GetMapping("/guide/product-validation")
+    public String productValidation() {
+        return "guide/product-validation";
+    }
+
+    @GetMapping("/guide/test-order")
+    public String testOrder() {
+        return "guide/test-order";
+    }
+
+    @GetMapping("/guide/main-product-selection")
+    public String mainProductSelection() {
+        return "guide/main-product-selection";
+    }
+
+    // ROI 회전 시스템 가이드
+    @GetMapping("/guide/roi-concept-calculation")
+    public String roiConceptCalculation() {
+        return "guide/roi-concept-calculation";
+    }
+
+    @GetMapping("/guide/capital-allocation")
+    public String capitalAllocation() {
+        return "guide/capital-allocation";
+    }
+
+    @GetMapping("/guide/inventory-rotation")
+    public String inventoryRotation() {
+        return "guide/inventory-rotation";
+    }
+
+    @GetMapping("/guide/season-prediction")
+    public String seasonPrediction() {
+        return "guide/season-prediction";
+    }
+
+    @GetMapping("/guide/automation-system")
+    public String automationSystem() {
+        return "guide/automation-system";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {
