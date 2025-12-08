@@ -528,6 +528,68 @@
                 </p>
             </div>
 
+            <!-- 헬프쿠팡 추천 TOP 20 (검색어가 없을 때만 표시) -->
+            <div th:if="${(search == null or search.isEmpty()) and (top20Recommended != null and !top20Recommended.isEmpty())}" style="margin-bottom: 2rem;">
+                <section style="padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
+                    <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--primary); margin-bottom: 1rem;">⭐ 헬프쿠팡 추천 TOP 20</h2>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 1.5rem; font-size: 0.9375rem;">
+                        최신 데이터 100개 중에서 <strong>만족도는 높지만 리뷰 수가 적은 상품</strong>을 선별했습니다. 이러한 상품들은 고객 만족도가 높으면서도 아직 충분한 리뷰가 쌓이지 않아 진입 기회가 높은 '품질 검증된 기회 상품'으로 분석됩니다. 만족도가 높다는 것은 실제 품질이 우수하다는 신호이며, 리뷰 수가 적다는 것은 아직 경쟁이 치열하지 않다는 의미입니다.
+                    </p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 1rem;">
+                        <div th:each="product, iterStat : ${top20Recommended}" 
+                             style="padding: 1.25rem; background-color: var(--muted); border-radius: var(--radius); border-left: 3px solid var(--primary);">
+                            <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                                <span style="font-weight: bold; color: var(--primary); font-size: 1.125rem; flex-shrink: 0;" th:text="${iterStat.index + 1}">1</span>
+                                <div style="flex: 1; min-width: 0;">
+                                    <a th:href="${product.url}" 
+                                       th:text="${product.title}" 
+                                       target="_blank"
+                                       rel="noopener noreferrer"
+                                       style="font-weight: 600; color: var(--foreground); text-decoration: none; display: block; margin-bottom: 0.75rem; line-height: 1.5; word-break: break-word;"
+                                       onmouseover="this.style.color='var(--primary)'" 
+                                       onmouseout="this.style.color='var(--foreground)'">
+                                        상품명
+                                    </a>
+                                    <div style="display: flex; gap: 1rem; font-size: 0.875rem; color: var(--muted-foreground); margin-bottom: 0.75rem;">
+                                        <span>상품평: <strong style="color: var(--foreground);" th:text="${product.review != null and product.review != '' ? (#strings.contains(product.review, '개') ? product.review : (product.review + '개')) : '-'}">-</strong></span>
+                                        <span th:if="${product.category != null and product.category != '' and product.category != '-'}">
+                                            카테고리: <span th:text="${product.category}">-</span>
+                                        </span>
+                                    </div>
+                                    <!-- 상품별 분석 설명 -->
+                                    <div style="padding: 0.875rem; background-color: var(--card); border-radius: calc(var(--radius) / 2); font-size: 0.8125rem; line-height: 1.6; color: var(--foreground);">
+                                        <!-- 카테고리 관점 (A축) -->
+                                        <div th:if="${product.category != null and product.category != '' and product.category != '-'}" style="margin-bottom: 0.5rem;">
+                                            <span th:if="${topCategoryNames != null and topCategoryNames.contains(product.category)}" 
+                                                  style="color: var(--primary); font-weight: 600;">
+                                                <span th:text="${product.category}">카테고리</span>는 헬프쿠팡 기준 인기 카테고리 Top 10 안에 들어갈 정도로 수요가 큰 영역입니다.
+                                            </span>
+                                            <span th:unless="${topCategoryNames != null and topCategoryNames.contains(product.category)}" 
+                                                  style="color: var(--muted-foreground);">
+                                                현재 인기 카테고리에 포함되지 않는 상품이지만, 리뷰 수가 적어 경쟁이 덜한 틈새 시장 가능성이 있습니다.
+                                            </span>
+                                        </div>
+                                        <!-- 리뷰/경쟁 구조 관점 (B축) -->
+                                        <div style="margin-bottom: 0.5rem; color: var(--foreground);">
+                                            만족도는 높지만 리뷰 수가 적은 편이라, 고객 만족도가 높으면서도 아직 충분한 리뷰가 쌓이지 않은 '품질 검증된 기회 상품'으로 볼 수 있습니다.
+                                        </div>
+                                        <!-- 전략 관점 (C축) -->
+                                        <div style="color: var(--foreground);">
+                                            <span th:if="${topCategoryNames != null and topCategoryNames.contains(product.category)}">
+                                                <strong>추천 전략:</strong> 동일 카테고리에서 차별화된 색상/사이즈/패키지 구성으로 들어가고, 기존 셀러라면 세트 상품으로 객단가를 높이는 용도로 활용하는 것을 추천합니다.
+                                            </span>
+                                            <span th:unless="${topCategoryNames != null and topCategoryNames.contains(product.category)}">
+                                                <strong>추천 전략:</strong> 객단가를 잘 파악하여 마진이 받쳐준다면 틈새형·조용한 효자 상품으로 활용할 수 있습니다.
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>

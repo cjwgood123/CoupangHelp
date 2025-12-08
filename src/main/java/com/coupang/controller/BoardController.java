@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import java.util.List;
 import java.util.Set;
 
@@ -78,6 +81,25 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
+        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
+        List<ProductListDto> top20Recommended = new ArrayList<>();
+        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
+        if (search == null || search.trim().isEmpty()) {
+            try {
+                top20Recommended = boardService.getTop20RecommendedProducts(months, countInt);
+                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
+                // 인기 카테고리 이름만 Set으로 추출
+                for (BoardService.CategoryCount cc : topCategories) {
+                    topCategoryNames.add(cc.getCategory());
+                }
+                System.out.println("[DEBUG] TOP 20 조회 결과: count=" + countInt + ", size=" + top20Recommended.size());
+            } catch (Exception e) {
+                System.err.println("[ERROR] TOP 20 조회 중 에러 발생: count=" + countInt);
+                e.printStackTrace();
+                // 에러 발생 시 빈 리스트 유지
+            }
+        }
+
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -88,6 +110,9 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
         model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
+        model.addAttribute("top20Recommended", top20Recommended);
+        model.addAttribute("topCategoryNames", topCategoryNames);
+        System.out.println("[DEBUG] 모델에 추가된 top20Recommended: " + (top20Recommended != null ? top20Recommended.size() : "null"));
 
         return "board";
     }
@@ -120,6 +145,21 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
+        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
+        List<ProductListDto> top20Recommended = new ArrayList<>();
+        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
+        if (search == null || search.trim().isEmpty()) {
+            try {
+                top20Recommended = boardService.getTop20RecommendedProducts(months, countInt);
+                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
+                for (BoardService.CategoryCount cc : topCategories) {
+                    topCategoryNames.add(cc.getCategory());
+                }
+            } catch (Exception e) {
+                // 에러 발생 시 빈 리스트 유지
+            }
+        }
+
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -130,6 +170,8 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
         model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
+        model.addAttribute("top20Recommended", top20Recommended);
+        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-mobile";
     }
@@ -317,6 +359,21 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
+        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
+        List<ProductListDto> top20Recommended = new ArrayList<>();
+        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
+        if (search == null || search.trim().isEmpty()) {
+            try {
+                top20Recommended = boardService.getTop20RecommendedSatisfiedProducts(countInt);
+                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
+                for (BoardService.CategoryCount cc : topCategories) {
+                    topCategoryNames.add(cc.getCategory());
+                }
+            } catch (Exception e) {
+                // 에러 발생 시 빈 리스트 유지
+            }
+        }
+
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -326,6 +383,8 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
         model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
+        model.addAttribute("top20Recommended", top20Recommended);
+        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-star";
     }
@@ -357,6 +416,21 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
+        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
+        List<ProductListDto> top20Recommended = new ArrayList<>();
+        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
+        if (search == null || search.trim().isEmpty()) {
+            try {
+                top20Recommended = boardService.getTop20RecommendedSatisfiedProducts(countInt);
+                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
+                for (BoardService.CategoryCount cc : topCategories) {
+                    topCategoryNames.add(cc.getCategory());
+                }
+            } catch (Exception e) {
+                // 에러 발생 시 빈 리스트 유지
+            }
+        }
+
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -366,6 +440,8 @@ public class BoardController {
         model.addAttribute("endPage", endPage);
         model.addAttribute("search", search != null ? search : "");
         model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
+        model.addAttribute("top20Recommended", top20Recommended);
+        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-star-mobile";
     }
