@@ -220,6 +220,62 @@ public class IndexController {
         return "guide/category-trends";
     }
 
+    // 쿠팡 판매 완전 정복 시리즈
+    @GetMapping("/guide/coupang-master-series")
+    public String coupangMasterSeries() {
+        return "guide/coupang-master-series";
+    }
+
+    @GetMapping("/guide/coupang-master-1")
+    public String coupangMaster1() {
+        return "guide/coupang-master-1";
+    }
+
+    @GetMapping("/guide/coupang-master-2")
+    public String coupangMaster2() {
+        return "guide/coupang-master-2";
+    }
+
+    @GetMapping("/guide/coupang-master-3")
+    public String coupangMaster3() {
+        return "guide/coupang-master-3";
+    }
+
+    @GetMapping("/guide/coupang-master-4")
+    public String coupangMaster4() {
+        return "guide/coupang-master-4";
+    }
+
+    @GetMapping("/guide/coupang-master-5")
+    public String coupangMaster5() {
+        return "guide/coupang-master-5";
+    }
+
+    @GetMapping("/guide/coupang-master-6")
+    public String coupangMaster6() {
+        return "guide/coupang-master-6";
+    }
+
+    @GetMapping("/guide/coupang-master-7")
+    public String coupangMaster7() {
+        return "guide/coupang-master-7";
+    }
+
+    @GetMapping("/guide/coupang-master-8")
+    public String coupangMaster8() {
+        return "guide/coupang-master-8";
+    }
+
+    @GetMapping("/guide/coupang-master-9")
+    public String coupangMaster9() {
+        return "guide/coupang-master-9";
+    }
+
+    @GetMapping("/guide/coupang-master-10")
+    public String coupangMaster10() {
+        return "guide/coupang-master-10";
+    }
+
     // 1688 중국 공장 소싱 가이드
     @GetMapping("/guide/1688-registration")
     public String sourcing1688Registration() {

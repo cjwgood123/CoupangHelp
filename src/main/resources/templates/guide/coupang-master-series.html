@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>쿠팡 판매 완전 정복 시리즈 | 쿠팡셀러 성공 가이드 | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 판매 완전 정복 시리즈: 초보 셀러부터 전업 판매자까지, 쿠팡 판매의 모든 것을 10편으로 정리한 완벽 가이드. 쿠팡 시장 지배력, 판매 시작하기, 아이템 위너 시스템, 광고 전략, 로켓그로스, 상품 등록, 리뷰 관리, 매출 증대, 성공 사례, 전업 로드맵까지.">
+    <meta name="keywords" content="쿠팡 판매, 쿠팡 셀러, 쿠팡 판매 가이드, 쿠팡 판매 완전 정복, 쿠팡 초보 셀러, 쿠팡 판매 전략, 쿠팡 아이템 위너, 쿠팡 광고, 쿠팡 로켓그로스, 쿠팡 판매자 성공">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide/coupang-master-series">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://helpcoupang.com/guide/coupang-master-series">
+    <meta property="og:title" content="쿠팡 판매 완전 정복 시리즈 | 쿠팡셀러 성공 가이드">
+    <meta property="og:description" content="쿠팡 판매 완전 정복 시리즈: 초보 셀러부터 전업 판매자까지, 쿠팡 판매의 모든 것을 10편으로 정리한 완벽 가이드.">
+    <meta property="og:image" content="https://helpcoupang.com/images/og-image.png">
+    <meta property="og:site_name" content="헬프쿠팡 (helpcoupang.com)">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://helpcoupang.com/guide/coupang-master-series">
+    <meta property="twitter:title" content="쿠팡 판매 완전 정복 시리즈 | 쿠팡셀러 성공 가이드">
+    <meta property="twitter:description" content="쿠팡 판매 완전 정복 시리즈: 초보 셀러부터 전업 판매자까지, 쿠팡 판매의 모든 것을 10편으로 정리한 완벽 가이드.">
+    <meta property="twitter:image" content="https://helpcoupang.com/images/og-image.png">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "쿠팡 판매 완전 정복 시리즈 | 쿠팡셀러 성공 가이드",
+      "description": "쿠팡 판매 완전 정복 시리즈: 초보 셀러부터 전업 판매자까지, 쿠팡 판매의 모든 것을 10편으로 정리한 완벽 가이드.",
+      "image": "https://helpcoupang.com/images/og-image.png",
+      "author": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "url": "https://helpcoupang.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://helpcoupang.com/images/hero-icon.png"
+        }
+      },
+      "datePublished": "2025-12-08",
+      "dateModified": "2025-12-08",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://helpcoupang.com/guide/coupang-master-series"
+      },
+      "keywords": "쿠팡 판매, 쿠팡 셀러, 쿠팡 판매 가이드, 쿠팡 판매 완전 정복, 쿠팡 초보 셀러, 쿠팡 판매 전략",
+      "inLanguage": "ko-KR",
+      "articleSection": "쿠팡 판매 가이드"
+    }
+    </script>
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .page-header .description {
+            font-size: 1rem;
+            color: var(--muted-foreground);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .series-intro {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .series-intro h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .series-intro p {
+            font-size: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+
+        .series-intro p:last-child {
+            margin-bottom: 0;
+        }
+
+        .series-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .series-item {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .series-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .series-number {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 3rem;
+            height: 3rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .series-content {
+            flex: 1;
+        }
+
+        .series-content h3 {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .series-content p {
+            font-size: 0.9375rem;
+            color: var(--muted-foreground);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .series-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .series-tag {
+            background-color: var(--muted);
+            color: var(--foreground);
+            padding: 0.25rem 0.75rem;
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .series-item {
+                padding: 1rem;
+            }
+
+            .series-number {
+                width: 2.5rem;
+                height: 2.5rem;
+                font-size: 1rem;
+            }
+
+            .series-content h3 {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1>🎯 쿠팡 판매 완전 정복</h1>
+                <p class="subtitle">초보 셀러부터 전업 판매자까지, 쿠팡 판매의 모든 것</p>
+                <p class="description">
+                    이 시리즈는 쿠팡 판매를 시작하려는 초보자부터 매출을 확대하고 싶은 기존 셀러까지, 
+                    쿠팡 판매의 전 과정을 체계적으로 정리한 실전 가이드입니다. 
+                    각 편은 독립적으로 읽을 수 있으면서도, 순서대로 읽으면 더욱 효과적입니다.
+                </p>
+            </div>
+
+            <!-- Series Introduction -->
+            <div class="series-intro">
+                <h2>📚 시리즈 소개</h2>
+                <p>
+                    쿠팡 판매는 단순히 상품을 등록하고 판매하는 것이 아닙니다. 
+                    시장 분석, 상품 선정, 광고 운영, 고객 관리, 재고 관리까지 모든 과정이 유기적으로 연결되어 있습니다.
+                </p>
+                <p>
+                    이 시리즈는 실제 쿠팡 판매자들의 경험과 데이터 분석을 바탕으로, 
+                    초보자도 따라할 수 있도록 단계별로 구성했습니다. 
+                    각 편마다 핵심 개념과 실전 팁을 제공하여, 이론과 실무를 동시에 습득할 수 있습니다.
+                </p>
+                <p>
+                    <strong>이 시리즈를 통해 배울 수 있는 것:</strong>
+                </p>
+                <ul style="margin-left: 1.5rem; line-height: 2;">
+                    <li>쿠팡이 초보자에게 유리한 이유와 시장 구조 이해</li>
+                    <li>체계적인 판매 시작 방법과 준비 사항</li>
+                    <li>아이템 위너 시스템을 활용한 상위 노출 전략</li>
+                    <li>효과적인 광고 운영과 예산 관리</li>
+                    <li>로켓그로스를 활용한 배송 최적화</li>
+                    <li>상품 등록부터 운영까지의 실전 노하우</li>
+                    <li>리뷰 관리와 고객 CS 전략</li>
+                    <li>매출 증대를 위한 고급 운영 기법</li>
+                    <li>실제 성공 사례 분석과 교훈</li>
+                    <li>전업 판매자로 성장하기 위한 로드맵</li>
+                </ul>
+            </div>
+
+            <!-- Series List -->
+            <div class="series-list">
+                <a href="/guide/coupang-master-1" class="series-item">
+                    <div class="series-number">1</div>
+                    <div class="series-content">
+                        <h3>쿠팡이 초보자에게 최고의 플랫폼인 이유</h3>
+                        <p>쿠팡의 시장 지배력과 초보자에게 유리한 구조적 혜택을 완전 분석합니다. 왜 쿠팡이 다른 플랫폼보다 초보자 성공 확률이 높은지, 아이템 위너 시스템과 롤링 시스템이 어떻게 작동하는지 알아봅니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">시장 분석</span>
+                            <span class="series-tag">플랫폼 비교</span>
+                            <span class="series-tag">초보자 가이드</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-2" class="series-item">
+                    <div class="series-number">2</div>
+                    <div class="series-content">
+                        <h3>쿠팡 판매 시작하기: 초보자를 위한 완벽 가이드</h3>
+                        <p>판매자 등록부터 첫 상품 등록까지, 쿠팡 판매를 시작하는 모든 과정을 단계별로 안내합니다. 필요한 준비물, 등록 절차, 초기 설정까지 실전 팁을 제공합니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">판매자 등록</span>
+                            <span class="series-tag">초기 설정</span>
+                            <span class="series-tag">시작 가이드</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-3" class="series-item">
+                    <div class="series-number">3</div>
+                    <div class="series-content">
+                        <h3>쿠팡 아이템 위너 시스템 완전 정복</h3>
+                        <p>아이템 위너 시스템의 작동 원리와 상위 노출을 위한 전략을 상세히 설명합니다. 가격, 재고, 광고 세팅을 통한 노출 최적화 방법을 배웁니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">아이템 위너</span>
+                            <span class="series-tag">상위 노출</span>
+                            <span class="series-tag">경쟁 전략</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-4" class="series-item">
+                    <div class="series-number">4</div>
+                    <div class="series-content">
+                        <h3>쿠팡 광고 전략: 초보자도 성공하는 광고 운영법</h3>
+                        <p>쿠팡 광고의 기본부터 고급 전략까지, 효과적인 광고 운영 방법을 배웁니다. 예산 배분, 키워드 선택, 광고 성과 분석까지 실전 노하우를 제공합니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">광고 운영</span>
+                            <span class="series-tag">예산 관리</span>
+                            <span class="series-tag">ROI 최적화</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-5" class="series-item">
+                    <div class="series-number">5</div>
+                    <div class="series-content">
+                        <h3>쿠팡 로켓그로스 활용법: 배송 걱정 없는 판매</h3>
+                        <p>로켓그로스 시스템을 완벽하게 활용하는 방법을 안내합니다. 입고 준비부터 라벨 출력, 포장, 배송까지 모든 과정을 상세히 설명합니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">로켓그로스</span>
+                            <span class="series-tag">배송 최적화</span>
+                            <span class="series-tag">물류 관리</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-6" class="series-item">
+                    <div class="series-number">6</div>
+                    <div class="series-content">
+                        <h3>쿠팡 상품 등록 마스터하기</h3>
+                        <p>상품 등록의 모든 것을 마스터합니다. 상품명 작성, 이미지 최적화, 옵션 설정, 가격 전략까지, 판매율을 높이는 상품 등록 노하우를 배웁니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">상품 등록</span>
+                            <span class="series-tag">상품명 작성</span>
+                            <span class="series-tag">이미지 최적화</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-7" class="series-item">
+                    <div class="series-number">7</div>
+                    <div class="series-content">
+                        <h3>쿠팡 리뷰 관리와 고객 CS 전략</h3>
+                        <p>리뷰 관리와 고객 CS를 통한 브랜드 신뢰도 구축 방법을 배웁니다. 리뷰 이벤트, CS 응대, 반품/교환 처리까지 실전 전략을 제공합니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">리뷰 관리</span>
+                            <span class="series-tag">고객 CS</span>
+                            <span class="series-tag">신뢰도 구축</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-8" class="series-item">
+                    <div class="series-number">8</div>
+                    <div class="series-content">
+                        <h3>쿠팡 매출 증대를 위한 고급 전략</h3>
+                        <p>기본 판매를 넘어 매출을 확대하기 위한 고급 전략을 배웁니다. 포트폴리오 관리, 시즌 예측, 재고 회전, 객단가 향상 등 고급 운영 기법을 다룹니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">매출 증대</span>
+                            <span class="series-tag">포트폴리오</span>
+                            <span class="series-tag">고급 전략</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-9" class="series-item">
+                    <div class="series-number">9</div>
+                    <div class="series-content">
+                        <h3>쿠팡 판매자 성공 사례 분석</h3>
+                        <p>실제 쿠팡 판매자들의 성공 사례를 분석합니다. 초보자부터 전업 판매자까지 다양한 사례를 통해 성공 패턴과 교훈을 배웁니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">성공 사례</span>
+                            <span class="series-tag">사례 분석</span>
+                            <span class="series-tag">인사이트</span>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="/guide/coupang-master-10" class="series-item">
+                    <div class="series-number">10</div>
+                    <div class="series-content">
+                        <h3>쿠팡 판매자로 전업하기까지의 로드맵</h3>
+                        <p>부업에서 시작해 전업 판매자로 성장하기 위한 단계별 로드맵을 제시합니다. 자본 관리, 시스템 구축, 리스크 관리까지 전업을 위한 모든 것을 다룹니다.</p>
+                        <div class="series-tags">
+                            <span class="series-tag">전업 로드맵</span>
+                            <span class="series-tag">성장 전략</span>
+                            <span class="series-tag">시스템 구축</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Navigation -->
+            <div style="text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border);">
+                <a href="/guide/coupang-master-1" style="display: inline-block; padding: 1rem 2rem; background-color: var(--primary); color: var(--primary-foreground); text-decoration: none; border-radius: var(--radius); font-weight: 600; transition: opacity 0.2s;">
+                    첫 번째 편 읽기 →
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // AdSense 광고 초기화
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+</body>
+</html>
+

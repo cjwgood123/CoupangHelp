@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상세페이지 제작 가이드 | 모바일 중심 쿠팡 상세페이지 만들기 | 헬프쿠팡</title>
+    <meta name="description" content="쿠팡 상세페이지 제작 가이드: 모바일 중심으로 만드는 방법, 상세페이지 구조 공식, 필수 요소와 주의사항까지. 쿠팡 판매 완전 정복 시리즈 8편.">
+    <meta name="keywords" content="쿠팡 상세페이지, 상세페이지 제작, 쿠팡 상품 설명, 모바일 상세페이지, 쿠팡 판매, 쿠팡 셀러, 상세페이지 디자인">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <link rel="canonical" href="https://helpcoupang.com/guide/coupang-master-8">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://helpcoupang.com/guide/coupang-master-8">
+    <meta property="og:title" content="상세페이지 제작 가이드 | 모바일 중심 쿠팡 상세페이지 만들기">
+    <meta property="og:description" content="쿠팡 상세페이지 제작 가이드: 모바일 중심으로 만드는 방법, 상세페이지 구조 공식, 필수 요소와 주의사항까지.">
+    <meta property="og:image" content="https://helpcoupang.com/images/og-image.png">
+    <meta property="og:site_name" content="헬프쿠팡 (helpcoupang.com)">
+    <meta property="og:locale" content="ko_KR">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://helpcoupang.com/guide/coupang-master-8">
+    <meta property="twitter:title" content="상세페이지 제작 가이드 | 모바일 중심 쿠팡 상세페이지 만들기">
+    <meta property="twitter:description" content="쿠팡 상세페이지 제작 가이드: 모바일 중심으로 만드는 방법, 상세페이지 구조 공식, 필수 요소와 주의사항까지.">
+    <meta property="twitter:image" content="https://helpcoupang.com/images/og-image.png">
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "상세페이지 제작 가이드 | 모바일 중심 쿠팡 상세페이지 만들기",
+      "description": "쿠팡 상세페이지 제작 가이드: 모바일 중심으로 만드는 방법, 상세페이지 구조 공식, 필수 요소와 주의사항까지.",
+      "image": "https://helpcoupang.com/images/og-image.png",
+      "author": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "url": "https://helpcoupang.com"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "헬프쿠팡",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://helpcoupang.com/images/hero-icon.png"
+        }
+      },
+      "datePublished": "2025-12-08",
+      "dateModified": "2025-12-08",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://helpcoupang.com/guide/coupang-master-8"
+      },
+      "keywords": "쿠팡 상세페이지, 상세페이지 제작, 쿠팡 상품 설명, 모바일 상세페이지",
+      "inLanguage": "ko-KR",
+      "articleSection": "쿠팡 판매 가이드"
+    }
+    </script>
+    
+    <!-- 공통 CSS -->
+    <link rel="stylesheet" href="/css/common.css">
+    
+    <style>
+        .page-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .series-info {
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+            margin-bottom: 1rem;
+        }
+
+        .page-header .subtitle {
+            font-size: 1.25rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .section-content {
+            font-size: 1rem;
+            color: var(--foreground);
+            line-height: 1.8;
+        }
+
+        .section-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .highlight-box {
+            background-color: var(--secondary);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--primary);
+        }
+
+        .highlight-box p {
+            margin-bottom: 0.75rem;
+        }
+
+        .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .tip-box {
+            background-color: hsl(200, 80%, 95%);
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--info);
+        }
+
+        .tip-box strong {
+            color: var(--info);
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+        }
+
+        .structure-list {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .structure-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+            border-left: 3px solid var(--primary);
+        }
+
+        .structure-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .structure-item h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 0.5rem;
+        }
+
+        .structure-item p {
+            font-size: 0.9375rem;
+            color: var(--muted-foreground);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border);
+        }
+
+        .nav-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            text-decoration: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .nav-button:hover {
+            opacity: 0.9;
+        }
+
+        .nav-button.secondary {
+            background-color: var(--muted);
+            color: var(--foreground);
+        }
+
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 2rem;
+            }
+
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+     crossorigin="anonymous"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="series-info">쿠팡 판매 완전 정복 시리즈 | 8편</div>
+                <h1>상세페이지 (모바일 중심) 제작 가이드</h1>
+                <p class="subtitle">고객이 빠르게 이해하는 상세페이지 만들기</p>
+            </div>
+
+            <!-- Introduction -->
+            <div class="section">
+                <div class="section-content">
+                    <p>
+                        쿠팡 상세페이지는 네이버 스토어처럼 복잡하게 만들 필요 없다.
+                    </p>
+                    <p>
+                        핵심은 "모바일 고객이 빠르게 이해할 수 있도록" 만드는 것이다. 
+                        쿠팡 고객의 80% 이상이 모바일로 쇼핑하기 때문에, 
+                        모바일 화면에서 잘 보이는 게 가장 중요하다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section 1: 상세페이지 구조 공식 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">1</span>
+                    상세페이지 구조 공식
+                </h2>
+                <div class="section-content">
+                    <p>
+                        잘 팔리는 상세페이지는 구조가 비슷하다. 
+                        다음 순서대로 구성하면 고객이 빠르게 정보를 파악하고 구매 결정을 내릴 수 있다.
+                    </p>
+                    <div class="structure-list">
+                        <div class="structure-item">
+                            <h4>1. 상단 핵심 메시지 1개</h4>
+                            <p>
+                                상세페이지 맨 위에 이 상품의 가장 중요한 메시지를 하나만 넣는다. 
+                                예를 들어 "3초 만에 세척 완료", "착용감 최고", "반품률 0.1%" 같은 식으로. 
+                                고객이 스크롤하기 전에 핵심을 전달하는 게 목적이다.
+                            </p>
+                        </div>
+                        <div class="structure-item">
+                            <h4>2. 제품 사용 장점 "숫자 2~3개"</h4>
+                            <p>
+                                제품의 장점을 숫자와 함께 2~3개만 간결하게 나열한다. 
+                                예를 들어 "세척력 3배", "사용 기간 2년", "만족도 98%" 같은 식으로. 
+                                숫자가 있으면 구체적이고 신뢰감이 생긴다.
+                            </p>
+                        </div>
+                        <div class="structure-item">
+                            <h4>3. 사용 방법 이미지</h4>
+                            <p>
+                                제품을 어떻게 쓰는지 단계별로 이미지로 보여준다. 
+                                텍스트 설명보다 이미지가 훨씬 이해하기 쉽다. 
+                                3~5단계 정도로 간단하게 구성하면 된다.
+                            </p>
+                        </div>
+                        <div class="structure-item">
+                            <h4>4. 구성품 이미지</h4>
+                            <p>
+                                상품에 뭐가 들어있는지 한눈에 보여준다. 
+                                고객이 "이 가격에 이만큼 들어있나?" 싶을 때 바로 확인할 수 있게 하는 게 중요하다.
+                            </p>
+                        </div>
+                        <div class="structure-item">
+                            <h4>5. FAQ</h4>
+                            <p>
+                                자주 묻는 질문 3~5개를 미리 답변해둔다. 
+                                "배송은 며칠 걸리나요?", "교환/반품은 어떻게 하나요?" 같은 질문들. 
+                                고객이 직접 문의하기 전에 답을 찾을 수 있게 하면 CS 부담도 줄고 구매 전환율도 올라간다.
+                            </p>
+                        </div>
+                        <div class="structure-item">
+                            <h4>6. 구매 유도 문구</h4>
+                            <p>
+                                마지막에 간단한 구매 유도 문구를 넣는다. 
+                                너무 강하게 하지 말고 자연스럽게. 
+                                예를 들어 "지금 주문하시면 내일 도착합니다" 같은 식으로.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: 핵심 팁 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">2</span>
+                    핵심 팁
+                </h2>
+                <div class="section-content">
+                    <div class="highlight-box">
+                        <p><strong>텍스트 크게</strong></p>
+                        <p>
+                            모바일에서 읽기 쉽도록 텍스트는 최소 14px 이상으로 크게 쓴다. 
+                            작은 글씨는 고객이 읽기 싫어하고, 스킵하고 넘어간다.
+                        </p>
+                    </div>
+                    <div class="highlight-box">
+                        <p><strong>필요 없는 설명 제거</strong></p>
+                        <p>
+                            상세페이지가 길다고 좋은 게 아니다. 
+                            고객이 궁금한 것만 간결하게 담는다. 
+                            불필요한 설명은 오히려 구매를 막는다.
+                        </p>
+                    </div>
+                    <div class="highlight-box">
+                        <p><strong>'어그로 문구'는 적당히 활용</strong></p>
+                        <p>
+                            "이 가격에 이 품질 실화?", "지금 안 사면 후회합니다" 같은 문구는 
+                            적당히 쓰면 효과가 있지만, 너무 많이 쓰면 신뢰도가 떨어진다. 
+                            핵심 메시지나 마지막 구매 유도 부분에만 쓰는 게 좋다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: 모바일 최적화 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">3</span>
+                    모바일 최적화 포인트
+                </h2>
+                <div class="section-content">
+                    <p>
+                        쿠팡 고객의 대부분이 모바일로 쇼핑하기 때문에, 
+                        모바일 화면을 기준으로 상세페이지를 만들어야 한다.
+                    </p>
+                    <div class="tip-box">
+                        <strong>💡 모바일 최적화 체크리스트</strong>
+                        <ul style="margin-left: 1.5rem; line-height: 2;">
+                            <li>이미지가 모바일 화면에 맞게 세로로 길게 구성되어 있는가?</li>
+                            <li>텍스트가 모바일에서도 읽기 쉬운 크기인가?</li>
+                            <li>스크롤을 많이 해야 하는가? (너무 길면 안 좋음)</li>
+                            <li>핵심 정보가 상단에 잘 배치되어 있는가?</li>
+                            <li>이미지 로딩이 빠른가? (용량이 너무 크면 느려짐)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: 상세페이지와 전환율 -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="section-number">4</span>
+                    상세페이지와 전환율의 관계
+                </h2>
+                <div class="section-content">
+                    <p>
+                        상세페이지는 '설득의 공간'이 아니라 '확인하는 공간'이다.
+                    </p>
+                    <p>
+                        고객이 상세페이지에 들어왔다는 건 이미 구매 의향이 있다는 뜻이다. 
+                        썸네일과 광고가 설득을 했고, 상세페이지는 그 의향을 확정시키는 역할만 하면 된다.
+                    </p>
+                    <div class="tip-box">
+                        <strong>💡 전환율을 높이는 상세페이지</strong>
+                        <p>
+                            상세페이지에서 고객이 궁금한 것만 빠르게 답해주면 된다. 
+                            제품 사양, 사용법, 구성품, 배송 정보 같은 것들. 
+                            이걸 명확하게 보여주면 고객이 구매 결정을 내리기 쉬워진다.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conclusion -->
+            <div class="section">
+                <div class="highlight-box" style="background: linear-gradient(135deg, var(--primary), hsl(330, 80%, 45%)); color: var(--primary-foreground); border-left: none;">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 1rem; color: var(--primary-foreground);">결론</h2>
+                    <p style="font-size: 1.125rem; margin-bottom: 1rem;">
+                        상세페이지는 '설득의 공간'이 아니라 '확인하는 공간'이다.
+                    </p>
+                    <p style="font-size: 1.125rem; margin: 0; font-weight: 600;">
+                        설득은 썸네일과 광고가 한다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Navigation -->
+            <div class="navigation">
+                <a href="/guide/coupang-master-7" class="nav-button secondary">
+                    ← 이전 편: 썸네일 전략
+                </a>
+                <a href="/guide/coupang-master-series" class="nav-button secondary">
+                    시리즈 목차
+                </a>
+                <a href="/guide/coupang-master-9" class="nav-button">
+                    다음 편: CPC 광고 →
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    // AdSense 광고 초기화
+    (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+</body>
+</html>
+
