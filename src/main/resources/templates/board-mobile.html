@@ -6,7 +6,7 @@
     <title th:text="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
-    <meta name="robots" th:content="${(isHubPage != null and isHubPage == true) ? 'index, follow' : 'noindex, nofollow'}">
+    <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{'/mobile/2025-11/all/' + ${count}}">
     
@@ -144,52 +144,18 @@
             height: 16px;
         }
 
-        /* Mobile Sidebar */
-        .mobile-sidebar-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 280px;
-            height: 100vh;
-            background-color: var(--card);
-            border-right: 1px solid var(--border);
-            z-index: 1000;
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-            overflow-y: auto;
-            box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .mobile-sidebar-wrapper.show {
-            transform: translateX(0);
-        }
-
+        /* Mobile Menu */
         .mobile-menu {
+            display: none;
+            background-color: var(--card);
+            border-bottom: 1px solid var(--border);
             padding: 1rem;
-            height: 100%;
+            max-height: 70vh;
             overflow-y: auto;
         }
 
-        .mobile-sidebar-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .mobile-sidebar-overlay.show {
+        .mobile-menu.show {
             display: block;
-            opacity: 1;
-        }
-
-        body.sidebar-open {
-            overflow: hidden;
         }
 
         .nav-section {
@@ -457,100 +423,72 @@
         </a>
     </header>
 
-    <!-- Mobile Sidebar Overlay -->
-    <div class="mobile-sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileMenu()"></div>
-    
-    <!-- Mobile Sidebar -->
-    <div class="mobile-sidebar-wrapper" id="mobileSidebar">
-        <div class="mobile-menu">
-            <div th:replace="~{fragments/sidebar :: mobile-menu}"></div>
+    <!-- Mobile Menu -->
+    <nav class="mobile-menu" id="mobileMenu">
+        <div class="nav-section">
+            <button class="nav-toggle active" onclick="toggleNav('nov2025')">
+                <span>구매했어요</span>
+                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items show" id="nov2025">
+                <a href="/mobile/2025-11/all/100" class="nav-item" th:classappend="${count == 100} ? 'active' : ''">⚡ 100명 이상 구매</a>
+                <a href="/mobile/2025-11/all/200" class="nav-item" th:classappend="${count == 200} ? 'active' : ''">⚡ 200명 이상 구매</a>
+                <a href="/mobile/2025-11/all/300" class="nav-item" th:classappend="${count == 300} ? 'active' : ''">⚡ 300명 이상 구매</a>
+                <a href="/mobile/2025-11/all/400" class="nav-item" th:classappend="${count == 400} ? 'active' : ''">⚡ 400명 이상 구매</a>
+                <a href="/mobile/2025-11/all/500" class="nav-item" th:classappend="${count == 500} ? 'active' : ''">⚡ 500명 이상 구매</a>
+                <a href="/mobile/2025-11/all/600" class="nav-item" th:classappend="${count == 600} ? 'active' : ''">⚡ 600명 이상 구매</a>
+                <a href="/mobile/2025-11/all/700" class="nav-item" th:classappend="${count == 700} ? 'active' : ''">⚡ 700명 이상 구매</a>
+                <a href="/mobile/2025-11/all/800" class="nav-item" th:classappend="${count == 800} ? 'active' : ''">⚡ 800명 이상 구매</a>
+                <a href="/mobile/2025-11/all/900" class="nav-item" th:classappend="${count == 900} ? 'active' : ''">⚡ 900명 이상 구매</a>
+                <a href="/mobile/2025-11/all/1000" class="nav-item" th:classappend="${count == 1000} ? 'active' : ''">⚡ 1000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/2000" class="nav-item" th:classappend="${count == 2000} ? 'active' : ''">⚡ 2000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/3000" class="nav-item" th:classappend="${count == 3000} ? 'active' : ''">⚡ 3000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/4000" class="nav-item" th:classappend="${count == 4000} ? 'active' : ''">⚡ 4000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/5000" class="nav-item" th:classappend="${count == 5000} ? 'active' : ''">⚡ 5000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/6000" class="nav-item" th:classappend="${count == 6000} ? 'active' : ''">⚡ 6000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/7000" class="nav-item" th:classappend="${count == 7000} ? 'active' : ''">⚡ 7000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/8000" class="nav-item" th:classappend="${count == 8000} ? 'active' : ''">⚡ 8000명 이상 구매</a>
+                <a href="/mobile/2025-11/all/9000" class="nav-item" th:classappend="${count == 9000} ? 'active' : ''">⚡ 9000명 이상 구매</a>
+            </div>
         </div>
-    </div>
+        <!-- 만족했어요 -->
+        <div class="nav-section">
+            <button class="nav-toggle" onclick="toggleNav('satisfied')">
+                <span>만족했어요</span>
+                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items" id="satisfied">
+                <a href="/mobile/satisfied/100" class="nav-item">⚡ 100명 이상 구매</a>
+                <a href="/mobile/satisfied/200" class="nav-item">⚡ 200명 이상 구매</a>
+                <a href="/mobile/satisfied/300" class="nav-item">⚡ 300명 이상 구매</a>
+                <a href="/mobile/satisfied/400" class="nav-item">⚡ 400명 이상 구매</a>
+                <a href="/mobile/satisfied/500" class="nav-item">⚡ 500명 이상 구매</a>
+                <a href="/mobile/satisfied/600" class="nav-item">⚡ 600명 이상 구매</a>
+                <a href="/mobile/satisfied/700" class="nav-item">⚡ 700명 이상 구매</a>
+                <a href="/mobile/satisfied/800" class="nav-item">⚡ 800명 이상 구매</a>
+                <a href="/mobile/satisfied/900" class="nav-item">⚡ 900명 이상 구매</a>
+                <a href="/mobile/satisfied/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                <a href="/mobile/satisfied/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                <a href="/mobile/satisfied/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                <a href="/mobile/satisfied/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                <a href="/mobile/satisfied/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                <a href="/mobile/satisfied/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                <a href="/mobile/satisfied/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                <a href="/mobile/satisfied/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                <a href="/mobile/satisfied/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Main Content -->
     <main class="content-wrapper">
         <div class="page-header">
             <h1 th:text="|${count}명 이상 구매 상품|">상품 리스트</h1>
             <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
-        </div>
-
-        <!-- 검색 영역 -->
-        <div style="margin-bottom: 1rem; padding: 0.75rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
-            <form method="get" th:action="@{/mobile/2025-11/all/{count}(count=${count})}" style="display: flex; gap: 0.5rem; align-items: center;">
-                <input type="text" 
-                       name="search" 
-                       th:value="${search != null ? search : ''}"
-                       placeholder="상품명 검색" 
-                       style="flex: 1; padding: 0.625rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 0.875rem;"
-                       autocomplete="off">
-                <button type="submit" 
-                        style="padding: 0.625rem 1rem; background-color: var(--primary); color: var(--primary-foreground); border: none; border-radius: var(--radius); font-weight: 600; cursor: pointer; white-space: nowrap; font-size: 0.875rem;">
-                    검색
-                </button>
-                <a th:if="${search != null and !search.isEmpty()}" 
-                   th:href="@{/mobile/2025-11/all/{count}(count=${count})}"
-                   style="padding: 0.625rem 0.75rem; background-color: var(--muted); color: var(--foreground); text-decoration: none; border-radius: var(--radius); font-weight: 600; white-space: nowrap; font-size: 0.75rem;">
-                    초기화
-                </a>
-            </form>
-            <p th:if="${search != null and !search.isEmpty()}" 
-               style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--muted-foreground);">
-                "<span th:text="${search}" style="font-weight: 600; color: var(--primary);"></span>" 검색 결과: <span th:text="${totalCount}" style="font-weight: 600;"></span>건
-            </p>
-        </div>
-
-        <!-- 헬프쿠팡 추천 TOP 20 (검색어가 없을 때만 표시) -->
-        <div th:if="${(search == null or search.isEmpty()) and (top20Recommended != null and !top20Recommended.isEmpty())}" style="margin-bottom: 1.5rem;">
-            <div style="padding: 1rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius);">
-                <h2 style="font-size: 1.125rem; font-weight: bold; color: var(--primary); margin-bottom: 0.75rem;">⭐ 헬프쿠팡 추천 TOP 20</h2>
-                <p style="color: var(--foreground); line-height: 1.7; margin-bottom: 1rem; font-size: 0.875rem;">
-                    최신 데이터 100개 중에서 <strong>구매는 많지만 리뷰 수가 적은 상품</strong>을 선별했습니다. 이러한 상품들은 아직 경쟁이 치열하지 않아 진입 기회가 높은 '기회 상품'으로 분석됩니다.
-                </p>
-                <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                    <div th:each="product, iterStat : ${top20Recommended}" 
-                         style="padding: 0.875rem; background-color: var(--muted); border-radius: var(--radius); border-left: 3px solid var(--primary);">
-                        <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
-                            <span style="font-weight: bold; color: var(--primary); font-size: 1rem; flex-shrink: 0;" th:text="${iterStat.index + 1}">1</span>
-                            <div style="flex: 1; min-width: 0;">
-                                <a th:href="${product.url}" 
-                                   th:text="${product.title}" 
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   style="font-weight: 600; color: var(--foreground); text-decoration: none; display: block; margin-bottom: 0.5rem; line-height: 1.4; font-size: 0.875rem; word-break: break-word;">
-                                    상품명
-                                </a>
-                                <div style="font-size: 0.75rem; color: var(--muted-foreground); margin-bottom: 0.5rem;">
-                                    <span>상품평: <strong style="color: var(--foreground);" th:text="${product.review != null and product.review != '' ? (#strings.contains(product.review, '개') ? product.review : (product.review + '개')) : '-'}">-</strong></span>
-                                    <span th:if="${product.category != null and product.category != '' and product.category != '-'}" style="margin-left: 0.75rem;">
-                                        카테고리: <span th:text="${product.category}">-</span>
-                                    </span>
-                                </div>
-                                <!-- 상품별 분석 설명 (모바일 간소화) -->
-                                <div style="padding: 0.625rem; background-color: var(--card); border-radius: calc(var(--radius) / 2); font-size: 0.6875rem; line-height: 1.4; color: var(--foreground);">
-                                    <div th:if="${product.category != null and product.category != '' and product.category != '-'}" style="margin-bottom: 0.25rem;">
-                                        <span th:if="${topCategoryNames != null and topCategoryNames.contains(product.category)}" 
-                                              style="color: var(--primary); font-weight: 600;">
-                                            인기 Top 10
-                                        </span>
-                                        <span th:unless="${topCategoryNames != null and topCategoryNames.contains(product.category)}" 
-                                              style="color: var(--muted-foreground);">
-                                            틈새 시장
-                                        </span>
-                                    </div>
-                                    <div style="color: var(--foreground); font-size: 0.625rem;">
-                                        <span th:if="${topCategoryNames != null and topCategoryNames.contains(product.category)}">
-                                            차별화 옵션/세트 추천
-                                        </span>
-                                        <span th:unless="${topCategoryNames != null and topCategoryNames.contains(product.category)}">
-                                            객단가 파악 후 틈새형 활용
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Product List -->
@@ -620,39 +558,17 @@
 
 <script>
     function toggleMobileMenu() {
-        const sidebar = document.getElementById('mobileSidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        const body = document.body;
-        
-        sidebar.classList.toggle('show');
-        overlay.classList.toggle('show');
-        body.classList.toggle('sidebar-open');
+        const menu = document.getElementById('mobileMenu');
+        menu.classList.toggle('show');
     }
 
-    <div th:replace="~{fragments/sidebar :: nav-script}"></div>
-    <script>
-        // board-mobile.html 전용: 현재 경로에 맞는 active 클래스 추가
-        (function() {
-            const currentPath = window.location.pathname;
-            const navLinks = document.querySelectorAll('.nav-item');
-            
-            navLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                // 정확한 경로 매칭만 사용
-                if (href === currentPath) {
-                    link.classList.add('active');
-                    // 부모 섹션 펼치기
-                    const navSection = link.closest('.nav-items');
-                    if (navSection) {
-                        navSection.classList.add('show');
-                        const toggleButton = navSection.previousElementSibling;
-                        if (toggleButton && toggleButton.classList.contains('nav-toggle')) {
-                            toggleButton.classList.add('active');
-                        }
-                    }
-                }
-            });
-        })();
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
 
     // 메뉴 외부 클릭 시 닫기
     document.addEventListener('click', function(event) {

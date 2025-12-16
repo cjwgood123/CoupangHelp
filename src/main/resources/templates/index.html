@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,20 +13,13 @@
     <meta name="google-site-verification" content="frQtC_H8rMspB2ywAlyVkKd7bBC4ibSd6wJo4TryUQ8" />
     <link rel="canonical" href="https://helpcoupang.com/">
     
-    <!-- Favicon for Google Search (구글 검색 결과용) -->
-    <!-- 최소 하나는 꼭 -->
-    <link rel="icon" href="https://helpcoupang.com/images/favicon2/favicon_48x48.png" sizes="any">
-    
-    <!-- PNG로도 명시 추천 (구글 검색 결과 favicon) -->
-    <link rel="icon" type="image/png" sizes="48x48" href="https://helpcoupang.com/images/favicon2/favicon_48x48.png">
-    <link rel="icon" type="image/png" sizes="96x96" href="https://helpcoupang.com/images/favicon2/favicon_96x96.png">
-    <link rel="icon" type="image/png" sizes="144x144" href="https://helpcoupang.com/images/favicon2/favicon_144x144.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://helpcoupang.com/images/favicon2/favicon_192x192.png">
-    
-    <!-- 추가 크기 (선택사항) -->
-    <link rel="icon" type="image/png" sizes="256x256" href="https://helpcoupang.com/images/favicon2/favicon_256x256.png">
-    <link rel="icon" type="image/png" sizes="384x384" href="https://helpcoupang.com/images/favicon2/favicon_384x384.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="https://helpcoupang.com/images/favicon2/favicon_512x512.png">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/images/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/images/favicon/android-icon-192x192.png">
     
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" sizes="57x57" href="/images/favicon/apple-icon-57x57.png">
@@ -78,20 +71,10 @@
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "헬프쿠팡 - 쿠팡셀러 인기상품 분석 플랫폼",
-      "alternateName": "쿠팡셀러 데이터 분석기, 쿠팡 판매자 데이터 분석기, helpcoupang",
+      "alternateName": "쿠팡 판매자 데이터 분석기, helpcoupang",
       "url": "https://helpcoupang.com",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://helpcoupang.com/images/favicon2/favicon_192x192.png",
-        "width": 192,
-        "height": 192
-      },
-      "image": {
-        "@type": "ImageObject",
-        "url": "https://helpcoupang.com/images/og-image.png",
-        "width": 1200,
-        "height": 630
-      },
+      "logo": "https://helpcoupang.com/images/hero-icon.png",
+      "image": "https://helpcoupang.com/images/og-image.png",
       "description": "헬프쿠팡(helpcoupang.com)은 쿠팡셀러와 스마트스토어 판매자를 위한 인기 상품 데이터 분석 플랫폼입니다. 쿠팡 부업, 쿠팡 판매, 쿠팡 인기상품 분석 서비스",
       "keywords": "쿠팡, 쿠팡셀러, 쿠팡 셀러, 스마트스토어, 쿠팡 판매, 쿠팡 부업, 쿠팡 인기상품, 쿠팡 데이터 분석",
       "inLanguage": "ko-KR",
@@ -108,18 +91,8 @@
       "@type": "Organization",
       "name": "헬프쿠팡 (helpcoupang.com)",
       "url": "https://helpcoupang.com",
-      "logo": {
-        "@type": "ImageObject",
-        "url": "https://helpcoupang.com/images/favicon2/favicon_192x192.png",
-        "width": 192,
-        "height": 192
-      },
-      "image": {
-        "@type": "ImageObject",
-        "url": "https://helpcoupang.com/images/og-image.png",
-        "width": 1200,
-        "height": 630
-      },
+      "logo": "https://helpcoupang.com/images/hero-icon.png",
+      "image": "https://helpcoupang.com/images/og-image.png",
       "description": "헬프쿠팡은 쿠팡셀러와 스마트스토어 판매자를 위한 데이터 분석 서비스입니다",
       "keywords": "쿠팡, 쿠팡셀러, 쿠팡 셀러, 스마트스토어, 쿠팡 판매, 쿠팡 부업",
       "sameAs": [
@@ -134,12 +107,7 @@
       "name": "헬프쿠팡 - 쿠팡 판매자 데이터 분석기",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Web",
-      "image": {
-        "@type": "ImageObject",
-        "url": "https://helpcoupang.com/images/og-image.png",
-        "width": 1200,
-        "height": 630
-      },
+      "image": "https://helpcoupang.com/images/og-image.png",
       "offers": {
         "@type": "Offer",
         "price": "0",
@@ -242,26 +210,15 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 0.75rem;
+            padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
-            font-weight: 600;
+            font-weight: 500;
             border: none;
             background: transparent;
             color: var(--foreground);
             border-radius: var(--radius);
             cursor: pointer;
             transition: background-color 0.2s;
-            white-space: nowrap;
-            text-align: left;
-        }
-        
-        .nav-toggle span {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-            min-width: 0;
-            text-align: left;
         }
 
         .nav-toggle:hover {
@@ -289,9 +246,8 @@
         }
 
         .nav-item {
-            padding: 0.75rem;
+            padding: 0.5rem 0.75rem;
             font-size: 0.875rem;
-            font-weight: 600;
             border-radius: var(--radius);
             cursor: pointer;
             transition: background-color 0.2s;
@@ -300,16 +256,8 @@
             color: inherit;
             display: block;
             white-space: nowrap;
-            word-break: keep-all;
-            overflow: visible;
-            text-overflow: clip;
-            min-width: 0;
-            text-align: left;
-        }
-
-        .nav-items .nav-item {
-            padding: 0.5rem 0.75rem;
-            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .nav-item:hover {
@@ -627,8 +575,105 @@
 <body>
 <div class="container">
     <!-- Sidebar -->
-    <!-- Sidebar -->
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>헬프쿠팡</h2>
+                        <p>쿠팡셀러 데이터 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <!-- 소개할게요 -->
+                <div class="nav-section">
+                    <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+                </div>
+                <!-- 구매했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('nov2025')">
+                        <span>구매했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="nov2025">
+                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                        <a href="/2025-11/all/6000" class="nav-item">⚡ 6000명 이상 구매</a>
+                        <a href="/2025-11/all/7000" class="nav-item">⚡ 7000명 이상 구매</a>
+                        <a href="/2025-11/all/8000" class="nav-item">⚡ 8000명 이상 구매</a>
+                        <a href="/2025-11/all/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                    </div>
+                </div>
+                <!-- 만족했어요 -->
+                <div class="nav-section">
+                    <button class="nav-toggle" onclick="toggleNav('satisfied')">
+                        <span>만족했어요</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="satisfied">
+                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 만족</a>
+                    </div>
+                </div>
+                <!-- 단기간 인기 상품 -->
+                <div class="nav-section">
+                    <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+                <!-- 쿠팡 판매 가이드 -->
+                <div class="nav-section">
+                    <a href="/seller-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📚 쿠팡 판매 A to Z</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/product-finding-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🔍 잘 팔리는 상품 찾는 법</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/1688-sourcing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏭 1688 중국 공장 소싱</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/rocket-gross-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 초보 소싱</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -645,10 +690,6 @@
                 </div>
                 <h2>쿠팡셀러를 위한 데이터 분석</h2>
                 <p>쿠팡셀러와 스마트스토어 판매자를 위한 인기상품 분석 플랫폼</p>
-                <p style="margin-top: 1rem; font-size: 1rem; color: var(--muted-foreground); line-height: 1.6;">
-                    헬프쿠팡은 쿠팡셀러가 더 나은 판매 전략을 수립할 수 있도록 도와주는 무료 데이터 분석 도구입니다. 
-                    쿠팡셀러를 위한 인기 상품 데이터, 구매 트렌드, 카테고리별 분석을 제공하여 쿠팡셀러의 성공을 지원합니다.
-                </p>
             </section>
 
             <!-- Stats Cards -->
@@ -805,106 +846,6 @@
                 </a>
             </div>
 
-            <!-- 헬프쿠팡 리뷰 섹션 -->
-            <section style="max-width: 1200px; margin: 3rem auto;">
-                <h2 class="section-title" style="text-align: center; margin-bottom: 2rem;">⭐ 헬프쿠팡 리뷰</h2>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
-                    <!-- 리뷰 카드 1 -->
-                    <div style="background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: box-shadow 0.2s;">
-                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--foreground); margin-bottom: 0.25rem; font-size: 1rem;">김*수</div>
-                                <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem;">
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p style="color: var(--foreground); line-height: 1.7; font-size: 0.9375rem; margin: 0;">
-                            헬프쿠팡 오픈하자마자 다른 유로 사이트 멤버십 탈퇴하고 헬쿠에서 데이터 찾아보면서 상품판매 시작했어요. 감사합니다
-                        </p>
-                    </div>
-
-                    <!-- 리뷰 카드 2 -->
-                    <div style="background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: box-shadow 0.2s;">
-                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--foreground); margin-bottom: 0.25rem; font-size: 1rem;">최*우</div>
-                                <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem;">
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p style="color: var(--foreground); line-height: 1.7; font-size: 0.9375rem; margin: 0;">
-                            단기간 인기상품에서 수면양말 추이 확인하고 완판 완료했어요
-                        </p>
-                    </div>
-
-                    <!-- 리뷰 카드 3 -->
-                    <div style="background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; transition: box-shadow 0.2s;">
-                        <div style="display: flex; align-items: center; margin-bottom: 1rem;">
-                            <div style="flex: 1;">
-                                <div style="font-weight: 600; color: var(--foreground); margin-bottom: 0.25rem; font-size: 1rem;">김*림</div>
-                                <div style="display: flex; gap: 0.25rem; margin-top: 0.5rem;">
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                    <span style="color: #fbbf24; font-size: 1.125rem;">★</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p style="color: var(--foreground); line-height: 1.7; font-size: 0.9375rem; margin: 0;">
-                            1688 중국 공장 소싱 관련 게시글을 읽어보면서 로켓그로스 입고와 관련된 개념을 익혔습니다.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- FAQ Section -->
-            <section class="faq-section" style="max-width: 900px; margin: 3rem auto; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;">
-                <h2 style="font-size: 1.5rem; font-weight: bold; color: var(--foreground); margin-bottom: 1.5rem; text-align: center;">자주 묻는 질문</h2>
-                <div class="faq-list" style="display: flex; flex-direction: column; gap: 1.5rem;">
-                    <div class="faq-item">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">📅 데이터 업데이트 주기는 어떻게 되나요?</h3>
-                        <p style="color: var(--foreground); line-height: 1.6;">
-                            헬프쿠팡은 매일 업데이트되는 쿠팡 인기상품 데이터를 제공합니다. 오늘 날짜 기준으로 구매했어요와 만족했어요 데이터가 실시간으로 반영되어, 최신 트렌드를 빠르게 파악할 수 있습니다.
-                        </p>
-                    </div>
-                    <div class="faq-item">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">🎯 데이터에 시즌성이 반영되나요?</h3>
-                        <p style="color: var(--foreground); line-height: 1.6;">
-                            네, 헬프쿠팡의 데이터는 계절별, 시즌별로 변동되는 인기상품 트렌드를 반영합니다. 예를 들어 여름철에는 선풍기, 냉방용품이, 겨울철에는 난방용품, 보온용품이 상위에 나타나는 등 시즌성 트렌드가 데이터에 그대로 반영됩니다.
-                        </p>
-                    </div>
-                    <div class="faq-item">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">📊 특정 카테고리가 편향되어 있나요?</h3>
-                        <p style="color: var(--foreground); line-height: 1.6;">
-                            헬프쿠팡은 쿠팡 전체 카테고리에서 실제 구매 데이터 기반으로 상위 인기상품을 분석합니다. 특정 카테고리에 편향되지 않으며, 실제 소비자 구매 패턴에 따라 자연스럽게 형성된 인기 카테고리 10종을 제공합니다. 생활용품, 전자제품, 식품, 패션 등 다양한 분야의 상품이 포함됩니다.
-                        </p>
-                    </div>
-                    <div class="faq-item">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">🔍 구매했어요와 만족했어요의 차이는 무엇인가요?</h3>
-                        <p style="color: var(--foreground); line-height: 1.6;">
-                            <strong>구매했어요</strong>는 해당 기간 동안 실제 구매가 이루어진 상품을 의미하며, 판매량을 나타냅니다. <strong>만족했어요</strong>는 고객이 상품에 만족스러워서 남긴 긍정적 피드백 수를 의미하며, 품질과 고객 만족도를 나타냅니다. 두 지표를 함께 분석하면 판매량과 품질을 모두 고려한 상품 선택이 가능합니다.
-                        </p>
-                    </div>
-                    <div class="faq-item">
-                        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">📈 단기간 인기 상품이란 무엇인가요?</h3>
-                        <p style="color: var(--foreground); line-height: 1.6;">
-                            단기간 인기 상품은 비교적 짧은 기간 동안 구매했어요 상승폭이 100단위, 1000단위로 급상승한 상품입니다. 이러한 상품들은 새로운 트렌드나 바이럴 상품일 가능성이 높아, 빠르게 반응하면 높은 수익을 얻을 수 있는 기회가 될 수 있습니다.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
             <!-- CTA Banner -->
             <div class="cta-banner">
                 <h2>지금 바로 시작하세요</h2>
@@ -915,8 +856,20 @@
     </main>
 </div>
 
-<!-- Navigation Script -->
-<div th:replace="~{fragments/sidebar :: nav-script}"></div>
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const button = event.currentTarget;
+
+        if (navItems.classList.contains('show')) {
+            navItems.classList.remove('show');
+            button.classList.remove('active');
+        } else {
+            navItems.classList.add('show');
+            button.classList.add('active');
+        }
+    }
+</script>
 
 <!-- Footer -->
 <footer style="margin-top: 4rem; padding: 2rem; border-top: 1px solid var(--border); background-color: var(--muted);">
@@ -947,25 +900,6 @@
         </div>
         <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--muted-foreground); font-size: 0.875rem;">
             <p>&copy; 2025 헬프쿠팡 (helpcoupang.com). All rights reserved.</p>
-            
-            <!-- 면책 고지 -->
-            <div style="margin-top: 2rem; padding: 1.5rem; background-color: var(--card); border: 1px solid var(--border); border-radius: var(--radius); text-align: left; max-width: 900px; margin-left: auto; margin-right: auto;">
-                <p style="font-size: 0.875rem; color: var(--foreground); line-height: 1.8; margin: 0; text-align: center;">
-                    <strong>헬프쿠팡은 쿠팡(주)와 공식적인 제휴·관계가 없는 독립적인 분석 서비스입니다.</strong> 쿠팡 로고 및 상품명은 각 소유자의 자산이며, 본 사이트는 공정한 데이터 분석 목적의 정보만 제공합니다.
-                </p>
-            </div>
-            
-            <div style="margin-top: 1.5rem; padding: 1.5rem; background-color: var(--card); border-radius: var(--radius); text-align: left; max-width: 800px; margin-left: auto; margin-right: auto;">
-                <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 0.75rem; color: var(--foreground);">쿠팡셀러를 위한 데이터 분석 플랫폼</h3>
-                <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.7; margin-bottom: 0.5rem;">
-                    헬프쿠팡은 쿠팡셀러와 쿠팡 판매자를 위한 전문 데이터 분석 서비스입니다. 쿠팡셀러가 인기 상품을 찾고, 
-                    판매 전략을 수립하는 데 필요한 모든 데이터를 제공합니다. 쿠팡셀러를 위해 매일 업데이트되는 인기 상품 정보, 
-                    구매 트렌드, 카테고리별 분석 데이터를 확인하세요. 쿠팡셀러의 성공적인 판매를 위한 첫걸음, 헬프쿠팡에서 시작하세요.
-                </p>
-                <p style="font-size: 0.875rem; color: var(--muted-foreground); line-height: 1.7;">
-                    <strong style="color: var(--foreground);">쿠팡셀러 필수 키워드:</strong> 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터 분석, 쿠팡 부업, 쿠팡 판매 전략, 쿠팡 트렌드 분석 , 쿠팡 로켓
-                </p>
-            </div>
         </div>
     </div>
 </footer>

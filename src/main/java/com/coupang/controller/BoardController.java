@@ -10,53 +10,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import java.util.List;
-import java.util.Set;
 
 @Controller
 public class BoardController {
 
     private final BoardService boardService;
-    
-    // 대표 허브 구간 (index 유지)
-    private static final Set<Integer> HUB_PURCHASE_COUNTS = Set.of(100, 300, 500, 1000, 3000, 5000);
-    private static final Set<Integer> HUB_SATISFIED_COUNTS = Set.of(100, 500, 1000);
 
     public BoardController(BoardService boardService) {
         this.boardService = boardService;
-    }
-    
-    /**
-     * 구매 페이지가 허브 콘텐츠인지 확인
-     */
-    private boolean isHubPurchasePage(int count, int page) {
-        return HUB_PURCHASE_COUNTS.contains(count) && page == 1;
-    }
-    
-    /**
-     * 만족 페이지가 허브 콘텐츠인지 확인
-     */
-    private boolean isHubSatisfiedPage(int count, int page) {
-        return HUB_SATISFIED_COUNTS.contains(count) && page == 1;
     }
 
     @GetMapping("/2025-11/all/{count}")
     public String board(@PathVariable String count,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "20") int size,
-                        @RequestParam(required = false) String search,
                         HttpServletRequest request,
                         Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            String redirectUrl = "/mobile/2025-11/all/" + count + "?page=" + page;
-            if (search != null && !search.trim().isEmpty()) {
-                redirectUrl += "&search=" + java.net.URLEncoder.encode(search.trim(), java.nio.charset.StandardCharsets.UTF_8);
-            }
-            return "redirect:" + redirectUrl;
+            return "redirect:/mobile/2025-11/all/" + count + "?page=" + page;
         }
         
         int countInt;
@@ -69,10 +42,9 @@ public class BoardController {
         // 페이징 계산
         int offset = (page - 1) * size;
         
-        // 데이터 조회 (11월과 12월 모두 포함)
-        List<String> months = List.of("2025-11", "2025-12");
-        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size, search);
-        int totalCount = boardService.getTotalCount(months, countInt, search);
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
+        int totalCount = boardService.getTotalCount("2025-11", countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -81,38 +53,14 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
-        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
-        List<ProductListDto> top20Recommended = new ArrayList<>();
-        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
-        if (search == null || search.trim().isEmpty()) {
-            try {
-                top20Recommended = boardService.getTop20RecommendedProducts(months, countInt);
-                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
-                // 인기 카테고리 이름만 Set으로 추출
-                for (BoardService.CategoryCount cc : topCategories) {
-                    topCategoryNames.add(cc.getCategory());
-                }
-                System.out.println("[DEBUG] TOP 20 조회 결과: count=" + countInt + ", size=" + top20Recommended.size());
-            } catch (Exception e) {
-                System.err.println("[ERROR] TOP 20 조회 중 에러 발생: count=" + countInt);
-                e.printStackTrace();
-                // 에러 발생 시 빈 리스트 유지
-            }
-        }
-
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("count", countInt);
-        model.addAttribute("month", "2025-11, 2025-12");
+        model.addAttribute("month", "2025-11");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("search", search != null ? search : "");
-        model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
-        model.addAttribute("top20Recommended", top20Recommended);
-        model.addAttribute("topCategoryNames", topCategoryNames);
-        System.out.println("[DEBUG] 모델에 추가된 top20Recommended: " + (top20Recommended != null ? top20Recommended.size() : "null"));
 
         return "board";
     }
@@ -121,7 +69,6 @@ public class BoardController {
     public String boardMobile(@PathVariable String count,
                               @RequestParam(defaultValue = "1") int page,
                               @RequestParam(defaultValue = "20") int size,
-                              @RequestParam(required = false) String search,
                               Model model) {
         int countInt;
         try {
@@ -133,10 +80,9 @@ public class BoardController {
         // 페이징 계산
         int offset = (page - 1) * size;
         
-        // 데이터 조회 (11월과 12월 모두 포함)
-        List<String> months = List.of("2025-11", "2025-12");
-        List<ProductListDto> products = boardService.getProducts(months, countInt, offset, size, search);
-        int totalCount = boardService.getTotalCount(months, countInt, search);
+        // 데이터 조회
+        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
+        int totalCount = boardService.getTotalCount("2025-11", countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
@@ -144,21 +90,6 @@ public class BoardController {
         int currentPageGroup = (page - 1) / pageGroupSize;
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
-
-        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
-        List<ProductListDto> top20Recommended = new ArrayList<>();
-        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
-        if (search == null || search.trim().isEmpty()) {
-            try {
-                top20Recommended = boardService.getTop20RecommendedProducts(months, countInt);
-                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
-                for (BoardService.CategoryCount cc : topCategories) {
-                    topCategoryNames.add(cc.getCategory());
-                }
-            } catch (Exception e) {
-                // 에러 발생 시 빈 리스트 유지
-            }
-        }
 
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
@@ -168,10 +99,6 @@ public class BoardController {
         model.addAttribute("month", "2025-11");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("search", search != null ? search : "");
-        model.addAttribute("isHubPage", isHubPurchasePage(countInt, page));
-        model.addAttribute("top20Recommended", top20Recommended);
-        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-mobile";
     }
@@ -326,16 +253,11 @@ public class BoardController {
     public String satisfied(@PathVariable String count,
                             @RequestParam(defaultValue = "1") int page,
                             @RequestParam(defaultValue = "20") int size,
-                            @RequestParam(required = false) String search,
                             HttpServletRequest request,
                             Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            String redirectUrl = "/mobile/satisfied/" + count + "?page=" + page;
-            if (search != null && !search.trim().isEmpty()) {
-                redirectUrl += "&search=" + java.net.URLEncoder.encode(search.trim(), java.nio.charset.StandardCharsets.UTF_8);
-            }
-            return "redirect:" + redirectUrl;
+            return "redirect:/mobile/satisfied/" + count + "?page=" + page;
         }
         
         int countInt;
@@ -349,8 +271,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size, search);
-        int totalCount = boardService.getTotalSatisfiedCount(countInt, search);
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -359,21 +281,6 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
-        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
-        List<ProductListDto> top20Recommended = new ArrayList<>();
-        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
-        if (search == null || search.trim().isEmpty()) {
-            try {
-                top20Recommended = boardService.getTop20RecommendedSatisfiedProducts(countInt);
-                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
-                for (BoardService.CategoryCount cc : topCategories) {
-                    topCategoryNames.add(cc.getCategory());
-                }
-            } catch (Exception e) {
-                // 에러 발생 시 빈 리스트 유지
-            }
-        }
-
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -381,10 +288,6 @@ public class BoardController {
         model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("search", search != null ? search : "");
-        model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
-        model.addAttribute("top20Recommended", top20Recommended);
-        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-star";
     }
@@ -393,7 +296,6 @@ public class BoardController {
     public String satisfiedMobile(@PathVariable String count,
                                   @RequestParam(defaultValue = "1") int page,
                                   @RequestParam(defaultValue = "20") int size,
-                                  @RequestParam(required = false) String search,
                                   Model model) {
         int countInt;
         try {
@@ -406,8 +308,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size, search);
-        int totalCount = boardService.getTotalSatisfiedCount(countInt, search);
+        List<ProductListDto> products = boardService.getSatisfiedProducts(countInt, offset, size);
+        int totalCount = boardService.getTotalSatisfiedCount(countInt);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
@@ -416,21 +318,6 @@ public class BoardController {
         int startPage = currentPageGroup * pageGroupSize + 1;
         int endPage = Math.min(startPage + pageGroupSize - 1, totalPages);
 
-        // 헬프쿠팡 추천 TOP 20 조회 (검색어가 없을 때만)
-        List<ProductListDto> top20Recommended = new ArrayList<>();
-        java.util.Set<String> topCategoryNames = new java.util.HashSet<>();
-        if (search == null || search.trim().isEmpty()) {
-            try {
-                top20Recommended = boardService.getTop20RecommendedSatisfiedProducts(countInt);
-                List<BoardService.CategoryCount> topCategories = boardService.getTopCategories();
-                for (BoardService.CategoryCount cc : topCategories) {
-                    topCategoryNames.add(cc.getCategory());
-                }
-            } catch (Exception e) {
-                // 에러 발생 시 빈 리스트 유지
-            }
-        }
-
         model.addAttribute("products", products);
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", totalPages);
@@ -438,10 +325,6 @@ public class BoardController {
         model.addAttribute("selectedStar", countInt);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("search", search != null ? search : "");
-        model.addAttribute("isHubPage", isHubSatisfiedPage(countInt, page));
-        model.addAttribute("top20Recommended", top20Recommended);
-        model.addAttribute("topCategoryNames", topCategoryNames);
 
         return "board-star-mobile";
     }
@@ -476,7 +359,6 @@ public class BoardController {
         model.addAttribute("totalCount", totalCount);
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
-        model.addAttribute("isHubPage", page == 1); // 첫 페이지만 허브 콘텐츠 표시
 
         return "board-shortterm";
     }

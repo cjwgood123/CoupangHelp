@@ -22,25 +22,8 @@ public class BoardService {
      * 예: 2025-11월, 100명 이상 구매 → coupang_products_100_20251117, coupang_products_100_20251118 등
      */
     public List<ProductListDto> getProducts(String month, int count, int offset, int limit) {
-        return getProducts(List.of(month), count, offset, limit);
-    }
-
-    /**
-     * 여러 월을 조회하여 데이터를 반환 (11월, 12월 등) - 검색 기능 포함
-     */
-    public List<ProductListDto> getProducts(List<String> months, int count, int offset, int limit, String search) {
-        if (search != null && !search.trim().isEmpty()) {
-            return getProductsWithSearch(months, count, offset, limit, search.trim());
-        }
-        return getProducts(months, count, offset, limit);
-    }
-
-    /**
-     * 여러 월을 조회하여 데이터를 반환 (11월, 12월 등)
-     */
-    public List<ProductListDto> getProducts(List<String> months, int count, int offset, int limit) {
-        // 존재하는 테이블 목록 조회 (여러 월)
-        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
+        // 존재하는 테이블 목록 조회
+        List<String> tableNames = findExistingTables(month, count);
         
         if (tableNames.isEmpty()) {
             return new ArrayList<>();
@@ -128,27 +111,10 @@ public class BoardService {
     }
 
     /**
-     * 전체 개수 조회 (중복 제거된 productID 개수) - 단일 월
+     * 전체 개수 조회 (중복 제거된 productID 개수)
      */
     public int getTotalCount(String month, int count) {
-        return getTotalCount(List.of(month), count);
-    }
-
-    /**
-     * 전체 개수 조회 (중복 제거된 productID 개수) - 여러 월 - 검색 기능 포함
-     */
-    public int getTotalCount(List<String> months, int count, String search) {
-        if (search != null && !search.trim().isEmpty()) {
-            return getTotalCountWithSearch(months, count, search.trim());
-        }
-        return getTotalCount(months, count);
-    }
-
-    /**
-     * 전체 개수 조회 (중복 제거된 productID 개수) - 여러 월
-     */
-    public int getTotalCount(List<String> months, int count) {
-        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
+        List<String> tableNames = findExistingTables(month, count);
         
         if (tableNames.isEmpty()) {
             return 0;
@@ -172,144 +138,6 @@ public class BoardService {
             """;
 
         Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
-        return result != null ? result : 0;
-    }
-
-    /**
-     * 검색어로 상품 조회 (띄어쓰기 무시)
-     * REPLACE 함수로 띄어쓰기를 제거한 후 LIKE 검색
-     */
-    private List<ProductListDto> getProductsWithSearch(List<String> months, int count, int offset, int limit, String search) {
-        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
-        
-        if (tableNames.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // 검색어에서 띄어쓰기 제거
-        String searchWithoutSpace = search.replaceAll("\\s+", "");
-
-        // UNION ALL 쿼리 생성
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
-        }
-
-        // 띄어쓰기 무시 검색 쿼리
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            ),
-            previous_review AS (
-                SELECT 
-                    l.productID,
-                    l.regidate as current_regidate,
-                    (
-                        SELECT review 
-                        FROM all_data 
-                        WHERE productID = l.productID 
-                          AND regidate < l.regidate
-                          AND review IS NOT NULL 
-                          AND review != ''
-                        ORDER BY regidate DESC 
-                        LIMIT 1
-                    ) as prev_review
-                FROM latest_data l
-                WHERE l.rn = 1
-            )
-            SELECT 
-                l.seq,
-                l.title,
-                l.productID,
-                l.regidate,
-                l.url,
-                l.category,
-                l.review,
-                CASE 
-                    WHEN l.review IS NOT NULL AND l.review != '' 
-                         AND p.prev_review IS NOT NULL AND p.prev_review != ''
-                         AND CAST(l.review AS UNSIGNED) > CAST(p.prev_review AS UNSIGNED)
-                    THEN CAST(l.review AS UNSIGNED) - CAST(p.prev_review AS UNSIGNED)
-                    ELSE NULL
-                END as review_increase
-            FROM latest_data l
-            LEFT JOIN previous_review p ON l.productID = p.productID AND l.regidate = p.current_regidate
-            WHERE l.rn = 1
-              AND REPLACE(l.title, ' ', '') LIKE ?
-            ORDER BY l.regidate DESC, l.seq ASC
-            LIMIT ? OFFSET ?
-            """;
-
-        final int startRowNum = offset + 1;
-        String searchPattern = "%" + searchWithoutSpace + "%";
-        
-        return jdbcTemplate.query(sql, 
-            (rs, index) -> {
-                Long seq = rs.getLong("seq");
-                int rowNum = startRowNum + index;
-                String title = rs.getString("title");
-                String productID = rs.getString("productID");
-                LocalDate regidate = rs.getDate("regidate") != null 
-                    ? rs.getDate("regidate").toLocalDate() 
-                    : null;
-                String url = rs.getString("url");
-                String category = rs.getString("category");
-                String review = rs.getString("review");
-                Integer reviewIncrease = rs.getObject("review_increase") != null 
-                    ? rs.getInt("review_increase") 
-                    : null;
-                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, reviewIncrease);
-            },
-            searchPattern, limit, offset);
-    }
-
-    /**
-     * 검색어로 총 개수 조회 (띄어쓰기 무시)
-     */
-    private int getTotalCountWithSearch(List<String> months, int count, String search) {
-        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
-        
-        if (tableNames.isEmpty()) {
-            return 0;
-        }
-
-        // 검색어에서 띄어쓰기 제거
-        String searchWithoutSpace = search.replaceAll("\\s+", "");
-
-        // UNION ALL 쿼리 생성
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate FROM ").append(tableNames.get(i));
-        }
-
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT productID, title,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            )
-            SELECT COUNT(DISTINCT productID) 
-            FROM latest_data
-            WHERE rn = 1
-              AND REPLACE(title, ' ', '') LIKE ?
-            """;
-
-        String searchPattern = "%" + searchWithoutSpace + "%";
-        Integer result = jdbcTemplate.queryForObject(sql, Integer.class, searchPattern);
         return result != null ? result : 0;
     }
 
@@ -364,18 +192,6 @@ public class BoardService {
             """;
         
         return jdbcTemplate.queryForList(sql, String.class, tablePattern);
-    }
-
-    /**
-     * 여러 월을 조회하여 존재하는 테이블 목록 반환
-     * 예: ["2025-11", "2025-12"], 100 → 11월과 12월의 모든 테이블
-     */
-    private List<String> findExistingTablesMultipleMonths(List<String> months, int count) {
-        List<String> allTables = new ArrayList<>();
-        for (String month : months) {
-            allTables.addAll(findExistingTables(month, count));
-        }
-        return allTables;
     }
 
     /**
@@ -492,16 +308,6 @@ public class BoardService {
     }
 
     /**
-     * coupang_satisfied 테이블에서 특정 count에 해당하는 상품 조회 - 검색 기능 포함
-     */
-    public List<ProductListDto> getSatisfiedProducts(int count, int offset, int limit, String search) {
-        if (search != null && !search.trim().isEmpty()) {
-            return getSatisfiedProductsWithSearch(count, offset, limit, search.trim());
-        }
-        return getSatisfiedProducts(count, offset, limit);
-    }
-
-    /**
      * coupang_satisfied 테이블에서 특정 count에 해당하는 상품 조회
      * 예: coupang_satisfied_100_20251120, coupang_satisfied_200_20251120 등
      */
@@ -567,16 +373,6 @@ public class BoardService {
     }
 
     /**
-     * coupang_satisfied 테이블에서 특정 count에 해당하는 총 개수 조회 - 검색 기능 포함
-     */
-    public int getTotalSatisfiedCount(int count, String search) {
-        if (search != null && !search.trim().isEmpty()) {
-            return getTotalSatisfiedCountWithSearch(count, search.trim());
-        }
-        return getTotalSatisfiedCount(count);
-    }
-
-    /**
      * coupang_satisfied 테이블에서 특정 count에 해당하는 총 개수 조회
      */
     public int getTotalSatisfiedCount(int count) {
@@ -604,111 +400,6 @@ public class BoardService {
             """;
 
         Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
-        return result != null ? result : 0;
-    }
-
-    /**
-     * 만족했어요 상품 검색 (띄어쓰기 무시)
-     */
-    private List<ProductListDto> getSatisfiedProductsWithSearch(int count, int offset, int limit, String search) {
-        List<String> tableNames = findExistingSatisfiedTables(count);
-        
-        if (tableNames.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        String searchWithoutSpace = search.replaceAll("\\s+", "");
-
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
-        }
-
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            )
-            SELECT 
-                l.seq,
-                l.title,
-                l.productID,
-                l.regidate,
-                l.url,
-                l.category,
-                l.review,
-                NULL as review_increase
-            FROM latest_data l
-            WHERE l.rn = 1
-              AND REPLACE(l.title, ' ', '') LIKE ?
-            ORDER BY l.regidate DESC, l.seq ASC
-            LIMIT ? OFFSET ?
-            """;
-
-        final int startRowNum = offset + 1;
-        String searchPattern = "%" + searchWithoutSpace + "%";
-        
-        return jdbcTemplate.query(sql, 
-            (rs, index) -> {
-                Long seq = rs.getLong("seq");
-                int rowNum = startRowNum + index;
-                String title = rs.getString("title");
-                String productID = rs.getString("productID");
-                LocalDate regidate = rs.getDate("regidate") != null 
-                    ? rs.getDate("regidate").toLocalDate() 
-                    : null;
-                String url = rs.getString("url");
-                String category = rs.getString("category");
-                String review = rs.getString("review");
-                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, null);
-            },
-            searchPattern, limit, offset);
-    }
-
-    /**
-     * 만족했어요 총 개수 검색 (띄어쓰기 무시)
-     */
-    private int getTotalSatisfiedCountWithSearch(int count, String search) {
-        List<String> tableNames = findExistingSatisfiedTables(count);
-        
-        if (tableNames.isEmpty()) {
-            return 0;
-        }
-
-        String searchWithoutSpace = search.replaceAll("\\s+", "");
-
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate FROM ").append(tableNames.get(i));
-        }
-
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT productID, title,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            )
-            SELECT COUNT(DISTINCT productID) 
-            FROM latest_data
-            WHERE rn = 1
-              AND REPLACE(title, ' ', '') LIKE ?
-            """;
-
-        String searchPattern = "%" + searchWithoutSpace + "%";
-        Integer result = jdbcTemplate.queryForObject(sql, Integer.class, searchPattern);
         return result != null ? result : 0;
     }
 
@@ -831,70 +522,66 @@ public class BoardService {
      */
     @org.springframework.cache.annotation.Cacheable(value = "shortTermPopular", unless = "#result == null")
     public int getShortTermPopularCount() {
-        // 11월과 12월 데이터 모두 포함
-        List<String> months = List.of("2025-11", "2025-12");
+        String month = "2025-11";
         int[] counts = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000};
         
         // 각 구매자 수 구간의 모든 테이블에서 상품 목록 조회
         java.util.Set<String> popularProducts = new java.util.HashSet<>();
         
-        // 각 월별로 처리
-        for (String month : months) {
-            for (int i = 0; i < counts.length - 1; i++) {
-                int lowerCount = counts[i];
-                int higherCount = counts[i + 1];
-                
-                // 낮은 구매자 수 테이블의 모든 테이블
-                List<String> lowerTableNames = findExistingTables(month, lowerCount);
-                if (lowerTableNames.isEmpty()) {
-                    continue;
+        for (int i = 0; i < counts.length - 1; i++) {
+            int lowerCount = counts[i];
+            int higherCount = counts[i + 1];
+            
+            // 낮은 구매자 수 테이블의 모든 테이블
+            List<String> lowerTableNames = findExistingTables(month, lowerCount);
+            if (lowerTableNames.isEmpty()) {
+                continue;
+            }
+            
+            // 높은 구매자 수 테이블의 모든 테이블
+            List<String> higherTableNames = findExistingTables(month, higherCount);
+            if (higherTableNames.isEmpty()) {
+                continue;
+            }
+            
+            // 각 테이블 그룹에서 최신 날짜의 상품들 조회
+            String lowerProductsSql = buildLatestProductsQuery(lowerTableNames);
+            String higherProductsSql = buildLatestProductsQuery(higherTableNames);
+            
+            // 낮은 구매자 수 테이블에 있던 상품이 높은 구매자 수 테이블에 나타나는지 확인
+            String sql = """
+                SELECT COUNT(DISTINCT lower_products.productID)
+                FROM (
+                    """ + lowerProductsSql + """
+                ) as lower_products
+                INNER JOIN (
+                    """ + higherProductsSql + """
+                ) as higher_products
+                ON lower_products.productID = higher_products.productID
+                WHERE higher_products.max_regidate > lower_products.max_regidate
+                """;
+            
+            try {
+                Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+                if (count != null && count > 0) {
+                    // 중복 제거를 위해 개별 상품 ID 조회
+                    String detailSql = """
+                        SELECT DISTINCT lower_products.productID
+                        FROM (
+                            """ + lowerProductsSql + """
+                        ) as lower_products
+                        INNER JOIN (
+                            """ + higherProductsSql + """
+                        ) as higher_products
+                        ON lower_products.productID = higher_products.productID
+                        WHERE higher_products.max_regidate > lower_products.max_regidate
+                        """;
+                    List<String> productIds = jdbcTemplate.queryForList(detailSql, String.class);
+                    popularProducts.addAll(productIds);
                 }
-                
-                // 높은 구매자 수 테이블의 모든 테이블
-                List<String> higherTableNames = findExistingTables(month, higherCount);
-                if (higherTableNames.isEmpty()) {
-                    continue;
-                }
-                
-                // 각 테이블 그룹에서 최신 날짜의 상품들 조회
-                String lowerProductsSql = buildLatestProductsQuery(lowerTableNames);
-                String higherProductsSql = buildLatestProductsQuery(higherTableNames);
-                
-                // 낮은 구매자 수 테이블에 있던 상품이 높은 구매자 수 테이블에 나타나는지 확인
-                String sql = """
-                    SELECT COUNT(DISTINCT lower_products.productID)
-                    FROM (
-                        """ + lowerProductsSql + """
-                    ) as lower_products
-                    INNER JOIN (
-                        """ + higherProductsSql + """
-                    ) as higher_products
-                    ON lower_products.productID = higher_products.productID
-                    WHERE higher_products.max_regidate > lower_products.max_regidate
-                    """;
-                
-                try {
-                    Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-                    if (count != null && count > 0) {
-                        // 중복 제거를 위해 개별 상품 ID 조회
-                        String detailSql = """
-                            SELECT DISTINCT lower_products.productID
-                            FROM (
-                                """ + lowerProductsSql + """
-                            ) as lower_products
-                            INNER JOIN (
-                                """ + higherProductsSql + """
-                            ) as higher_products
-                            ON lower_products.productID = higher_products.productID
-                            WHERE higher_products.max_regidate > lower_products.max_regidate
-                            """;
-                        List<String> productIds = jdbcTemplate.queryForList(detailSql, String.class);
-                        popularProducts.addAll(productIds);
-                    }
-                } catch (Exception e) {
-                    // 테이블이 없거나 쿼리 오류 시 무시하고 계속
-                    continue;
-                }
+            } catch (Exception e) {
+                // 테이블이 없거나 쿼리 오류 시 무시하고 계속
+                continue;
             }
         }
         
@@ -934,22 +621,17 @@ public class BoardService {
      * 모든 coupang_products_ 테이블을 UNION ALL로 합쳐서 CTE로 처리
      */
     public List<ProductListDto> getShortTermPopularProducts(int offset, int limit) {
-        // 11월과 12월 데이터 모두 포함
-        List<String> months = List.of("2025-11", "2025-12");
-        List<String> allTableNames = new ArrayList<>();
+        String month = "2025-11";
+        String monthPrefix = month.replace("-", "");
         
-        // 각 월의 모든 coupang_products_* 테이블 조회
-        for (String month : months) {
-            String monthPrefix = month.replace("-", "");
-            String findTablesSql = "SELECT TABLE_NAME " +
-                "FROM INFORMATION_SCHEMA.TABLES " +
-                "WHERE TABLE_SCHEMA = DATABASE() " +
-                "AND TABLE_NAME LIKE 'coupang_products_%_" + monthPrefix + "%' " +
-                "ORDER BY TABLE_NAME";
-            
-            List<String> monthTables = jdbcTemplate.queryForList(findTablesSql, String.class);
-            allTableNames.addAll(monthTables);
-        }
+        // 1) 해당 월의 모든 coupang_products_* 테이블 조회
+        String findTablesSql = "SELECT TABLE_NAME " +
+            "FROM INFORMATION_SCHEMA.TABLES " +
+            "WHERE TABLE_SCHEMA = DATABASE() " +
+            "AND TABLE_NAME LIKE 'coupang_products_%_" + monthPrefix + "%' " +
+            "ORDER BY TABLE_NAME";
+        
+        List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
         
         if (allTableNames.isEmpty()) {
             return new ArrayList<>();
@@ -1113,23 +795,18 @@ public class BoardService {
      * 단기간 인기 상품 총 개수 조회 - 최적화된 한 방 SQL
      */
     public int getShortTermPopularTotalCount() {
-        // 11월과 12월 데이터 모두 포함
-        List<String> months = List.of("2025-11", "2025-12");
-        List<String> allTableNames = new ArrayList<>();
+        String month = "2025-11";
+        String monthPrefix = month.replace("-", "");
         
-        // 각 월의 모든 coupang_products_ 테이블 찾기
-        for (String month : months) {
-            String monthPrefix = month.replace("-", "");
-            String findTablesSql = """
-                SELECT TABLE_NAME 
-                FROM INFORMATION_SCHEMA.TABLES 
-                WHERE TABLE_SCHEMA = DATABASE() 
-                AND TABLE_NAME LIKE 'coupang_products_%_""" + monthPrefix + "%'"
-                + " ORDER BY TABLE_NAME";
-            
-            List<String> monthTables = jdbcTemplate.queryForList(findTablesSql, String.class);
-            allTableNames.addAll(monthTables);
-        }
+        // 모든 coupang_products_ 테이블 찾기
+        String findTablesSql = """
+            SELECT TABLE_NAME 
+            FROM INFORMATION_SCHEMA.TABLES 
+            WHERE TABLE_SCHEMA = DATABASE() 
+            AND TABLE_NAME LIKE 'coupang_products_%_""" + monthPrefix + "%'"
+            + " ORDER BY TABLE_NAME";
+        
+        List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
         
         if (allTableNames.isEmpty()) {
             return 0;
@@ -1199,22 +876,17 @@ public class BoardService {
      * 100~9000까지 모든 구매했어요 테이블에서 카테고리별 집계
      */
     public List<CategoryCount> getTopCategories() {
-        // 11월과 12월 데이터 모두 포함
-        List<String> months = List.of("2025-11", "2025-12");
-        List<String> allTableNames = new ArrayList<>();
+        String month = "2025-11";
+        String monthPrefix = month.replace("-", "");
         
-        // 각 월의 100~9000까지의 모든 coupang_products_ 테이블 찾기
-        for (String month : months) {
-            String monthPrefix = month.replace("-", "");
-            String findTablesSql = "SELECT TABLE_NAME " +
-                "FROM INFORMATION_SCHEMA.TABLES " +
-                "WHERE TABLE_SCHEMA = DATABASE() " +
-                "AND TABLE_NAME LIKE 'coupang_products_%_" + monthPrefix + "%' " +
-                "ORDER BY TABLE_NAME";
-            
-            List<String> monthTables = jdbcTemplate.queryForList(findTablesSql, String.class);
-            allTableNames.addAll(monthTables);
-        }
+        // 100~9000까지의 모든 coupang_products_ 테이블 찾기
+        String findTablesSql = "SELECT TABLE_NAME " +
+            "FROM INFORMATION_SCHEMA.TABLES " +
+            "WHERE TABLE_SCHEMA = DATABASE() " +
+            "AND TABLE_NAME LIKE 'coupang_products_%_" + monthPrefix + "%' " +
+            "ORDER BY TABLE_NAME";
+        
+        List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
         
         if (allTableNames.isEmpty()) {
             return new ArrayList<>();
@@ -1266,195 +938,6 @@ public class BoardService {
             e.printStackTrace();
             return new ArrayList<>();
         }
-    }
-
-    /**
-     * 헬프쿠팡 추천 TOP 20 조회 (구매했어요)
-     * 전체 데이터에서 review가 "-"가 아니고 0이 아닌 상품 중 리뷰 수가 가장 적은 상위 20개 반환
-     * 구매는 많지만 리뷰가 적은 상품 = 기회 상품
-     */
-    public List<ProductListDto> getTop20RecommendedProducts(List<String> months, int count) {
-        List<String> tableNames = findExistingTablesMultipleMonths(months, count);
-        
-        if (tableNames.isEmpty()) {
-            System.out.println("[DEBUG] 테이블이 없습니다: months=" + months + ", count=" + count);
-            return new ArrayList<>();
-        }
-        
-        System.out.println("[DEBUG] 조회할 테이블 수: " + tableNames.size());
-
-        // UNION ALL 쿼리 생성
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
-        }
-
-        // 전체 데이터에서 review가 "-"가 아니고 0이 아닌 상품 중 리뷰 수가 가장 적은 상위 20개
-        // review 필드에서 숫자 추출: "123", "123개", "123 개" 등 모든 형식 지원
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            ),
-            filtered_data AS (
-                SELECT 
-                    seq,
-                    title,
-                    productID,
-                    regidate,
-                    url,
-                    category,
-                    review,
-                    CASE 
-                        WHEN review IS NOT NULL 
-                             AND review != '' 
-                             AND review != '-'
-                             AND review LIKE '%개%'
-                        THEN CAST(REPLACE(review, '개', '') AS UNSIGNED)
-                        ELSE NULL
-                    END as review_num
-                FROM latest_data
-                WHERE rn = 1
-                  AND review IS NOT NULL
-                  AND review != ''
-                  AND review != '-'
-                  AND review LIKE '%개%'
-            )
-            SELECT 
-                seq,
-                title,
-                productID,
-                regidate,
-                url,
-                category,
-                review,
-                NULL as review_increase
-            FROM filtered_data
-            WHERE review_num IS NOT NULL
-              AND review_num > 0
-            ORDER BY review_num ASC, regidate DESC
-            LIMIT 20
-            """;
-        
-        try {
-            List<ProductListDto> result = jdbcTemplate.query(sql, 
-                (rs, index) -> {
-                    Long seq = rs.getLong("seq");
-                    int rowNum = index + 1;
-                    String title = rs.getString("title");
-                    String productID = rs.getString("productID");
-                    LocalDate regidate = rs.getDate("regidate") != null 
-                        ? rs.getDate("regidate").toLocalDate() 
-                        : null;
-                    String url = rs.getString("url");
-                    String category = rs.getString("category");
-                    String review = rs.getString("review");
-                    return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, null);
-                });
-            
-            System.out.println("[DEBUG] TOP 20 조회 성공: " + result.size() + "개");
-            if (result.size() > 0) {
-                System.out.println("[DEBUG] 첫 번째 상품 review: " + result.get(0).getReview());
-            }
-            return result;
-        } catch (Exception e) {
-            System.err.println("[ERROR] TOP 20 조회 중 에러: " + e.getMessage());
-            e.printStackTrace();
-            return new ArrayList<>();
-        }
-    }
-
-    /**
-     * 헬프쿠팡 추천 TOP 20 조회 (만족했어요)
-     * 전체 데이터에서 review가 "-"가 아니고 0이 아닌 상품 중 리뷰 수가 가장 적은 상위 20개 반환
-     */
-    public List<ProductListDto> getTop20RecommendedSatisfiedProducts(int count) {
-        List<String> tableNames = findExistingSatisfiedTables(count);
-        
-        if (tableNames.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // UNION ALL 쿼리 생성
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
-        }
-
-        // 전체 데이터에서 review가 "-"가 아니고 0이 아닌 상품 중 리뷰 수가 가장 적은 상위 20개
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            ),
-            filtered_data AS (
-                SELECT 
-                    seq,
-                    title,
-                    productID,
-                    regidate,
-                    url,
-                    category,
-                    review,
-                    CASE 
-                        WHEN review IS NOT NULL 
-                             AND review != '' 
-                             AND review != '-'
-                             AND review LIKE '%개%'
-                        THEN CAST(REPLACE(review, '개', '') AS UNSIGNED)
-                        ELSE NULL
-                    END as review_num
-                FROM latest_data
-                WHERE rn = 1
-                  AND review IS NOT NULL
-                  AND review != ''
-                  AND review != '-'
-                  AND review LIKE '%개%'
-            )
-            SELECT 
-                seq,
-                title,
-                productID,
-                regidate,
-                url,
-                category,
-                review,
-                NULL as review_increase
-            FROM filtered_data
-            WHERE review_num IS NOT NULL
-              AND review_num > 0
-            ORDER BY review_num ASC, regidate DESC
-            LIMIT 20
-            """;
-
-        return jdbcTemplate.query(sql, 
-            (rs, index) -> {
-                Long seq = rs.getLong("seq");
-                int rowNum = index + 1;
-                String title = rs.getString("title");
-                String productID = rs.getString("productID");
-                LocalDate regidate = rs.getDate("regidate") != null 
-                    ? rs.getDate("regidate").toLocalDate() 
-                    : null;
-                String url = rs.getString("url");
-                String category = rs.getString("category");
-                String review = rs.getString("review");
-                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, null);
-            });
     }
 
     /**
