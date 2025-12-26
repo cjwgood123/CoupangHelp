@@ -6,7 +6,7 @@
     <title>단기간 인기 상품 | 쿠팡셀러 인기상품 분석</title>
     <meta name="description" content="단기간 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석.">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 단기간 인기상품, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{/shortterm}">
     
@@ -574,10 +574,23 @@
             </a>
 
             <div>
-                <div class="page-header">
-                    <h1>단기간 인기 상품</h1>
-                    <p th:text="|총 ${totalCount}건|">-</p>
-                </div>
+            <div class="page-header">
+                <h1>단기간 인기 상품</h1>
+                <p th:text="|총 ${totalCount}건|">-</p>
+            </div>
+
+            <!-- 정보성 설명 추가 (애드센스 심사용) -->
+            <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 단기간 급상승 상품 분석 정보</h2>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
+                    이 페이지는 짧은 기간 동안 구매자 수가 급상승한 쿠팡 인기 상품을 분석하여 제공합니다. 
+                    100명 단위 또는 1,000명 단위로 급상승한 상품을 모아 보여주어 지금 막 떠오르는 트렌드 상품을 가장 먼저 발견할 수 있습니다.
+                </p>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
+                    <strong>데이터 분석 기준:</strong> 현재 등록된 상품 중에서 구매자 수가 짧은 기간에 급상승한 상품을 선별하여 분석합니다. 
+                    이러한 급상승 상품은 트렌드가 급부상하고 있거나 시장에서 주목받기 시작한 상품을 의미하므로, 쿠팡셀러분들이 새로운 판매 기회를 찾는 데 유용한 정보입니다.
+                </p>
+            </div>
 
                 <div class="table-wrapper">
                     <table>

@@ -1,3 +1,8 @@
+# 애드센스 봇은 모든 경로 허용 (심사용)
+User-agent: Mediapartners-Google
+Allow: /
+
+# 일반 구글 봇은 데이터 페이지 제한
 User-agent: Googlebot
 Allow: /
 Disallow: /2025-11/all/

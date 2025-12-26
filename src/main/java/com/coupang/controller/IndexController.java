@@ -113,6 +113,21 @@ public class IndexController {
         return "wing-express-guide";
     }
 
+    @GetMapping("/item-winner-guide")
+    public String itemWinnerGuide() {
+        return "item-winner-guide";
+    }
+
+    @GetMapping("/beginner-seller-strategy")
+    public String beginnerSellerStrategy() {
+        return "beginner-seller-strategy";
+    }
+
+    @GetMapping("/product-registration-guide")
+    public String productRegistrationGuide() {
+        return "product-registration-guide";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {

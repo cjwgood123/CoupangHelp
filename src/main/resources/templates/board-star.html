@@ -6,7 +6,7 @@
     <title th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|만족했어요 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{${selectedStar != null ? '/star/' + selectedStar : '/star/all'}}">
     
@@ -505,6 +505,20 @@
                 <h1 th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'}">만족 상품</h1>
                 <p th:if="${selectedStar != null}" th:text="|만족했어요 - 총 ${totalCount}건|">-</p>
                 <p th:if="${selectedStar == null}" th:text="|전체 상품 - 총 ${totalCount}건|">-</p>
+            </div>
+
+            <!-- 정보성 설명 추가 (애드센스 심사용) -->
+            <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 만족도 높은 상품 분석 정보</h2>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
+                    이 페이지는 구매 후 만족도가 높은 쿠팡 상품 데이터를 분석하여 제공합니다. 
+                    <span th:if="${selectedStar != null}"><strong th:text="${selectedStar}"></strong>명 이상의 구매자가 만족한 상품</span>
+                    <span th:if="${selectedStar == null}">구매자 만족도가 높은 상품</span>을 확인하여 품질이 검증된 아이템을 찾을 수 있습니다.
+                </p>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
+                    <strong>데이터 분석 기준:</strong> 쿠팡에서 실제 구매 후 만족도가 높은 상품을 수집하여 분석합니다. 
+                    구매했어요 수와 만족했어요 비율을 함께 확인하면 상품의 판매량과 품질을 종합적으로 판단할 수 있어 쿠팡셀러분들의 상품 선택에 도움이 됩니다.
+                </p>
             </div>
 
             <div class="table-wrapper">

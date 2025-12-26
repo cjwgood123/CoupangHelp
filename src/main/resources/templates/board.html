@@ -6,7 +6,7 @@
     <title th:text="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
     <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
-    <meta name="robots" content="noindex, follow">
+    <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{'/2025-11/all/' + ${count}}">
     
@@ -480,6 +480,19 @@
             <div class="page-header">
                 <h1 th:text="|${count}명 이상 구매 상품|">상품 리스트</h1>
                 <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
+            </div>
+
+            <!-- 정보성 설명 추가 (애드센스 심사용) -->
+            <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+                <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 인기 상품 분석 정보</h2>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
+                    이 페이지는 <strong th:text="${count}"></strong>명 이상의 구매자가 실제로 구매한 쿠팡 인기 상품 데이터를 분석하여 제공합니다. 
+                    쿠팡셀러분들이 시장 트렌드를 파악하고 판매 전략을 수립하는 데 도움이 되는 정보입니다.
+                </p>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
+                    <strong>데이터 분석 기준:</strong> 매일 쿠팡에 신규 등록되는 상품 중 구매자 수가 <strong th:text="${count}"></strong>명 이상인 상품을 수집하여 분석합니다. 
+                    상품명, 상품ID, 상품평 수, 카테고리, 조회일자 등의 정보를 제공하여 셀러분들이 시장 동향을 빠르게 파악할 수 있도록 돕습니다.
+                </p>
             </div>
 
             <div class="table-wrapper">

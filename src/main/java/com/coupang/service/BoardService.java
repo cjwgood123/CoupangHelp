@@ -522,66 +522,69 @@ public class BoardService {
      */
     @org.springframework.cache.annotation.Cacheable(value = "shortTermPopular", unless = "#result == null")
     public int getShortTermPopularCount() {
-        String month = "2025-11";
+        // 11월과 12월 데이터 모두 포함
+        String[] months = {"2025-11", "2025-12"};
         int[] counts = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000};
         
         // 각 구매자 수 구간의 모든 테이블에서 상품 목록 조회
         java.util.Set<String> popularProducts = new java.util.HashSet<>();
         
-        for (int i = 0; i < counts.length - 1; i++) {
-            int lowerCount = counts[i];
-            int higherCount = counts[i + 1];
-            
-            // 낮은 구매자 수 테이블의 모든 테이블
-            List<String> lowerTableNames = findExistingTables(month, lowerCount);
-            if (lowerTableNames.isEmpty()) {
-                continue;
-            }
-            
-            // 높은 구매자 수 테이블의 모든 테이블
-            List<String> higherTableNames = findExistingTables(month, higherCount);
-            if (higherTableNames.isEmpty()) {
-                continue;
-            }
-            
-            // 각 테이블 그룹에서 최신 날짜의 상품들 조회
-            String lowerProductsSql = buildLatestProductsQuery(lowerTableNames);
-            String higherProductsSql = buildLatestProductsQuery(higherTableNames);
-            
-            // 낮은 구매자 수 테이블에 있던 상품이 높은 구매자 수 테이블에 나타나는지 확인
-            String sql = """
-                SELECT COUNT(DISTINCT lower_products.productID)
-                FROM (
-                    """ + lowerProductsSql + """
-                ) as lower_products
-                INNER JOIN (
-                    """ + higherProductsSql + """
-                ) as higher_products
-                ON lower_products.productID = higher_products.productID
-                WHERE higher_products.max_regidate > lower_products.max_regidate
-                """;
-            
-            try {
-                Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
-                if (count != null && count > 0) {
-                    // 중복 제거를 위해 개별 상품 ID 조회
-                    String detailSql = """
-                        SELECT DISTINCT lower_products.productID
-                        FROM (
-                            """ + lowerProductsSql + """
-                        ) as lower_products
-                        INNER JOIN (
-                            """ + higherProductsSql + """
-                        ) as higher_products
-                        ON lower_products.productID = higher_products.productID
-                        WHERE higher_products.max_regidate > lower_products.max_regidate
-                        """;
-                    List<String> productIds = jdbcTemplate.queryForList(detailSql, String.class);
-                    popularProducts.addAll(productIds);
+        for (String month : months) {
+            for (int i = 0; i < counts.length - 1; i++) {
+                int lowerCount = counts[i];
+                int higherCount = counts[i + 1];
+                
+                // 낮은 구매자 수 테이블의 모든 테이블
+                List<String> lowerTableNames = findExistingTables(month, lowerCount);
+                if (lowerTableNames.isEmpty()) {
+                    continue;
                 }
-            } catch (Exception e) {
-                // 테이블이 없거나 쿼리 오류 시 무시하고 계속
-                continue;
+                
+                // 높은 구매자 수 테이블의 모든 테이블
+                List<String> higherTableNames = findExistingTables(month, higherCount);
+                if (higherTableNames.isEmpty()) {
+                    continue;
+                }
+                
+                // 각 테이블 그룹에서 최신 날짜의 상품들 조회
+                String lowerProductsSql = buildLatestProductsQuery(lowerTableNames);
+                String higherProductsSql = buildLatestProductsQuery(higherTableNames);
+                
+                // 낮은 구매자 수 테이블에 있던 상품이 높은 구매자 수 테이블에 나타나는지 확인
+                String sql = """
+                    SELECT COUNT(DISTINCT lower_products.productID)
+                    FROM (
+                        """ + lowerProductsSql + """
+                    ) as lower_products
+                    INNER JOIN (
+                        """ + higherProductsSql + """
+                    ) as higher_products
+                    ON lower_products.productID = higher_products.productID
+                    WHERE higher_products.max_regidate > lower_products.max_regidate
+                    """;
+                
+                try {
+                    Integer count = jdbcTemplate.queryForObject(sql, Integer.class);
+                    if (count != null && count > 0) {
+                        // 중복 제거를 위해 개별 상품 ID 조회
+                        String detailSql = """
+                            SELECT DISTINCT lower_products.productID
+                            FROM (
+                                """ + lowerProductsSql + """
+                            ) as lower_products
+                            INNER JOIN (
+                                """ + higherProductsSql + """
+                            ) as higher_products
+                            ON lower_products.productID = higher_products.productID
+                            WHERE higher_products.max_regidate > lower_products.max_regidate
+                            """;
+                        List<String> productIds = jdbcTemplate.queryForList(detailSql, String.class);
+                        popularProducts.addAll(productIds);
+                    }
+                } catch (Exception e) {
+                    // 테이블이 없거나 쿼리 오류 시 무시하고 계속
+                    continue;
+                }
             }
         }
         
@@ -621,14 +624,13 @@ public class BoardService {
      * 모든 coupang_products_ 테이블을 UNION ALL로 합쳐서 CTE로 처리
      */
     public List<ProductListDto> getShortTermPopularProducts(int offset, int limit) {
-        String month = "2025-11";
-        String monthPrefix = month.replace("-", "");
+        // 11월과 12월 데이터 모두 포함 (202511, 202512)
         
         // 1) 해당 월의 모든 coupang_products_* 테이블 조회
         String findTablesSql = "SELECT TABLE_NAME " +
             "FROM INFORMATION_SCHEMA.TABLES " +
             "WHERE TABLE_SCHEMA = DATABASE() " +
-            "AND TABLE_NAME LIKE 'coupang_products_%_" + monthPrefix + "%' " +
+            "AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%') " +
             "ORDER BY TABLE_NAME";
         
         List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
@@ -795,16 +797,16 @@ public class BoardService {
      * 단기간 인기 상품 총 개수 조회 - 최적화된 한 방 SQL
      */
     public int getShortTermPopularTotalCount() {
-        String month = "2025-11";
-        String monthPrefix = month.replace("-", "");
+        // 11월과 12월 데이터 모두 포함 (202511, 202512)
         
         // 모든 coupang_products_ 테이블 찾기
         String findTablesSql = """
             SELECT TABLE_NAME 
             FROM INFORMATION_SCHEMA.TABLES 
             WHERE TABLE_SCHEMA = DATABASE() 
-            AND TABLE_NAME LIKE 'coupang_products_%_""" + monthPrefix + "%'"
-            + " ORDER BY TABLE_NAME";
+            AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%')
+            ORDER BY TABLE_NAME
+            """;
         
         List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
         
