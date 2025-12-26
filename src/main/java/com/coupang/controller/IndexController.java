@@ -128,6 +128,36 @@ public class IndexController {
         return "product-registration-guide";
     }
 
+    @GetMapping("/margin-template-guide")
+    public String marginTemplateGuide() {
+        return "margin-template-guide";
+    }
+
+    @GetMapping("/product-detail-writing-guide")
+    public String productDetailWritingGuide() {
+        return "product-detail-writing-guide";
+    }
+
+    @GetMapping("/item-winner-safety-checklist")
+    public String itemWinnerSafetyChecklist() {
+        return "item-winner-safety-checklist";
+    }
+
+    @GetMapping("/blog-structure-guide")
+    public String blogStructureGuide() {
+        return "blog-structure-guide";
+    }
+
+    @GetMapping("/coupang-entry-guide")
+    public String coupangEntryGuide() {
+        return "coupang-entry-guide";
+    }
+
+    @GetMapping("/dropshipping-guide")
+    public String dropshippingGuide() {
+        return "dropshipping-guide";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {
