@@ -108,6 +108,11 @@ public class IndexController {
         return "rocket-gross-guide";
     }
 
+    @GetMapping("/wing-express-guide")
+    public String wingExpressGuide() {
+        return "wing-express-guide";
+    }
+
     @GetMapping("/sitemap.xml")
     public ResponseEntity<String> sitemap() {
         try {
