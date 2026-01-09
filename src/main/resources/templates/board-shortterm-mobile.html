@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>단기간 인기 상품 | 쿠팡셀러 인기상품 분석</title>
     <meta name="description" content="단기간 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석.">
-    <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 단기간 인기상품, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석">
+    <meta name="keywords" content="쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 단기간 인기상품, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석">
     <meta name="robots" content="noindex, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{/shortterm}">
@@ -573,50 +573,59 @@
                 <p th:text="|총 ${totalCount}건|">-</p>
             </div>
 
+            <!-- 디스플레이 광고 (상품 리스트 전) -->
+            <div th:replace="~{fragments/ads :: display-ad}"></div>
+
             <!-- Product List -->
             <div class="product-list" th:if="${!products.isEmpty()}">
-                <div class="product-card" th:each="product : ${products}">
-                    <div class="product-row">
-                        <div class="product-number" th:text="${product.rowNum}">1</div>
-                        <div class="product-info">
-                            <a th:href="${product.url}" 
-                               th:text="${product.title}" 
-                               class="product-title"
-                               target="_blank"
-                               rel="noopener noreferrer">상품명</a>
-                            <div class="product-meta">
-                                <span class="product-id" th:text="|ID: ${product.productID}|">ID: PRODUCT_ID</span>
-                                <span class="review-count">
-                                    <span th:if="${product.review != null and product.review != ''}">
-                                        <span th:if="${#strings.contains(product.review, '개')}" th:text="|상품평: ${product.review}|">상품평: -</span>
-                                        <span th:unless="${#strings.contains(product.review, '개')}" th:text="|상품평: ${product.review} 개|">상품평: -</span>
+                <th:block th:each="product, iterStat : ${products}">
+                    <div class="product-card">
+                        <div class="product-row">
+                            <div class="product-number" th:text="${product.rowNum}">1</div>
+                            <div class="product-info">
+                                <a th:href="${product.url}" 
+                                   th:text="${product.title}" 
+                                   class="product-title"
+                                   target="_blank"
+                                   rel="noopener noreferrer">상품명</a>
+                                <div class="product-meta">
+                                    <span class="product-id" th:text="|ID: ${product.productID}|">ID: PRODUCT_ID</span>
+                                    <span class="review-count">
+                                        <span th:if="${product.review != null and product.review != ''}">
+                                            <span th:if="${#strings.contains(product.review, '개')}" th:text="|상품평: ${product.review}|">상품평: -</span>
+                                            <span th:unless="${#strings.contains(product.review, '개')}" th:text="|상품평: ${product.review} 개|">상품평: -</span>
+                                        </span>
+                                        <span th:if="${product.review == null or product.review == ''}" th:text="'상품평: -'">상품평: -</span>
                                     </span>
-                                    <span th:if="${product.review == null or product.review == ''}" th:text="'상품평: -'">상품평: -</span>
-                                </span>
-                                <span th:if="${product.fromCount != null and product.toCount != null}" style="display: block; margin-top: 0.25rem;">
-                                    <span style="font-weight: 600;">이동: </span>
-                                    <span th:text="${product.fromCount} + ' → ' + ${product.toCount}">100 → 200</span>
-                                    <span th:if="${product.daysDiff != null and product.daysDiff >= 0}" th:text="' (' + ${product.daysDiff} + '일)'"> (1일)</span>
-                                </span>
-                                <span th:if="${product.fromDate != null and product.toDate != null}" style="display: block; font-size: 0.7rem; color: var(--muted-foreground); margin-top: 0.25rem;">
-                                    <span th:text="${#temporals.format(product.fromDate, 'yyyyMMdd')}">20251118</span>
-                                    <span> → </span>
-                                    <span th:text="${#temporals.format(product.toDate, 'yyyyMMdd')}">20251120</span>
-                                </span>
-                                <span th:if="${product.fromCount == null or product.toCount == null}" style="display: block; margin-top: 0.25rem; color: var(--muted-foreground);">
-                                    이동 경로: -
-                                </span>
-                                <span class="rise-badge" th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}" style="display: block; margin-top: 0.25rem;">
-                                    <span>상승폭: </span>
-                                    <span th:text="'+' + ${product.reviewIncrease}">+100</span>
-                                    <span>↑</span>
-                                </span>
-                                <span class="category" th:text="${product.category != null and product.category != '' ? ('카테고리: ' + product.category) : '카테고리: -'}">카테고리: -</span>
-                                <span class="product-date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
+                                    <span th:if="${product.fromCount != null and product.toCount != null}" style="display: block; margin-top: 0.25rem;">
+                                        <span style="font-weight: 600;">이동: </span>
+                                        <span th:text="${product.fromCount} + ' → ' + ${product.toCount}">100 → 200</span>
+                                        <span th:if="${product.daysDiff != null and product.daysDiff >= 0}" th:text="' (' + ${product.daysDiff} + '일)'"> (1일)</span>
+                                    </span>
+                                    <span th:if="${product.fromDate != null and product.toDate != null}" style="display: block; font-size: 0.7rem; color: var(--muted-foreground); margin-top: 0.25rem;">
+                                        <span th:text="${#temporals.format(product.fromDate, 'yyyyMMdd')}">20251118</span>
+                                        <span> → </span>
+                                        <span th:text="${#temporals.format(product.toDate, 'yyyyMMdd')}">20251120</span>
+                                    </span>
+                                    <span th:if="${product.fromCount == null or product.toCount == null}" style="display: block; margin-top: 0.25rem; color: var(--muted-foreground);">
+                                        이동 경로: -
+                                    </span>
+                                    <span class="rise-badge" th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}" style="display: block; margin-top: 0.25rem;">
+                                        <span>상승폭: </span>
+                                        <span th:text="'+' + ${product.reviewIncrease}">+100</span>
+                                        <span>↑</span>
+                                    </span>
+                                    <span class="category" th:text="${product.category != null and product.category != '' ? ('카테고리: ' + product.category) : '카테고리: -'}">카테고리: -</span>
+                                    <span class="product-date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                    <!-- 10번째 항목마다 광고 배치 -->
+                    <div th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" style="margin: 1.5rem 0;">
+                        <div th:replace="~{fragments/ads :: infeed-ad}"></div>
+                    </div>
+                </th:block>
             </div>
 
             <div class="empty-state" th:if="${products.isEmpty()}">
@@ -648,6 +657,9 @@
             <div class="pagination-info" th:if="${totalCount > 0}">
                 <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
             </div>
+
+            <!-- 멀티플렉스 광고 (페이지 하단) -->
+            <div th:replace="~{fragments/ads :: multiplex-ad}"></div>
         </div>
     </main>
 

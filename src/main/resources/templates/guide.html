@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>헬프쿠팡 사용 가이드 | 쿠팡셀러 데이터 분석 활용법</title>
     <meta name="description" content="헬프쿠팡 사용 가이드: 쿠팡 인기상품 데이터를 활용한 판매 전략 수립 방법, 구매했어요/만족했어요 데이터 분석 팁, 단기간 인기 상품 활용법을 안내합니다.">
-    <meta name="keywords" content="헬프쿠팡, helpcoupang, 쿠팡셀러, 쿠팡 판매, 쿠팡 데이터 분석, 쿠팡 인기상품, 쿠팡 판매 전략, 쿠팡 셀러 가이드">
+    <meta name="keywords" content="헬프쿠팡, helpcoupang, 쿠팡 헬프, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 쿠팡 데이터 분석, 쿠팡 인기상품, 쿠팡 판매 전략, 쿠팡 셀러 가이드">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" href="https://helpcoupang.com/guide">
@@ -283,6 +283,9 @@
             </div>
         </div>
 
+        <!-- 디스플레이 광고 (본문 중간) -->
+        <div th:replace="~{fragments/ads :: display-ad}"></div>
+
         <div class="content-section">
             <h2>시작하기</h2>
             <p>
@@ -292,6 +295,12 @@
             </p>
             <a href="/" class="btn">메인 페이지로 이동</a>
         </div>
+
+        <!-- 인아티클 광고 (본문 하단) -->
+        <div th:replace="~{fragments/ads :: inarticle-ad}"></div>
+
+        <!-- 멀티플렉스 광고 (페이지 하단) -->
+        <div th:replace="~{fragments/ads :: multiplex-ad}"></div>
     </div>
 
     <footer class="footer">

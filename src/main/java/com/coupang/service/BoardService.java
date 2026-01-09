@@ -20,10 +20,17 @@ public class BoardService {
     /**
      * 특정 월과 구매수에 해당하는 모든 테이블을 조회하여 데이터를 반환
      * 예: 2025-11월, 100명 이상 구매 → coupang_products_100_20251117, coupang_products_100_20251118 등
+     * 11월과 12월 데이터 모두 포함
      */
     public List<ProductListDto> getProducts(String month, int count, int offset, int limit) {
-        // 존재하는 테이블 목록 조회
-        List<String> tableNames = findExistingTables(month, count);
+        // 11월, 12월, 1월 데이터 모두 포함
+        String[] months = {"2025-11", "2025-12", "2026-01"};
+        List<String> tableNames = new ArrayList<>();
+        
+        for (String m : months) {
+            List<String> monthTables = findExistingTables(m, count);
+            tableNames.addAll(monthTables);
+        }
         
         if (tableNames.isEmpty()) {
             return new ArrayList<>();
@@ -112,9 +119,17 @@ public class BoardService {
 
     /**
      * 전체 개수 조회 (중복 제거된 productID 개수)
+     * 11월과 12월 데이터 모두 포함
      */
     public int getTotalCount(String month, int count) {
-        List<String> tableNames = findExistingTables(month, count);
+        // 11월, 12월, 1월 데이터 모두 포함
+        String[] months = {"2025-11", "2025-12", "2026-01"};
+        List<String> tableNames = new ArrayList<>();
+        
+        for (String m : months) {
+            List<String> monthTables = findExistingTables(m, count);
+            tableNames.addAll(monthTables);
+        }
         
         if (tableNames.isEmpty()) {
             return 0;
@@ -522,8 +537,8 @@ public class BoardService {
      */
     @org.springframework.cache.annotation.Cacheable(value = "shortTermPopular", unless = "#result == null")
     public int getShortTermPopularCount() {
-        // 11월과 12월 데이터 모두 포함
-        String[] months = {"2025-11", "2025-12"};
+        // 11월, 12월, 1월 데이터 모두 포함
+        String[] months = {"2025-11", "2025-12", "2026-01"};
         int[] counts = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000};
         
         // 각 구매자 수 구간의 모든 테이블에서 상품 목록 조회
@@ -624,13 +639,13 @@ public class BoardService {
      * 모든 coupang_products_ 테이블을 UNION ALL로 합쳐서 CTE로 처리
      */
     public List<ProductListDto> getShortTermPopularProducts(int offset, int limit) {
-        // 11월과 12월 데이터 모두 포함 (202511, 202512)
+        // 11월, 12월, 1월 데이터 모두 포함 (202511, 202512, 202601)
         
         // 1) 해당 월의 모든 coupang_products_* 테이블 조회
         String findTablesSql = "SELECT TABLE_NAME " +
             "FROM INFORMATION_SCHEMA.TABLES " +
             "WHERE TABLE_SCHEMA = DATABASE() " +
-            "AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%') " +
+            "AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%' OR TABLE_NAME LIKE 'coupang_products_%_202601%') " +
             "ORDER BY TABLE_NAME";
         
         List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
@@ -797,14 +812,14 @@ public class BoardService {
      * 단기간 인기 상품 총 개수 조회 - 최적화된 한 방 SQL
      */
     public int getShortTermPopularTotalCount() {
-        // 11월과 12월 데이터 모두 포함 (202511, 202512)
+        // 11월, 12월, 1월 데이터 모두 포함 (202511, 202512, 202601)
         
         // 모든 coupang_products_ 테이블 찾기
         String findTablesSql = """
             SELECT TABLE_NAME 
             FROM INFORMATION_SCHEMA.TABLES 
             WHERE TABLE_SCHEMA = DATABASE() 
-            AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%')
+            AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%' OR TABLE_NAME LIKE 'coupang_products_%_202601%')
             ORDER BY TABLE_NAME
             """;
         

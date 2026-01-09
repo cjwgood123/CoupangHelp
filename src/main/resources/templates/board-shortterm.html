@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>단기간 인기 상품 | 쿠팡셀러 인기상품 분석</title>
     <meta name="description" content="단기간 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석.">
-    <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 단기간 인기상품, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석">
+    <meta name="keywords" content="쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 단기간 인기상품, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석">
     <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{/shortterm}">
@@ -583,14 +583,55 @@
             <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
                 <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 단기간 급상승 상품 분석 정보</h2>
                 <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
-                    이 페이지는 짧은 기간 동안 구매자 수가 급상승한 쿠팡 인기 상품을 분석하여 제공합니다. 
+                    이 페이지의 상품 랭킹은 최근 쿠팡 내 판매 흐름과 소비자 반응을 기준으로 정리된 참고용 정보입니다. 
+                    단기 트렌드를 파악하거나 시장 분위기를 빠르게 확인하는 용도로 활용하실 수 있으며, 
+                    실제 상품 선택 시에는 가격, 리뷰 수, 경쟁 상품도 함께 고려하시길 권장합니다.
+                </p>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
+                    짧은 기간 동안 구매자 수가 급상승한 쿠팡 인기 상품을 분석하여 제공합니다. 
                     100명 단위 또는 1,000명 단위로 급상승한 상품을 모아 보여주어 지금 막 떠오르는 트렌드 상품을 가장 먼저 발견할 수 있습니다.
                 </p>
-                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
-                    <strong>데이터 분석 기준:</strong> 현재 등록된 상품 중에서 구매자 수가 짧은 기간에 급상승한 상품을 선별하여 분석합니다. 
-                    이러한 급상승 상품은 트렌드가 급부상하고 있거나 시장에서 주목받기 시작한 상품을 의미하므로, 쿠팡셀러분들이 새로운 판매 기회를 찾는 데 유용한 정보입니다.
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
+                    이 분석은 현재 등록된 상품 중에서 구매자 수가 짧은 기간에 급상승한 상품을 선별하여 분석합니다. 
+                    이러한 급상승 상품은 트렌드가 급부상하고 있거나 시장에서 주목받기 시작한 상품을 의미하므로, 
+                    쿠팡셀러분들이 새로운 판매 기회를 찾는 데 유용한 정보입니다. 특히 초보 셀러분들은 단기간에 인기를 얻은 상품의 특징을 분석하여 
+                    자신의 상품 전략에 참고할 수 있으며, 구매자분들은 최신 트렌드 상품을 빠르게 확인하실 수 있습니다.
+                </p>
+                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0; font-size: 0.9375rem; color: var(--muted-foreground); padding-top: 0.75rem; border-top: 1px solid var(--border);">
+                    ※ 랭킹은 시점에 따라 변동될 수 있으며, 절대적인 판매 성과를 보장하는 지표는 아닙니다. 
+                    모든 데이터는 참고용으로 활용하시고, 실제 판매나 구매 결정 시에는 개인의 상황과 조건을 함께 고려하시기 바랍니다.
                 </p>
             </div>
+
+            <!-- FAQ 섹션 추가 -->
+            <div th:if="${currentPage == 1}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--foreground); margin-bottom: 1rem;">이 페이지에 대한 자주 묻는 질문</h3>
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 이 분석은 어떤 데이터를 기준으로 만드는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 1rem;">
+                        A. 현재 등록된 상품 중에서 구매자 수가 짧은 기간에 100명 단위 또는 1,000명 단위로 급상승한 상품을 선별하여 분석합니다. 
+                        실제 판매 데이터를 기반으로 하므로 지금 막 떠오르는 트렌드 상품을 확인할 수 있습니다.
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 어떤 문제가 해결되는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 1rem;">
+                        A. 쿠팡 셀러분들이 "지금 막 떠오르는 트렌드 상품은 무엇인지", "단기간에 인기를 얻은 상품의 특징은 무엇인지"를 빠르게 파악할 수 있도록 돕습니다. 
+                        새로운 판매 기회를 찾거나 시장 트렌드를 빠르게 따라잡는 데 도움이 됩니다.
+                    </p>
+                </div>
+                <div>
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 실제 사용자에게 어떤 도움이 되는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
+                        A. 초보 셀러분들은 단기간에 인기를 얻은 상품의 특징을 분석하여 자신의 상품 전략에 참고할 수 있으며, 
+                        현재 판매 중인 셀러분들은 새로운 트렌드를 빠르게 파악하여 상품 기획에 활용할 수 있습니다. 
+                        구매자분들은 최신 트렌드 상품을 빠르게 확인하실 수 있습니다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 디스플레이 광고 (FAQ 섹션 이후) -->
+            <div th:replace="~{fragments/ads :: display-ad}"></div>
 
                 <div class="table-wrapper">
                     <table>
@@ -613,60 +654,68 @@
                                     데이터가 없습니다.
                                 </td>
                             </tr>
-                            <tr th:each="product : ${products}">
-                                <td th:text="${product.rowNum}">1</td>
-                                <td>
-                                    <a th:href="${product.url}" 
-                                       th:text="${product.title}" 
-                                       class="title-link"
-                                       target="_blank"
-                                       rel="noopener noreferrer">상품명</a>
-                                </td>
-                                <td>
-                                    <span class="product-id" th:text="${product.productID}">PRODUCT_ID</span>
-                                </td>
-                                <td>
-                                    <span class="review-count">
-                                        <span th:if="${product.review != null and product.review != ''}">
-                                            <span th:if="${#strings.contains(product.review, '개')}" th:text="${product.review}">-</span>
-                                            <span th:unless="${#strings.contains(product.review, '개')}" th:text="${product.review + ' 개'}">-</span>
+                            <th:block th:each="product, iterStat : ${products}">
+                                <tr>
+                                    <td th:text="${product.rowNum}">1</td>
+                                    <td>
+                                        <a th:href="${product.url}" 
+                                           th:text="${product.title}" 
+                                           class="title-link"
+                                           target="_blank"
+                                           rel="noopener noreferrer">상품명</a>
+                                    </td>
+                                    <td>
+                                        <span class="product-id" th:text="${product.productID}">PRODUCT_ID</span>
+                                    </td>
+                                    <td>
+                                        <span class="review-count">
+                                            <span th:if="${product.review != null and product.review != ''}">
+                                                <span th:if="${#strings.contains(product.review, '개')}" th:text="${product.review}">-</span>
+                                                <span th:unless="${#strings.contains(product.review, '개')}" th:text="${product.review + ' 개'}">-</span>
+                                            </span>
+                                            <span th:if="${product.review == null or product.review == ''}" th:text="'-'">-</span>
                                         </span>
-                                        <span th:if="${product.review == null or product.review == ''}" th:text="'-'">-</span>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div style="font-size: 0.75rem; line-height: 1.4;">
-                                        <div th:if="${product.fromCount != null and product.toCount != null}">
-                                            <span th:text="${product.fromCount} + ' → ' + ${product.toCount}">100 → 200</span>
+                                    </td>
+                                    <td>
+                                        <div style="font-size: 0.75rem; line-height: 1.4;">
+                                            <div th:if="${product.fromCount != null and product.toCount != null}">
+                                                <span th:text="${product.fromCount} + ' → ' + ${product.toCount}">100 → 200</span>
+                                            </div>
+                                            <div style="color: var(--muted-foreground); margin-top: 0.25rem;" th:if="${product.fromDate != null and product.toDate != null}">
+                                                <div th:text="${#temporals.format(product.fromDate, 'yyyyMMdd')}">20251118</div>
+                                                <div>→</div>
+                                                <div th:text="${#temporals.format(product.toDate, 'yyyyMMdd')}">20251120</div>
+                                            </div>
+                                            <div th:if="${product.fromCount == null or product.toCount == null}" style="color: var(--muted-foreground);">
+                                                -
+                                            </div>
                                         </div>
-                                        <div style="color: var(--muted-foreground); margin-top: 0.25rem;" th:if="${product.fromDate != null and product.toDate != null}">
-                                            <div th:text="${#temporals.format(product.fromDate, 'yyyyMMdd')}">20251118</div>
-                                            <div>→</div>
-                                            <div th:text="${#temporals.format(product.toDate, 'yyyyMMdd')}">20251120</div>
-                                        </div>
-                                        <div th:if="${product.fromCount == null or product.toCount == null}" style="color: var(--muted-foreground);">
-                                            -
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span th:if="${product.daysDiff != null and product.daysDiff >= 0}" th:text="${product.daysDiff} + '일'">1일</span>
-                                    <span th:if="${product.daysDiff == null or product.daysDiff < 0}">-</span>
-                                </td>
-                                <td>
-                                    <span class="category" th:text="${product.category != null and product.category != '' ? product.category : '-'}">-</span>
-                                </td>
-                                <td>
-                                    <span class="date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
-                                </td>
-                                <td>
-                                    <span class="rise-badge" th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}">
-                                        <span th:text="'+' + ${product.reviewIncrease}">+100</span>
-                                        <span>↑</span>
-                                    </span>
-                                    <span th:if="${product.reviewIncrease == null or product.reviewIncrease == 0}">-</span>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td>
+                                        <span th:if="${product.daysDiff != null and product.daysDiff >= 0}" th:text="${product.daysDiff} + '일'">1일</span>
+                                        <span th:if="${product.daysDiff == null or product.daysDiff < 0}">-</span>
+                                    </td>
+                                    <td>
+                                        <span class="category" th:text="${product.category != null and product.category != '' ? product.category : '-'}">-</span>
+                                    </td>
+                                    <td>
+                                        <span class="date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
+                                    </td>
+                                    <td>
+                                        <span class="rise-badge" th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}">
+                                            <span th:text="'+' + ${product.reviewIncrease}">+100</span>
+                                            <span>↑</span>
+                                        </span>
+                                        <span th:if="${product.reviewIncrease == null or product.reviewIncrease == 0}">-</span>
+                                    </td>
+                                </tr>
+                                <!-- 10번째 항목마다 광고 배치 -->
+                                <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}">
+                                    <td colspan="9" style="padding: 1.5rem; text-align: center;">
+                                        <div th:replace="~{fragments/ads :: infeed-ad}"></div>
+                                    </td>
+                                </tr>
+                            </th:block>
                         </tbody>
                     </table>
                 </div>
@@ -694,6 +743,9 @@
                 <div class="pagination-info" th:if="${totalCount > 0}">
                     <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
                 </div>
+
+            <!-- 멀티플렉스 광고 (페이지 하단) -->
+            <div th:replace="~{fragments/ads :: multiplex-ad}"></div>
             </div>
         </div>
     </main>

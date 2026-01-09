@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상품 상세페이지 글쓰기 템플릿 | 전환율 높이는 설명서형 작성법 | 헬프쿠팡</title>
     <meta name="description" content="쿠팡 판매를 위한 상품 상세페이지 작성 가이드. 전환율이 높은 설명서형 상세페이지 작성법을 6단계로 설명합니다. 고객 타겟팅, 문제 해결, 핵심 기능, 사용 방법, 주의사항, 교환/반품 기준 등 상세페이지 작성의 모든 것을 배우세요.">
-    <meta name="keywords" content="쿠팡 상세페이지, 쿠팡 상세페이지 작성, 쿠팡 전환율, 쿠팡 상세페이지 템플릿, 쿠팡 상품 설명, 쿠팡 반품률 감소, 쿠팡 CS 관리, 쿠팡 판매자 가이드">
+    <meta name="keywords" content="쿠팡 헬프, 쿠팡 상세페이지, 쿠팡 상세페이지 작성, 쿠팡 전환율, 쿠팡 상세페이지 템플릿, 쿠팡 상품 설명, 쿠팡 반품률 감소, 쿠팡 CS 관리, 쿠팡 판매자 가이드, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익">
     <meta name="robots" content="index, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" href="https://helpcoupang.com/product-detail-writing-guide">
@@ -639,6 +639,16 @@
         toggle.classList.toggle('active');
     }
 </script>
+
+<!-- 디스플레이 광고 (본문 중간) -->
+<div th:replace="~{fragments/ads :: display-ad}"></div>
+
+<!-- 인아티클 광고 (본문 하단) -->
+<div th:replace="~{fragments/ads :: inarticle-ad}"></div>
+
+<!-- 멀티플렉스 광고 (페이지 하단) -->
+<div th:replace="~{fragments/ads :: multiplex-ad}"></div>
+
 </body>
 </html>
 

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
     <meta name="description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
-    <meta name="keywords" content="쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
+    <meta name="keywords" content="쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략">
     <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{'/2025-11/all/' + ${count}}">
@@ -463,6 +463,50 @@
                         <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 구매</a>
                     </div>
                 </div>
+                <!-- 단기간 인기 상품 -->
+                <div class="nav-section">
+                    <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+                <!-- 쿠팡 판매 가이드 -->
+                <div class="nav-section">
+                    <a href="/seller-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📚 쿠팡 판매 A to Z</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/coupang-entry-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚪 쿠팡 입점 가이드</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/product-finding-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🔍 잘 팔리는 상품 찾는 법</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/1688-sourcing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏭 1688 중국 공장 소싱</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/rocket-gross-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 초보 소싱</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/item-winner-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏆 아이템위너 전략</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/beginner-seller-strategy" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📖 초보 셀러 전략</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/product-registration-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📝 상품 등록 가이드</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/margin-template-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">💰 마진표 템플릿</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/product-detail-writing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">✍️ 상세페이지 작성법</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/item-winner-safety-checklist" class="nav-item" style="padding: 0.75rem; font-weight: 600;">✅ 아이템위너 체크리스트</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/blog-structure-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 블로그 구조 설계</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/dropshipping-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📦 위탁판매 가이드</a>
+                </div>
             </nav>
         </div>
     </aside>
@@ -482,18 +526,35 @@
                 <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
             </div>
 
-            <!-- 정보성 설명 추가 -->
-            <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
-                <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 인기 상품 분석 정보</h2>
-                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
-                    이 페이지는 <strong th:text="${count}"></strong>명 이상의 구매자가 실제로 구매한 쿠팡 인기 상품 데이터를 분석하여 제공합니다. 
-                    쿠팡셀러분들이 시장 트렌드를 파악하고 판매 전략을 수립하는 데 도움이 되는 정보입니다.
-                </p>
-                <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
-                    <strong>데이터 분석 기준:</strong> 매일 쿠팡에 신규 등록되는 상품 중 구매자 수가 <strong th:text="${count}"></strong>명 이상인 상품을 수집하여 분석합니다. 
-                    상품명, 상품ID, 상품평 수, 카테고리, 조회일자 등의 정보를 제공하여 셀러분들이 시장 동향을 빠르게 파악할 수 있도록 돕습니다.
-                </p>
+            <!-- FAQ 섹션 추가 -->
+            <div th:if="${currentPage == 1}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1rem;">
+                <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--foreground); margin-bottom: 1rem;">이 페이지에 대한 자주 묻는 질문</h3>
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 이 분석은 어떤 데이터를 기준으로 만드는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 1rem;">
+                        A. 매일 쿠팡에 신규 등록되는 상품 중 구매자 수가 <strong th:text="${count}"></strong>명 이상인 상품을 수집하여 분석합니다. 
+                        실제 구매 데이터를 기반으로 하므로 시장에서 실제로 주목받고 있는 상품을 확인할 수 있습니다.
+                    </p>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 어떤 문제가 해결되는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 1rem;">
+                        A. 쿠팡 셀러분들이 "지금 어떤 상품이 잘 팔리고 있는지", "어떤 카테고리에 수요가 몰리는지"를 빠르게 파악할 수 있도록 돕습니다. 
+                        비싼 유료 도구 없이도 시장 트렌드를 확인하여 판매 전략을 수립하는 데 도움이 됩니다.
+                    </p>
+                </div>
+                <div>
+                    <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 실제 사용자에게 어떤 도움이 되는가?</p>
+                    <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0;">
+                        A. 쿠팡 셀러를 준비 중인 분은 시장 트렌드를 파악하여 판매 전략을 수립하는 데 활용할 수 있으며, 
+                        현재 판매 중인 셀러분들은 경쟁 상품 분석과 시장 동향 파악에 도움이 됩니다. 
+                        구매자분들은 인기 있는 상품을 빠르게 찾아보실 수 있습니다.
+                    </p>
+                </div>
             </div>
+
+            <!-- 디스플레이 광고 (FAQ 섹션 이후) -->
+            <div th:replace="~{fragments/ads :: display-ad}"></div>
 
             <div class="table-wrapper">
                 <table>
@@ -513,37 +574,45 @@
                                 데이터가 없습니다.
                             </td>
                         </tr>
-                        <tr th:each="product : ${products}">
-                            <td th:text="${product.rowNum}">1</td>
-                            <td>
-                                <a th:href="${product.url}" 
-                                   th:text="${product.title}" 
-                                   class="title-link"
-                                   target="_blank"
-                                   rel="noopener noreferrer">상품명</a>
-                            </td>
-                            <td>
-                                <span class="product-id" th:text="${product.productID}">PRODUCT_ID</span>
-                            </td>
-                            <td>
-                                <span class="review-count">
-                                    <span th:if="${product.review != null and product.review != ''}">
-                                        <span th:if="${#strings.contains(product.review, '개')}" th:text="${product.review}">-</span>
-                                        <span th:unless="${#strings.contains(product.review, '개')}" th:text="${product.review + ' 개'}">-</span>
+                        <th:block th:each="product, iterStat : ${products}">
+                            <tr>
+                                <td th:text="${product.rowNum}">1</td>
+                                <td>
+                                    <a th:href="${product.url}" 
+                                       th:text="${product.title}" 
+                                       class="title-link"
+                                       target="_blank"
+                                       rel="noopener noreferrer">상품명</a>
+                                </td>
+                                <td>
+                                    <span class="product-id" th:text="${product.productID}">PRODUCT_ID</span>
+                                </td>
+                                <td>
+                                    <span class="review-count">
+                                        <span th:if="${product.review != null and product.review != ''}">
+                                            <span th:if="${#strings.contains(product.review, '개')}" th:text="${product.review}">-</span>
+                                            <span th:unless="${#strings.contains(product.review, '개')}" th:text="${product.review + ' 개'}">-</span>
+                                        </span>
+                                        <span th:if="${product.review == null or product.review == ''}" th:text="'-'">-</span>
+                                        <span th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}" 
+                                              style="color: var(--success); margin-left: 0.5rem; font-weight: 600;"
+                                              th:text="'↑' + ${product.reviewIncrease}">↑100</span>
                                     </span>
-                                    <span th:if="${product.review == null or product.review == ''}" th:text="'-'">-</span>
-                                    <span th:if="${product.reviewIncrease != null and product.reviewIncrease > 0}" 
-                                          style="color: var(--success); margin-left: 0.5rem; font-weight: 600;"
-                                          th:text="'↑' + ${product.reviewIncrease}">↑100</span>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="category" th:text="${product.category != null and product.category != '' ? product.category : '-'}">-</span>
-                            </td>
-                            <td>
-                                <span class="date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
-                            </td>
-                        </tr>
+                                </td>
+                                <td>
+                                    <span class="category" th:text="${product.category != null and product.category != '' ? product.category : '-'}">-</span>
+                                </td>
+                                <td>
+                                    <span class="date" th:text="${product.regidate != null ? #temporals.format(product.regidate, 'yyyy-MM-dd') : '-'}">2025-11-17</span>
+                                </td>
+                            </tr>
+                            <!-- 10번째 항목마다 광고 배치 -->
+                            <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}">
+                                <td colspan="6" style="padding: 1.5rem; text-align: center;">
+                                    <div th:replace="~{fragments/ads :: infeed-ad}"></div>
+                                </td>
+                            </tr>
+                        </th:block>
                     </tbody>
                 </table>
             </div>
@@ -574,6 +643,9 @@
             <div class="pagination-info" th:if="${totalCount > 0}">
                 <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
             </div>
+
+            <!-- 멀티플렉스 광고 (페이지 하단) -->
+            <div th:replace="~{fragments/ads :: multiplex-ad}"></div>
         </div>
     </main>
 </div>
