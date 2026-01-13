@@ -25,11 +25,16 @@ public class BoardController {
     public String board(@PathVariable String count,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "20") int size,
+                        @RequestParam(required = false) String search,
                         HttpServletRequest request,
                         Model model) {
         // 모바일 기기 감지 후 리다이렉트
         if (MobileDetector.isMobile(request)) {
-            return "redirect:/mobile/2025-11/all/" + count + "?page=" + page;
+            String redirectUrl = "/mobile/2025-11/all/" + count + "?page=" + page;
+            if (search != null && !search.trim().isEmpty()) {
+                redirectUrl += "&search=" + java.net.URLEncoder.encode(search, java.nio.charset.StandardCharsets.UTF_8);
+            }
+            return "redirect:" + redirectUrl;
         }
         
         int countInt;
@@ -43,8 +48,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-11", countInt);
+        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size, search);
+        int totalCount = boardService.getTotalCount("2025-11", countInt, search);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -61,6 +66,7 @@ public class BoardController {
         model.addAttribute("month", "2025-11");
         model.addAttribute("startPage", startPage);
         model.addAttribute("endPage", endPage);
+        model.addAttribute("search", search);
 
         return "board";
     }
@@ -81,8 +87,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-11", countInt);
+        List<ProductListDto> products = boardService.getProducts("2025-11", countInt, offset, size, null);
+        int totalCount = boardService.getTotalCount("2025-11", countInt, null);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시
@@ -125,8 +131,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-01", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-01", countInt);
+        List<ProductListDto> products = boardService.getProducts("2025-01", countInt, offset, size, null);
+        int totalCount = boardService.getTotalCount("2025-01", countInt, null);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 페이징 범위 계산 (10개씩 표시)
@@ -163,8 +169,8 @@ public class BoardController {
         int offset = (page - 1) * size;
         
         // 데이터 조회
-        List<ProductListDto> products = boardService.getProducts("2025-01", countInt, offset, size);
-        int totalCount = boardService.getTotalCount("2025-01", countInt);
+        List<ProductListDto> products = boardService.getProducts("2025-01", countInt, offset, size, null);
+        int totalCount = boardService.getTotalCount("2025-01", countInt, null);
         int totalPages = (int) Math.ceil((double) totalCount / size);
 
         // 모바일에서는 페이징 범위를 5개씩 표시

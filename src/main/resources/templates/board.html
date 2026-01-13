@@ -238,6 +238,66 @@
             color: var(--foreground);
         }
 
+        /* Search */
+        .search-wrapper {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-form {
+            width: 100%;
+        }
+
+        .search-input-group {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            background-color: var(--card);
+            color: var(--foreground);
+            transition: border-color 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .search-button:hover {
+            opacity: 0.9;
+        }
+
+        .search-clear {
+            padding: 0.75rem 1rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            transition: color 0.2s;
+        }
+
+        .search-clear:hover {
+            color: var(--foreground);
+        }
+
         /* Table */
         .table-wrapper {
             background-color: var(--card);
@@ -378,6 +438,19 @@
             .table-wrapper {
                 overflow-x: auto;
             }
+
+            .search-input-group {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .search-input {
+                width: 100%;
+            }
+
+            .search-button {
+                width: 100%;
+            }
         }
     </style>
 
@@ -443,24 +516,24 @@
                         </svg>
                     </button>
                     <div class="nav-items" id="satisfied">
-                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 구매</a>
-                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 구매</a>
-                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 구매</a>
-                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 구매</a>
-                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 구매</a>
-                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 구매</a>
-                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 구매</a>
-                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 구매</a>
-                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 구매</a>
-                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 구매</a>
-                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 구매</a>
-                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 구매</a>
-                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 구매</a>
-                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 구매</a>
+                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+                        <a href="/satisfied/6000" class="nav-item">⚡ 6000명 이상 만족</a>
+                        <a href="/satisfied/7000" class="nav-item">⚡ 7000명 이상 만족</a>
+                        <a href="/satisfied/8000" class="nav-item">⚡ 8000명 이상 만족</a>
+                        <a href="/satisfied/9000" class="nav-item">⚡ 9000명 이상 만족</a>
                     </div>
                 </div>
                 <!-- 단기간 인기 상품 -->
@@ -556,6 +629,24 @@
             <!-- 디스플레이 광고 (FAQ 섹션 이후) -->
             <div th:replace="~{fragments/ads :: display-ad}"></div>
 
+            <!-- 검색 영역 -->
+            <div class="search-wrapper">
+                <form method="get" th:action="@{/2025-11/all/{count}(count=${count})}" class="search-form">
+                    <input type="hidden" name="page" value="1">
+                    <div class="search-input-group">
+                        <input type="text" 
+                               name="search" 
+                               th:value="${search}" 
+                               placeholder="상품명 또는 카테고리로 검색" 
+                               class="search-input">
+                        <button type="submit" class="search-button">검색</button>
+                        <a th:if="${search != null and !#strings.isEmpty(search)}" 
+                           th:href="@{/2025-11/all/{count}(count=${count})}" 
+                           class="search-clear">초기화</a>
+                    </div>
+                </form>
+            </div>
+
             <div class="table-wrapper">
                 <table>
                     <thead>
@@ -621,13 +712,13 @@
             <div class="pagination" th:if="${totalPages > 1}">
                 <!-- 이전 그룹 -->
                 <a th:if="${startPage > 1}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${startPage - 1})}">이전</a>
+                   th:href="@{/2025-11/all/{count}(count=${count}, page=${startPage - 1}, search=${search})}">이전</a>
                 <span th:if="${startPage == 1}" class="disabled">이전</span>
 
                 <!-- 현재 그룹의 페이지 번호들 (최대 10개) -->
                 <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
                     <a th:if="${pageNum != currentPage}"
-                       th:href="@{/2025-11/all/{count}(count=${count}, page=${pageNum})}"
+                       th:href="@{/2025-11/all/{count}(count=${count}, page=${pageNum}, search=${search})}"
                        th:text="${pageNum}">1</a>
                     <span th:if="${pageNum == currentPage}" 
                           class="current"
@@ -636,7 +727,7 @@
 
                 <!-- 다음 그룹 -->
                 <a th:if="${endPage < totalPages}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${endPage + 1})}">다음</a>
+                   th:href="@{/2025-11/all/{count}(count=${count}, page=${endPage + 1}, search=${search})}">다음</a>
                 <span th:if="${endPage == totalPages}" class="disabled">다음</span>
             </div>
 

@@ -22,7 +22,7 @@ public class BoardService {
      * 예: 2025-11월, 100명 이상 구매 → coupang_products_100_20251117, coupang_products_100_20251118 등
      * 11월과 12월 데이터 모두 포함
      */
-    public List<ProductListDto> getProducts(String month, int count, int offset, int limit) {
+    public List<ProductListDto> getProducts(String month, int count, int offset, int limit, String searchKeyword) {
         // 11월, 12월, 1월 데이터 모두 포함
         String[] months = {"2025-11", "2025-12", "2026-01"};
         List<String> tableNames = new ArrayList<>();
@@ -36,6 +36,17 @@ public class BoardService {
             return new ArrayList<>();
         }
 
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
+        // 검색 조건 생성
+        String searchClause = "";
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            String escapedKeyword = searchKeyword.trim().replace("'", "''").replace("%", "\\%").replace("_", "\\_");
+            searchClause = " AND (title LIKE '%" + escapedKeyword + "%' OR category LIKE '%" + escapedKeyword + "%')";
+        }
+
         // UNION ALL 쿼리 생성
         StringBuilder unionSql = new StringBuilder();
         for (int i = 0; i < tableNames.size(); i++) {
@@ -43,6 +54,16 @@ public class BoardService {
                 unionSql.append(" UNION ALL ");
             }
             unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
+            String whereClause = "";
+            if (!categoryExclusionClause.isEmpty()) {
+                whereClause = " WHERE 1=1" + categoryExclusionClause;
+            }
+            if (!searchClause.isEmpty()) {
+                whereClause += (whereClause.isEmpty() ? " WHERE 1=1" : "") + searchClause;
+            }
+            if (!whereClause.isEmpty()) {
+                unionSql.append(whereClause);
+            }
         }
 
         // 최신 productID만 선택하고, 이전 review와 비교하여 증가량 계산
@@ -121,7 +142,7 @@ public class BoardService {
      * 전체 개수 조회 (중복 제거된 productID 개수)
      * 11월과 12월 데이터 모두 포함
      */
-    public int getTotalCount(String month, int count) {
+    public int getTotalCount(String month, int count, String searchKeyword) {
         // 11월, 12월, 1월 데이터 모두 포함
         String[] months = {"2025-11", "2025-12", "2026-01"};
         List<String> tableNames = new ArrayList<>();
@@ -135,13 +156,34 @@ public class BoardService {
             return 0;
         }
 
-        // UNION ALL 쿼리 생성
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
+        // 검색 조건 생성
+        String searchClause = "";
+        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
+            String escapedKeyword = searchKeyword.trim().replace("'", "''").replace("%", "\\%").replace("_", "\\_");
+            searchClause = " AND (title LIKE '%" + escapedKeyword + "%' OR category LIKE '%" + escapedKeyword + "%')";
+        }
+
+        // UNION ALL 쿼리 생성 (검색을 위해 title, category도 함께 SELECT)
         StringBuilder unionSql = new StringBuilder();
         for (int i = 0; i < tableNames.size(); i++) {
             if (i > 0) {
                 unionSql.append(" UNION ALL ");
             }
-            unionSql.append("SELECT productID FROM ").append(tableNames.get(i));
+            unionSql.append("SELECT productID, title, category FROM ").append(tableNames.get(i));
+            String whereClause = "";
+            if (!categoryExclusionClause.isEmpty()) {
+                whereClause = " WHERE 1=1" + categoryExclusionClause;
+            }
+            if (!searchClause.isEmpty()) {
+                whereClause += (whereClause.isEmpty() ? " WHERE 1=1" : "") + searchClause;
+            }
+            if (!whereClause.isEmpty()) {
+                unionSql.append(whereClause);
+            }
         }
 
         // 중복 제거된 productID 개수
@@ -226,11 +268,54 @@ public class BoardService {
         return 0;
     }
 
+    /**
+     * 제외 카테고리 목록 조회
+     */
+    private List<String> getExcludedCategories() {
+        try {
+            String sql = "SELECT exceptCategory FROM excluded_category";
+            return jdbcTemplate.queryForList(sql, String.class);
+        } catch (Exception e) {
+            // 테이블이 없거나 오류 발생 시 빈 리스트 반환
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * SQL WHERE 절에 카테고리 제외 조건 추가
+     * 제외 카테고리가 없으면 빈 문자열 반환
+     */
+    private String buildCategoryExclusionClause(List<String> excludedCategories) {
+        if (excludedCategories == null || excludedCategories.isEmpty()) {
+            return "";
+        }
+        
+        // SQL Injection 방지를 위해 각 카테고리를 따옴표로 감싸고 이스케이프
+        StringBuilder clause = new StringBuilder(" AND category IS NOT NULL");
+        if (!excludedCategories.isEmpty()) {
+            clause.append(" AND category NOT IN (");
+            for (int i = 0; i < excludedCategories.size(); i++) {
+                if (i > 0) {
+                    clause.append(", ");
+                }
+                // 카테고리명에서 작은따옴표를 이스케이프
+                String category = excludedCategories.get(i).replace("'", "''");
+                clause.append("'").append(category).append("'");
+            }
+            clause.append(")");
+        }
+        return clause.toString();
+    }
+
 
     /**
      * coupang_products_star 테이블에서 star 값으로 필터링된 상품 조회 (로켓 상품 제외)
      */
     public List<ProductListDto> getStarProducts(Integer star, int offset, int limit) {
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+        
         String sql;
         Object[] params;
         
@@ -249,6 +334,7 @@ public class BoardService {
                 FROM coupang_products_star
                 WHERE star = ?
                   AND NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)
+                  """ + categoryExclusionClause + """
                 ORDER BY regidate DESC, seq ASC
                 LIMIT ? OFFSET ?
                 """;
@@ -267,6 +353,7 @@ public class BoardService {
                     NULL as review_increase
                 FROM coupang_products_star
                 WHERE NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)
+                  """ + categoryExclusionClause + """
                 ORDER BY regidate DESC, seq ASC
                 LIMIT ? OFFSET ?
                 """;
@@ -296,12 +383,16 @@ public class BoardService {
      * coupang_products_star 테이블에서 star 값으로 필터링된 총 개수 조회 (로켓 상품 제외)
      */
     public int getTotalStarCount(Integer star) {
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+        
         if (star != null) {
-            String sql = "SELECT COUNT(*) FROM coupang_products_star WHERE star = ? AND NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)";
+            String sql = "SELECT COUNT(*) FROM coupang_products_star WHERE star = ? AND NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)" + categoryExclusionClause;
             Integer result = jdbcTemplate.queryForObject(sql, Integer.class, star);
             return result != null ? result : 0;
         } else {
-            String sql = "SELECT COUNT(*) FROM coupang_products_star WHERE NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)";
+            String sql = "SELECT COUNT(*) FROM coupang_products_star WHERE NOT MATCH(html) AGAINST('로켓' IN NATURAL LANGUAGE MODE)" + categoryExclusionClause;
             Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
             return result != null ? result : 0;
         }
@@ -334,6 +425,10 @@ public class BoardService {
             return new ArrayList<>();
         }
 
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
         // UNION ALL 쿼리 생성
         StringBuilder unionSql = new StringBuilder();
         for (int i = 0; i < tableNames.size(); i++) {
@@ -341,6 +436,9 @@ public class BoardService {
                 unionSql.append(" UNION ALL ");
             }
             unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
+            if (!categoryExclusionClause.isEmpty()) {
+                unionSql.append(" WHERE 1=1").append(categoryExclusionClause);
+            }
         }
 
         // 최신 productID만 선택
@@ -397,6 +495,10 @@ public class BoardService {
             return 0;
         }
 
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
         // UNION ALL 쿼리 생성
         StringBuilder unionSql = new StringBuilder();
         for (int i = 0; i < tableNames.size(); i++) {
@@ -404,6 +506,9 @@ public class BoardService {
                 unionSql.append(" UNION ALL ");
             }
             unionSql.append("SELECT productID FROM ").append(tableNames.get(i));
+            if (!categoryExclusionClause.isEmpty()) {
+                unionSql.append(" WHERE 1=1").append(categoryExclusionClause);
+            }
         }
 
         // 중복 제거된 productID 개수
@@ -615,6 +720,10 @@ public class BoardService {
             return "SELECT productID, '1900-01-01' as max_regidate FROM (SELECT 1) as dummy WHERE 1=0";
         }
         
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+        
         // UNION ALL 쿼리 생성
         StringBuilder unionSql = new StringBuilder();
         for (int i = 0; i < tableNames.size(); i++) {
@@ -622,6 +731,9 @@ public class BoardService {
                 unionSql.append(" UNION ALL ");
             }
             unionSql.append("SELECT productID, regidate FROM ").append(tableNames.get(i));
+            if (!categoryExclusionClause.isEmpty()) {
+                unionSql.append(" WHERE 1=1").append(categoryExclusionClause);
+            }
         }
         
         // 각 productID별 최신 날짜만 선택
@@ -654,6 +766,10 @@ public class BoardService {
             return new ArrayList<>();
         }
         
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
         // 2) all_data CTE용 UNION ALL SQL 생성 (10000 미만만 포함)
         StringBuilder allDataSql = new StringBuilder();
         boolean first = true;
@@ -670,6 +786,9 @@ public class BoardService {
             allDataSql.append("SELECT seq, title, productID, regidate, url, category, review, ")
                       .append(countBand).append(" AS count_band ")
                       .append("FROM ").append(tableName);
+            if (!categoryExclusionClause.isEmpty()) {
+                allDataSql.append(" WHERE 1=1").append(categoryExclusionClause);
+            }
         }
         
         // 10000 미만 테이블이 없으면 빈 리스트 반환
@@ -829,6 +948,10 @@ public class BoardService {
             return 0;
         }
         
+        // 제외 카테고리 목록 조회
+        List<String> excludedCategories = getExcludedCategories();
+        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
+
         // all_data CTE 생성 (10000 미만만 포함)
         StringBuilder allDataSql = new StringBuilder();
         boolean first = true;
@@ -846,6 +969,9 @@ public class BoardService {
             allDataSql.append("SELECT productID, regidate, ")
                       .append(count).append(" as count_band ")
                       .append("FROM ").append(tableName);
+            if (!categoryExclusionClause.isEmpty()) {
+                allDataSql.append(" WHERE 1=1").append(categoryExclusionClause);
+            }
         }
         
         // 10000 미만 테이블이 없으면 0 반환

@@ -529,6 +529,121 @@
             transform: scale(1.05);
         }
 
+        /* Update Notice Popup */
+        .update-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .update-popup-overlay.show {
+            display: flex;
+        }
+
+        .update-popup {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .update-popup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .update-popup-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--foreground);
+        }
+
+        .update-popup-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            transition: background-color 0.2s;
+        }
+
+        .update-popup-close:hover {
+            background-color: var(--muted);
+        }
+
+        .update-popup-content {
+            color: var(--foreground);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .update-popup-content ul {
+            margin: 1rem 0;
+            padding-left: 1.5rem;
+        }
+
+        .update-popup-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .update-popup-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .update-popup-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--muted-foreground);
+        }
+
+        .update-popup-checkbox input[type="checkbox"] {
+            width: 1rem;
+            height: 1rem;
+            cursor: pointer;
+        }
+
+        .update-popup-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .update-popup-button:hover {
+            opacity: 0.9;
+        }
+
         @media (max-width: 768px) {
             .container {
                 flex-direction: column;
@@ -563,6 +678,25 @@
 
             .cta-banner h2 {
                 font-size: 1.5rem;
+            }
+
+            .update-popup {
+                padding: 1.5rem;
+                max-width: 95%;
+            }
+
+            .update-popup-title {
+                font-size: 1.25rem;
+            }
+
+            .update-popup-footer {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .update-popup-button {
+                width: 100%;
             }
         }
     </style>
@@ -902,6 +1036,32 @@
     </main>
 </div>
 
+<!-- Update Notice Popup -->
+<div class="update-popup-overlay" id="updatePopup">
+    <div class="update-popup">
+        <div class="update-popup-header">
+            <h2 class="update-popup-title">헬프쿠팡 업데이트 안내</h2>
+            <button class="update-popup-close" onclick="closeUpdatePopup(false)">×</button>
+        </div>
+        <div class="update-popup-content">
+            <ul>
+                <li>특정 카테고리 제거(스킨/오일/크림)</li>
+                <li>구매했어요 검색 기능 추가</li>
+            </ul>
+            <p style="margin-top: 1rem; color: var(--muted-foreground); font-size: 0.875rem;">
+                더 나은 데이터를 필터하기 위해 노력중입니다.
+            </p>
+        </div>
+        <div class="update-popup-footer">
+            <label class="update-popup-checkbox">
+                <input type="checkbox" id="dontShowAgain">
+                <span>더 이상 보지 않기</span>
+            </label>
+            <button class="update-popup-button" onclick="closeUpdatePopup(true)">확인</button>
+        </div>
+    </div>
+</div>
+
 <script>
     function toggleNav(id) {
         const navItems = document.getElementById(id);
@@ -915,6 +1075,63 @@
             button.classList.add('active');
         }
     }
+
+    // Update Popup 관리
+    (function() {
+        const POPUP_KEY = 'updateNotice2025_01';
+        const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+        const popup = document.getElementById('updatePopup');
+        const dontShowCheckbox = document.getElementById('dontShowAgain');
+
+        function shouldShowPopup() {
+            const stored = localStorage.getItem(POPUP_KEY);
+            
+            if (!stored) {
+                return true; // 처음 방문
+            }
+
+            if (stored === 'dismissed') {
+                return false; // 더 이상 보지 않기 체크됨
+            }
+
+            // 타임스탬프 확인
+            const timestamp = parseInt(stored, 10);
+            if (isNaN(timestamp)) {
+                return true;
+            }
+
+            const now = Date.now();
+            const timeDiff = now - timestamp;
+            
+            // 24시간이 지났으면 다시 표시
+            return timeDiff >= ONE_DAY_MS;
+        }
+
+        function closeUpdatePopup(shouldSaveTimestamp) {
+            const dontShow = dontShowCheckbox.checked;
+            
+            if (dontShow) {
+                // 더 이상 보지 않기 체크됨
+                localStorage.setItem(POPUP_KEY, 'dismissed');
+            } else if (shouldSaveTimestamp) {
+                // 확인 버튼 클릭 - 타임스탬프 저장
+                localStorage.setItem(POPUP_KEY, Date.now().toString());
+            } else {
+                // X 버튼 클릭 - 타임스탬프 저장
+                localStorage.setItem(POPUP_KEY, Date.now().toString());
+            }
+            
+            popup.classList.remove('show');
+        }
+
+        // 페이지 로드 시 팝업 표시 확인
+        if (shouldShowPopup()) {
+            popup.classList.add('show');
+        }
+
+        // 전역 함수로 노출 (onclick에서 사용)
+        window.closeUpdatePopup = closeUpdatePopup;
+    })();
 </script>
 
 <!-- Footer -->
