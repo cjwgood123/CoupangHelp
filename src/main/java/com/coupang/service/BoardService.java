@@ -284,6 +284,7 @@ public class BoardService {
     /**
      * SQL WHERE 절에 카테고리 제외 조건 추가
      * 제외 카테고리가 없으면 빈 문자열 반환
+     * NULL 카테고리는 포함되도록 함 (category IS NULL OR category NOT IN (...))
      */
     private String buildCategoryExclusionClause(List<String> excludedCategories) {
         if (excludedCategories == null || excludedCategories.isEmpty()) {
@@ -291,19 +292,17 @@ public class BoardService {
         }
         
         // SQL Injection 방지를 위해 각 카테고리를 따옴표로 감싸고 이스케이프
-        StringBuilder clause = new StringBuilder(" AND category IS NOT NULL");
-        if (!excludedCategories.isEmpty()) {
-            clause.append(" AND category NOT IN (");
-            for (int i = 0; i < excludedCategories.size(); i++) {
-                if (i > 0) {
-                    clause.append(", ");
-                }
-                // 카테고리명에서 작은따옴표를 이스케이프
-                String category = excludedCategories.get(i).replace("'", "''");
-                clause.append("'").append(category).append("'");
+        // NULL 카테고리도 포함되도록: (category IS NULL OR category NOT IN (...))
+        StringBuilder clause = new StringBuilder(" AND (category IS NULL OR category NOT IN (");
+        for (int i = 0; i < excludedCategories.size(); i++) {
+            if (i > 0) {
+                clause.append(", ");
             }
-            clause.append(")");
+            // 카테고리명에서 작은따옴표를 이스케이프
+            String category = excludedCategories.get(i).replace("'", "''");
+            clause.append("'").append(category).append("'");
         }
+        clause.append("))");
         return clause.toString();
     }
 

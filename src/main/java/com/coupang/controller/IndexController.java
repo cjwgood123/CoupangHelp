@@ -1,6 +1,9 @@
 package com.coupang.controller;
 
 import com.coupang.service.BoardService;
+import com.coupang.service.ShareService;
+import com.coupang.service.ShareService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -9,19 +12,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 @Controller
 public class IndexController {
 
     private final BoardService boardService;
+    private final ShareService shareService;
 
-    public IndexController(BoardService boardService) {
+    public IndexController(BoardService boardService, ShareService shareService) {
         this.boardService = boardService;
+        this.shareService = shareService;
     }
 
     @GetMapping(value = {"/", ""})
@@ -156,6 +164,26 @@ public class IndexController {
     @GetMapping("/dropshipping-guide")
     public String dropshippingGuide() {
         return "dropshipping-guide";
+    }
+
+    @GetMapping("/event")
+    public String event() {
+        return "redirect:/";
+    }
+
+    @GetMapping("/event/generate-code")
+    @ResponseBody
+    public Map<String, String> generateShareCode(HttpSession session) {
+        // 세션에 이미 share_code가 있으면 기존 것 반환
+        String shareCode = (String) session.getAttribute("shareCode");
+        if (shareCode == null) {
+            shareCode = shareService.getNextShareCode();
+            session.setAttribute("shareCode", shareCode);
+        }
+        Map<String, String> response = new HashMap<>();
+        response.put("shareCode", shareCode);
+        response.put("shareUrl", "https://helpcoupang.com/" + shareCode);
+        return response;
     }
 
     @GetMapping("/sitemap.xml")

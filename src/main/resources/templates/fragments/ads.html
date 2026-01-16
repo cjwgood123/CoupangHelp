@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- Google AdSense 광고 프래그먼트 -->
+    
+    <!-- 1. 인피드광고 (In-feed ad) -->
+    <div th:fragment="infeed-ad" class="ads-container" style="margin: 1.5rem 0; text-align: center;">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+             crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-format="fluid"
+             data-ad-layout-key="-ff-f+2h-5z+6n"
+             data-ad-client="ca-pub-4521820475012938"
+             data-ad-slot="8134317837"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- 2. 인아티클광고 (In-article ad) -->
+    <div th:fragment="inarticle-ad" class="ads-container" style="margin: 1.5rem 0; text-align: center;">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+             crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:block; text-align:center;"
+             data-ad-layout="in-article"
+             data-ad-format="fluid"
+             data-ad-client="ca-pub-4521820475012938"
+             data-ad-slot="7493165910"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- 3. 디스플레이 광고 (Display ad - 1번 광고) -->
+    <div th:fragment="display-ad" class="ads-container" style="margin: 1.5rem 0; text-align: center;">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+             crossorigin="anonymous"></script>
+        <!-- 광고단위_1 -->
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-4521820475012938"
+             data-ad-slot="2993896821"
+             data-ad-format="auto"
+             data-full-width-responsive="true"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <!-- 4. 멀티플렉스 광고 (Multiplex ad) -->
+    <div th:fragment="multiplex-ad" class="ads-container" style="margin: 1.5rem 0; text-align: center;">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
+             crossorigin="anonymous"></script>
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-format="autorelaxed"
+             data-ad-client="ca-pub-4521820475012938"
+             data-ad-slot="3953715469"></ins>
+        <script>
+             (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+</body>
+</html>
+
+
+
+
+

@@ -47,8 +47,7 @@
         <changefreq>monthly</changefreq>
         <priority>0.7</priority>
     </url>
-    
-    <!-- 쿠팡 판매 가이드 -->
+
     <url>
         <loc>https://helpcoupang.com/seller-guide</loc>
         <lastmod>2025-11-27</lastmod>

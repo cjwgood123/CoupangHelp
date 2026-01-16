@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헬프쿠팡 공유 이벤트 | 쿠팡셀러 인기상품 분석</title>
+    <meta name="description" content="헬프쿠팡 공유 이벤트에 참여하고 상품권을 받으세요! 친구에게 공유하고 상위 3명에게 배민 상품권을 드립니다.">
+    <meta name="keywords" content="헬프쿠팡 이벤트, 쿠팡 이벤트, 쿠팡 공유 이벤트, 쿠팡 셀러 이벤트, 배민 상품권, 쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 취미, 취미부업, 집에서 부업, 온라인 부업, 재택 부업, 쿠팡 부업, 무료, 무료 데이터, 무료 분석, 무료 트래픽, 무료 도구, 무료 플랫폼, 무료 쿠팡 데이터, 무료 스마트스토어 데이터, 무료 쿠팡 분석, 무료 판매 도구, 쿠팡 무료, 스마트스토어 무료, 스마트스토어 데이터, 스마트스토어 분석, 스마트스토어 부업, 스마트스토어 판매, 스마트스토어 도구, 스마트스토어 무료 데이터, 부업 추천, 부업 사이트, 부업 정보, 부업 가이드, 누구나 할 수 있는, 초보자도 가능한, 성공 사례, 실전 가이드, 완전 정복, 비법 공개">
+    <meta name="robots" content="index, follow">
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
+    <meta name="naver-site-verification" content="8927dad485c905eefd8d2896126637d32ee7fc93" />
+    <link rel="canonical" href="https://helpcoupang.com/event">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://helpcoupang.com/event">
+    <meta property="og:title" content="헬프쿠팡 공유 이벤트 | 상품권 받기">
+    <meta property="og:description" content="헬프쿠팡 공유 이벤트에 참여하고 상품권을 받으세요! 친구에게 공유하고 상위 3명에게 배민 상품권을 드립니다.">
+    <meta property="og:site_name" content="헬프쿠팡 (helpcoupang.com)">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://helpcoupang.com/event">
+    <meta property="twitter:title" content="헬프쿠팡 공유 이벤트 | 상품권 받기">
+    <meta property="twitter:description" content="헬프쿠팡 공유 이벤트에 참여하고 상품권을 받으세요!">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --success: hsl(140, 60%, 50%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.125rem;
+            color: var(--muted-foreground);
+        }
+
+        .event-card {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .event-card h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--foreground);
+            margin-bottom: 1.5rem;
+        }
+
+        .reward-list {
+            list-style: none;
+            padding: 0;
+            margin: 1.5rem 0;
+        }
+
+        .reward-list li {
+            padding: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .reward-list li strong {
+            color: var(--primary);
+            font-size: 1.125rem;
+        }
+
+        .share-section {
+            background-color: var(--secondary);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .share-url-container {
+            display: flex;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            align-items: center;
+        }
+
+        .share-url-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            background-color: var(--card);
+            color: var(--foreground);
+        }
+
+        .share-url-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .copy-button {
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            white-space: nowrap;
+        }
+
+        .copy-button:hover {
+            opacity: 0.9;
+        }
+
+        .share-button {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s;
+            margin: 0.5rem;
+        }
+
+        .share-button:hover {
+            transform: scale(1.05);
+        }
+
+        .kakao-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: #FEE500;
+            color: #000000;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 600;
+            margin: 1rem 0;
+            transition: opacity 0.2s;
+        }
+
+        .kakao-link:hover {
+            opacity: 0.9;
+        }
+
+        .instruction-list {
+            list-style: decimal;
+            padding-left: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .instruction-list li {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 2rem;
+            color: var(--muted-foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--foreground);
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+            background-color: var(--muted);
+            border-left: 4px solid var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .event-card {
+                padding: 1.5rem;
+            }
+
+            .share-url-container {
+                flex-direction: column;
+            }
+
+            .copy-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>헬프쿠팡 공유 이벤트</h1>
+        <p>친구에게 공유하고 상품권을 받으세요!</p>
+    </div>
+
+    <div class="event-card">
+        <h2>🎁 이벤트 상품</h2>
+        <ul class="reward-list">
+            <li><strong>1등</strong> 헬프쿠팡 광고제거 + 배민 3만원 상품권</li>
+            <li><strong>2등</strong> 헬프쿠팡 광고제거 + 배민 2만원 상품권</li>
+            <li><strong>3등</strong> 헬프쿠팡 광고제거 + 배민 1만원 상품권</li>
+        </ul>
+        <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+            ※ 상위 3명에게 상품권이 지급됩니다.
+        </p>
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+            <p style="font-weight: 600; color: var(--foreground); margin-bottom: 0.5rem;">📅 이벤트 기간</p>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                이벤트 응모 마감: <strong style="color: var(--primary);">1월 23일</strong>
+            </p>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                당첨자 발표: <strong style="color: var(--primary);">1월 28일 이내</strong>
+            </p>
+        </div>
+    </div>
+
+    <div class="event-card">
+        <h2>📋 참여 방법</h2>
+        <ol class="instruction-list">
+            <li><strong>아래 나의 공유 URL을</strong><br>
+                로켓그로스 셀러 커뮤니티 / 로켓그로스 단체방 / 로켓그로스·스마트스토어 셀러 친구에게 공유해주세요.</li>
+            <li><strong>공유한 화면을 캡쳐해주세요.</strong></li>
+            <li><strong>아래 [인증하기] 버튼을 클릭하여</strong><br>
+                오픈카카오톡으로 캡쳐 이미지와 나의 공유 URL을 함께 보내주세요.</li>
+            <li><strong>공유 횟수가 많은 상위 3명에게 상품권을 지급합니다.</strong></li>
+        </ol>
+        <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border);">
+            <p style="color: var(--foreground); font-weight: 600; margin-bottom: 0.5rem;">📅 이벤트 기간</p>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                이벤트 응모 마감: <strong style="color: var(--primary);">1월 23일</strong>
+            </p>
+            <p style="color: var(--muted-foreground); font-size: 0.875rem;">
+                당첨자 발표: <strong style="color: var(--primary);">1월 28일 이내</strong>
+            </p>
+        </div>
+        <div style="margin-top: 1rem; padding: 1rem; background-color: var(--muted); border-left: 4px solid #ef4444; border-radius: var(--radius);">
+            <p style="font-size: 0.875rem; color: var(--foreground); margin: 0; line-height: 1.6;">
+                <strong style="color: #ef4444;">⚠️ 주의사항:</strong> 부당한 방법으로 이벤트 참여 시 제외될 수 있습니다.
+            </p>
+        </div>
+    </div>
+
+    <div class="share-section">
+        <h3 style="margin-bottom: 1rem;">나의 공유 URL</h3>
+        <div class="share-url-container">
+            <input type="text" id="shareUrl" class="share-url-input" th:value="${shareUrl}" placeholder="복사하기 버튼을 클릭하면 공유 URL이 생성됩니다" readonly>
+            <button onclick="generateAndCopyUrl()" class="copy-button" id="copyButton">복사하기</button>
+        </div>
+        <div style="margin-top: 1.5rem;">
+            <a href="javascript:void(0);" onclick="shareToKakao()" class="share-button" id="shareButton">카카오톡으로 공유하기</a>
+        </div>
+    </div>
+
+    <div class="event-card">
+        <h2>✅ 인증하기</h2>
+        <p style="margin-bottom: 1rem;">
+            공유한 화면을 캡쳐하여 오픈카카오톡으로 보내주세요.
+        </p>
+        <a href="https://open.kakao.com/o/sHo0Ifbi" target="_blank" class="kakao-link">
+            📱 오픈카카오톡 인증하기
+        </a>
+        <div class="alert">
+            <strong>인증 안내:</strong><br>
+            공유한 URL을 오픈카카오톡으로 보내주시면 인증이 완료됩니다.<br>
+            상위 3명에게 상품권이 지급됩니다.
+        </div>
+    </div>
+
+    <a href="/" class="back-link">← 메인으로 돌아가기</a>
+</div>
+
+<script>
+    let shareCodeGenerated = false;
+    const shareUrlInput = document.getElementById('shareUrl');
+    const initialUrl = shareUrlInput.value;
+
+    // share_code 생성 및 URL 복사 기능
+    async function generateAndCopyUrl() {
+        const copyButton = document.getElementById('copyButton');
+        const shareButton = document.getElementById('shareButton');
+        
+        // share_code가 아직 생성되지 않았으면 생성
+        if (!shareCodeGenerated && (!initialUrl || initialUrl === '')) {
+            copyButton.disabled = true;
+            copyButton.textContent = '생성 중...';
+            
+            try {
+                const response = await fetch('/event/generate-code');
+                const data = await response.json();
+                
+                shareUrlInput.value = data.shareUrl;
+                shareCodeGenerated = true;
+                copyButton.disabled = false;
+                copyButton.textContent = '복사하기';
+                
+                // URL 복사 실행
+                copyUrl();
+            } catch (error) {
+                console.error('Error generating share code:', error);
+                alert('공유 URL 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+                copyButton.disabled = false;
+                copyButton.textContent = '복사하기';
+            }
+        } else {
+            // 이미 생성되었거나 초기값이 있으면 바로 복사
+            copyUrl();
+        }
+    }
+
+    // URL 복사 기능
+    function copyUrl() {
+        const urlInput = document.getElementById('shareUrl');
+        const currentUrl = urlInput.value;
+        
+        if (!currentUrl || currentUrl === '' || currentUrl.includes('복사하기')) {
+            alert('먼저 복사하기 버튼을 클릭하여 공유 URL을 생성해주세요.');
+            return;
+        }
+        
+        urlInput.select();
+        urlInput.setSelectionRange(0, 99999); // 모바일 지원
+        
+        try {
+            document.execCommand('copy');
+            alert('URL이 복사되었습니다!');
+        } catch (err) {
+            // 복사 실패 시 수동 선택 안내
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    alert('URL이 복사되었습니다!');
+                }).catch(() => {
+                    alert('URL을 선택하여 복사해주세요.');
+                });
+            } else {
+                alert('URL을 선택하여 복사해주세요.');
+            }
+        }
+    }
+
+    // 카카오톡 공유하기 (Web Share API 사용)
+    async function shareToKakao() {
+        const shareButton = document.getElementById('shareButton');
+        const currentUrl = shareUrlInput.value;
+        
+        // share_code가 아직 생성되지 않았으면 먼저 생성
+        if (!shareCodeGenerated && (!currentUrl || currentUrl === '' || currentUrl.includes('복사하기'))) {
+            shareButton.disabled = true;
+            shareButton.textContent = '생성 중...';
+            
+            try {
+                const response = await fetch('/event/generate-code');
+                const data = await response.json();
+                
+                shareUrlInput.value = data.shareUrl;
+                shareCodeGenerated = true;
+                shareButton.disabled = false;
+                shareButton.textContent = '카카오톡으로 공유하기';
+                
+                // 공유 실행
+                executeShare(data.shareUrl);
+            } catch (error) {
+                console.error('Error generating share code:', error);
+                alert('공유 URL 생성 중 오류가 발생했습니다. 다시 시도해주세요.');
+                shareButton.disabled = false;
+                shareButton.textContent = '카카오톡으로 공유하기';
+            }
+        } else {
+            // 이미 생성되었거나 초기값이 있으면 바로 공유
+            executeShare(currentUrl);
+        }
+    }
+
+    function executeShare(url) {
+        // URL에서 share_code 추출
+        let shareCode = '';
+        try {
+            // URL 형식: https://helpcoupang.com/share_123 또는 https://helpcoupang.com/123
+            const urlMatch = url.match(/(?:share_)?(\d+)$/);
+            if (urlMatch && urlMatch[1]) {
+                shareCode = urlMatch[1];
+            }
+        } catch (e) {
+            console.error('Error extracting share code:', e);
+        }
+        
+        // share_code가 있으면 메시지에 포함, 없으면 기본 메시지
+        let text = '-쿠팡 데이터 판매 무료 분석 헬프쿠팡-\n\n100명 이상 구매했어요, 단기간 인기상품 등\n\n무료로 샘플링해보세요 판매 추이\n\n무료로 확인가능 가능합니다.';
+        if (shareCode) {
+            text += `\n\n-현재 공유 ${shareCode}회차`;
+        }
+        if (navigator.share) {
+            navigator.share({
+                title: '헬프쿠팡 - 쿠팡셀러 데이터 무료 분석',
+                text: text,
+                url: url
+            }).catch(() => {
+                // 공유 취소 또는 오류
+            });
+        } else {
+            // Web Share API를 지원하지 않는 경우 URL 복사 안내
+            copyUrl();
+            alert('모바일에서는 카카오톡 앱에서 직접 공유해주세요.\nURL이 복사되었습니다!');
+        }
+    }
+
+    // 페이지 로드 시 초기값 확인
+    if (initialUrl && initialUrl !== '' && !initialUrl.includes('복사하기')) {
+        shareCodeGenerated = true;
+    }
+</script>
+</body>
+</html>
+
