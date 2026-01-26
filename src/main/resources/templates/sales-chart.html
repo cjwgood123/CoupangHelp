@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>판매실적추이 그래프 | 쿠팡셀러 판매 데이터 분석</title>
+    <link rel="canonical" th:href="@{/sales-chart}">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Flatpickr (날짜 선택 라이브러리) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: hsl(330, 80%, 55%);
+            --primary-foreground: hsl(0, 0%, 100%);
+            --secondary: hsl(330, 100%, 97%);
+            --secondary-foreground: hsl(330, 80%, 40%);
+            --background: hsl(0, 0%, 100%);
+            --foreground: hsl(220, 15%, 20%);
+            --card: hsl(0, 0%, 100%);
+            --muted: hsl(220, 15%, 96%);
+            --muted-foreground: hsl(220, 10%, 50%);
+            --border: hsl(220, 15%, 90%);
+            --success: hsl(140, 60%, 50%);
+            --radius: 0.75rem;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: var(--primary-foreground);
+        }
+
+        .logo-text h2 {
+            font-weight: bold;
+            font-size: 1rem;
+            color: var(--foreground);
+        }
+
+        .logo-text p {
+            font-size: 0.75rem;
+            color: var(--muted-foreground);
+        }
+
+        .nav {
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .nav-section {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-item {
+            padding: 0.75rem;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            color: var(--foreground);
+            text-decoration: none;
+            display: block;
+            transition: background-color 0.2s;
+        }
+
+        .nav-item:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-item.active {
+            background-color: var(--secondary);
+            color: var(--secondary-foreground);
+            font-weight: 600;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .section {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .section h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1.5rem;
+            color: var(--foreground);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .data-paste-area {
+            min-height: 300px;
+            font-family: monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            opacity: 0.9;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        /* Filter Section */
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            flex: 0 0 auto;
+            min-width: 150px;
+        }
+
+        .filter-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-family: inherit;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .input-mode-toggle {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+        }
+
+        .input-mode-btn {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background-color: var(--card);
+            color: var(--foreground);
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .input-mode-btn.active {
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border-color: var(--primary);
+        }
+
+        .input-mode-btn:hover {
+            background-color: var(--secondary);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            user-select: none;
+        }
+
+        .radio-label input[type="radio"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .radio-label span {
+            color: var(--foreground);
+        }
+
+        .radio-label:hover span {
+            color: var(--primary);
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .checkbox-label span {
+            color: var(--foreground);
+        }
+
+        .checkbox-label:hover span {
+            color: var(--primary);
+        }
+
+        .checkbox-label input[type="checkbox"]:disabled + span {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .direct-input-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .direct-input-table th,
+        .direct-input-table td {
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            text-align: left;
+            font-size: 0.875rem;
+        }
+
+        .direct-input-table th {
+            background-color: var(--muted);
+            font-weight: 600;
+        }
+
+        .direct-input-table input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) / 2);
+            font-size: 0.875rem;
+        }
+
+        .direct-input-table input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .direct-input-table input[readonly] {
+            background-color: var(--muted);
+            cursor: not-allowed;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            background-color: var(--secondary);
+            border-radius: var(--radius);
+            margin-bottom: 2rem;
+        }
+
+        .user-info span {
+            font-size: 0.875rem;
+            color: var(--secondary-foreground);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .content-wrapper {
+                padding: 1rem;
+            }
+
+            .filter-section {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .chart-container {
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="/" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.75rem;">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>쿠팡 데이터</h2>
+                        <p>판매 기록 분석</p>
+                    </div>
+                </div>
+            </a>
+
+            <nav class="nav">
+                <div class="nav-section">
+                    <a href="/dropshipping-guide" class="nav-item">📦 위탁판매 가이드</a>
+                </div>
+                <div class="nav-section">
+                    <a href="/sales-chart" class="nav-item active">📊 판매실적추이 그래프</a>
+                </div>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header">
+                <h1>판매실적추이 그래프</h1>
+            </div>
+
+            <!-- User Info -->
+            <div class="user-info" id="userInfo" style="display: none;">
+                <span id="userInfoText">사용자: </span>
+                <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+            </div>
+
+            <!-- Data Input Section -->
+            <div class="section" id="dataInputSection" style="display: none;">
+                <h2>데이터 입력</h2>
+                
+                <!-- 입력 방식 선택 -->
+                <div class="input-mode-toggle">
+                    <button class="input-mode-btn active" id="pasteModeBtn" onclick="switchInputMode('paste')">붙여넣기</button>
+                    <button class="input-mode-btn" id="directModeBtn" onclick="switchInputMode('direct')">직접입력</button>
+                </div>
+
+                <!-- 붙여넣기 모드 -->
+                <div id="pasteMode" class="input-mode-content">
+                    <div class="form-group">
+                        <label for="dataPaste">시간별 판매 데이터 (붙여넣기)</label>
+                        <textarea id="dataPaste" class="data-paste-area" placeholder="데이터 추출일자 : 1월18일 (일) | 상품번호 : 15915369884
+시간   판매량(추정)   매출 KRW(추정)
+00h   0.00   0
+02h   0.00   0
+04h   0.00   0
+06h   0.00   0
+08h   0.00   0
+10h   1.00   10900
+12h   0.00   0
+14h   1.00   10900
+16h   0.00   0
+18h   0.00   0
+20h   2.00   19800
+22h   0.00   0"></textarea>
+                        <small style="color: var(--muted-foreground); font-size: 0.75rem; margin-top: 0.5rem; display: block;">
+                            헤더(데이터 추출일자, 상품번호)를 포함한 전체 데이터를 붙여넣으세요.
+                        </small>
+                    </div>
+                </div>
+
+                <!-- 직접입력 모드 -->
+                <div id="directMode" class="input-mode-content" style="display: none;">
+                    <div class="form-group">
+                        <label for="directExtractDate">데이터 추출일자</label>
+                        <input type="text" id="directExtractDate" placeholder="예: 1월18일 (일)">
+                    </div>
+                    <div class="form-group">
+                        <label for="directProductNumber">상품번호</label>
+                        <input type="text" id="directProductNumber" placeholder="예: 15915369884">
+                    </div>
+                    <table class="direct-input-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 100px;">시간</th>
+                                <th>판매량(추정)</th>
+                                <th>매출 KRW(추정)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="directInputTableBody">
+                            <tr>
+                                <td><input type="text" value="00h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="02h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="04h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="06h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="08h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="10h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="12h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="14h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="16h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="18h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="20h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                            <tr>
+                                <td><input type="text" value="22h" readonly></td>
+                                <td><input type="number" step="0.01" class="direct-sales" placeholder="0.00"></td>
+                                <td><input type="number" class="direct-revenue" placeholder="0"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn btn-success" onclick="saveData()">저장하기</button>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="section" id="chartSection" style="display: none;">
+                <h2>판매 데이터 분석</h2>
+                
+                <!-- Filter -->
+                <div class="filter-section">
+                    <div class="filter-group">
+                        <label for="filterType">조회 방식</label>
+                        <select id="filterType" onchange="changeFilterType()">
+                            <option value="range">기간별</option>
+                            <option value="date">날짜별</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" id="dateFilter" style="display: none;">
+                        <label for="filterDate">추출일자</label>
+                        <input type="text" id="filterDate" placeholder="날짜 선택">
+                    </div>
+                    <div class="filter-group" id="rangeFilter">
+                        <label for="startDate">시작일</label>
+                        <input type="text" id="startDate" placeholder="날짜 선택">
+                    </div>
+                    <div class="filter-group" id="endDateFilter">
+                        <label for="endDate">종료일</label>
+                        <input type="text" id="endDate" placeholder="날짜 선택">
+                    </div>
+                    <div class="filter-group">
+                        <label for="filterProduct">상품번호</label>
+                        <select id="filterProduct">
+                            <option value="">전체</option>
+                        </select>
+                    </div>
+                    <div class="filter-group" style="flex: 0 0 auto;">
+                        <button class="btn btn-primary" onclick="loadChartData()" style="padding: 0.75rem 1.5rem; margin-top: 0;">조회</button>
+                    </div>
+                </div>
+                
+                <!-- Day Filter (기간별 조회일 때만 표시) -->
+                <div id="dayFilterSection" style="margin-top: 1rem; padding: 1rem; background-color: var(--muted); border-radius: var(--radius);">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 600;">요일 필터 (여러 요일 선택 가능)</label>
+                        <div class="checkbox-group" style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="월" onchange="updateDayFilter()">
+                                <span>월요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="화" onchange="updateDayFilter()">
+                                <span>화요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="수" onchange="updateDayFilter()">
+                                <span>수요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="목" onchange="updateDayFilter()">
+                                <span>목요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="금" onchange="updateDayFilter()">
+                                <span>금요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="토" onchange="updateDayFilter()">
+                                <span>토요일</span>
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" name="dayFilter" value="일" onchange="updateDayFilter()">
+                                <span>일요일</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart -->
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+                
+                <!-- Revenue Summary -->
+                <div id="revenueSummary" style="margin-top: 1.5rem; padding: 1rem; background-color: var(--muted); border-radius: var(--radius); display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-weight: 600; font-size: 1rem;">매출 합계:</span>
+                        <span id="totalRevenue" style="font-weight: bold; font-size: 1.25rem; color: var(--primary);">0원</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Section -->
+            <div class="section" id="loginSection">
+                <h2>로그인이 필요합니다</h2>
+                <p>판매실적추이 그래프를 사용하려면 로그인이 필요합니다.</p>
+                <button class="btn btn-primary" onclick="window.location.href='/'">홈으로 돌아가기</button>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+    let chart = null;
+    const userId = localStorage.getItem('salesChart_userId');
+
+    // 페이지 로드 시
+    window.addEventListener('load', function() {
+        if (userId) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('dataInputSection').style.display = 'block';
+            document.getElementById('chartSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'flex';
+            document.getElementById('userInfoText').textContent = '사용자: ' + userId;
+            
+            loadExtractDates();
+            loadProductNumbers();
+            // 페이지 로드 시 자동으로 데이터 로드하지 않음
+            
+            // 날짜 선택 라이브러리 초기화
+            initDatePickers();
+            
+            // 필터 타입에 따라 요일 필터 표시/숨김
+            changeFilterType();
+        } else {
+            // 로그인 안 되어 있으면 홈으로 리다이렉트
+            window.location.href = '/';
+        }
+    });
+
+    // 입력 방식 전환
+    function switchInputMode(mode) {
+        const pasteMode = document.getElementById('pasteMode');
+        const directMode = document.getElementById('directMode');
+        const pasteModeBtn = document.getElementById('pasteModeBtn');
+        const directModeBtn = document.getElementById('directModeBtn');
+        
+        if (mode === 'paste') {
+            pasteMode.style.display = 'block';
+            directMode.style.display = 'none';
+            pasteModeBtn.classList.add('active');
+            directModeBtn.classList.remove('active');
+        } else {
+            pasteMode.style.display = 'none';
+            directMode.style.display = 'block';
+            pasteModeBtn.classList.remove('active');
+            directModeBtn.classList.add('active');
+        }
+    }
+
+    // 날짜 선택 라이브러리 초기화
+    function initDatePickers() {
+        // 날짜별 조회용 날짜 선택기 (수동 입력 허용)
+        if (document.getElementById('filterDate')) {
+            flatpickr("#filterDate", {
+                locale: "ko",
+                allowInput: true,
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "Y년 m월 d일"
+            });
+        }
+
+        // 기간별 조회용 날짜 선택기
+        if (document.getElementById('startDate')) {
+            flatpickr("#startDate", {
+                locale: "ko",
+                allowInput: true,
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "Y년 m월 d일"
+            });
+        }
+
+        if (document.getElementById('endDate')) {
+            flatpickr("#endDate", {
+                locale: "ko",
+                allowInput: true,
+                dateFormat: "Y-m-d",
+                altInput: true,
+                altFormat: "Y년 m월 d일"
+            });
+        }
+    }
+
+    // SQL 인젝션 및 XSS 검사 함수
+    function containsSqlInjection(input) {
+        if (!input) return false;
+        const sqlPattern = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|EXECUTE|UNION|SCRIPT|--|\/\*|\*\/|;|'|"|`|\*|%|_|\||&|\^|~|\[|\]|\{|\}|<|>)\b)/gi;
+        return sqlPattern.test(input);
+    }
+    
+    function containsXss(input) {
+        if (!input) return false;
+        const xssPattern = /(<script|<\/script>|<iframe|<\/iframe>|<object|<\/object>|<embed|<\/embed>|javascript:|onerror=|onclick=|onload=|onmouseover=|onfocus=|onblur=)/gi;
+        return xssPattern.test(input);
+    }
+    
+    function sanitizeInput(input) {
+        if (!input) return input;
+        return input.replace(/[<>"'`;\\]/g, '');
+    }
+    
+    function isValidProductNumber(productNumber) {
+        if (!productNumber) return false;
+        return /^[0-9]{1,20}$/.test(productNumber);
+    }
+    
+    function isValidExtractDate(date) {
+        if (!date) return false;
+        return /^\d{1,2}월\d{1,2}일(\s*\([월화수목금토일]\))?$/.test(date);
+    }
+    
+    function isValidTime(time) {
+        if (!time) return false;
+        return /^(0[02468]|1[02468]|2[02])h$/.test(time);
+    }
+
+    // 데이터 저장
+    async function saveData() {
+        const pasteMode = document.getElementById('pasteMode').style.display !== 'none';
+        let extractDate, productNumber, dataList;
+
+        if (pasteMode) {
+            // 붙여넣기 모드
+            const dataPaste = document.getElementById('dataPaste').value.trim();
+            if (!dataPaste) {
+                alert('데이터를 입력해주세요.');
+                return;
+            }
+            
+            // SQL 인젝션 및 XSS 검사
+            if (containsSqlInjection(dataPaste) || containsXss(dataPaste)) {
+                alert('입력값에 허용되지 않은 문자가 포함되어 있습니다.');
+                return;
+            }
+
+            // 헤더에서 추출일자와 상품번호 파싱
+            const lines = dataPaste.split('\n').filter(line => line.trim());
+            if (lines.length === 0) {
+                alert('데이터를 입력해주세요.');
+                return;
+            }
+
+            // 첫 번째 줄에서 추출일자와 상품번호 추출
+            const headerLine = lines[0];
+            const extractDateMatch = headerLine.match(/데이터 추출일자\s*:\s*([^|]+)/);
+            const productNumberMatch = headerLine.match(/상품번호\s*:\s*(\d+)/);
+
+            if (!extractDateMatch || !productNumberMatch) {
+                alert('헤더 형식이 올바르지 않습니다.\n예: 데이터 추출일자 : 1월18일 (일) | 상품번호 : 15915369884');
+                return;
+            }
+
+            extractDate = extractDateMatch[1].trim();
+            productNumber = productNumberMatch[1].trim();
+            
+            // 입력값 검증
+            if (containsSqlInjection(extractDate) || containsXss(extractDate)) {
+                alert('날짜에 허용되지 않은 문자가 포함되어 있습니다.');
+                return;
+            }
+            
+            if (!isValidExtractDate(extractDate)) {
+                alert('날짜 형식이 올바르지 않습니다. (예: 1월26일 (일))');
+                return;
+            }
+            
+            if (containsSqlInjection(productNumber) || containsXss(productNumber)) {
+                alert('상품번호에 허용되지 않은 문자가 포함되어 있습니다.');
+                return;
+            }
+            
+            if (!isValidProductNumber(productNumber)) {
+                alert('상품번호는 숫자만 입력 가능합니다.');
+                return;
+            }
+
+            // 데이터 파싱 (헤더 제외)
+            dataList = [];
+            for (let i = 1; i < lines.length; i++) {
+                const line = lines[i].trim();
+                // 헤더 라인 스킵
+                if (line.includes('시간') || line.includes('판매량') || line.includes('매출')) {
+                    continue;
+                }
+                
+                // SQL 인젝션 및 XSS 검사
+                if (containsSqlInjection(line) || containsXss(line)) {
+                    alert('데이터에 허용되지 않은 문자가 포함되어 있습니다.');
+                    return;
+                }
+                
+                const parts = line.split(/\s+/);
+                if (parts.length >= 3) {
+                    const time = parts[0].trim();
+                    const sales = parts[1].trim();
+                    const revenue = parts[2].trim();
+                    
+                    // 시간 형식 검증
+                    if (!isValidTime(time)) {
+                        alert(`시간 형식이 올바르지 않습니다: ${time}`);
+                        return;
+                    }
+                    
+                    if (time && !isNaN(parseFloat(sales)) && !isNaN(parseFloat(revenue))) {
+                        dataList.push({
+                            time: sanitizeInput(time),
+                            sales: parseFloat(sales),
+                            revenue: parseInt(revenue)
+                        });
+                    }
+                }
+            }
+        } else {
+            // 직접입력 모드
+            extractDate = document.getElementById('directExtractDate').value.trim();
+            productNumber = document.getElementById('directProductNumber').value.trim();
+
+            if (!extractDate || !productNumber) {
+                alert('데이터 추출일자와 상품번호를 입력해주세요.');
+                return;
+            }
+            
+            // 입력값 검증
+            if (containsSqlInjection(extractDate) || containsXss(extractDate)) {
+                alert('날짜에 허용되지 않은 문자가 포함되어 있습니다.');
+                return;
+            }
+            
+            if (!isValidExtractDate(extractDate)) {
+                alert('날짜 형식이 올바르지 않습니다. (예: 1월26일 (일))');
+                return;
+            }
+            
+            if (containsSqlInjection(productNumber) || containsXss(productNumber)) {
+                alert('상품번호에 허용되지 않은 문자가 포함되어 있습니다.');
+                return;
+            }
+            
+            if (!isValidProductNumber(productNumber)) {
+                alert('상품번호는 숫자만 입력 가능합니다.');
+                return;
+            }
+
+            // 테이블에서 데이터 수집
+            dataList = [];
+            const rows = document.querySelectorAll('#directInputTableBody tr');
+            rows.forEach(row => {
+                const timeInput = row.querySelector('td:first-child input');
+                const salesInput = row.querySelector('.direct-sales');
+                const revenueInput = row.querySelector('.direct-revenue');
+                
+                const time = timeInput.value.trim();
+                const sales = parseFloat(salesInput.value) || 0;
+                const revenue = parseInt(revenueInput.value) || 0;
+                
+                // 시간 형식 검증
+                if (time && !isValidTime(time)) {
+                    alert(`시간 형식이 올바르지 않습니다: ${time}`);
+                    return;
+                }
+
+                if (time) {
+                    dataList.push({
+                        time: sanitizeInput(time),
+                        sales: sales,
+                        revenue: revenue
+                    });
+                }
+            });
+        }
+
+        if (dataList.length === 0) {
+            alert('판매 데이터를 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/sales-chart/data/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    extractDate: extractDate,
+                    productNumber: productNumber,
+                    dataList: dataList
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('데이터가 저장되었습니다.');
+                // 입력 필드 초기화
+                if (pasteMode) {
+                    document.getElementById('dataPaste').value = '';
+                } else {
+                    document.getElementById('directExtractDate').value = '';
+                    document.getElementById('directProductNumber').value = '';
+                    document.querySelectorAll('.direct-sales, .direct-revenue').forEach(input => {
+                        input.value = '';
+                    });
+                }
+                
+                // 목록 새로고침
+                loadExtractDates();
+                loadProductNumbers();
+                loadChartData();
+            } else {
+                alert(result.message || '데이터 저장에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('데이터 저장 오류:', error);
+            alert('데이터 저장 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 추출일자 목록 로드
+    async function loadExtractDates() {
+        try {
+            const response = await fetch(`/api/sales-chart/data/dates?userId=${userId}`);
+            const result = await response.json();
+            
+            if (result.success && result.dates) {
+                // 날짜 선택기에 사용할 수 있도록 처리
+                // 필요시 드롭다운에도 추가 가능
+            }
+        } catch (error) {
+            console.error('추출일자 목록 로드 오류:', error);
+        }
+    }
+
+    // 상품번호 목록 로드
+    async function loadProductNumbers() {
+        try {
+            const response = await fetch(`/api/sales-chart/data/products?userId=${userId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                const select = document.getElementById('filterProduct');
+                select.innerHTML = '<option value="">전체</option>';
+                if (result.products && result.products.length > 0) {
+                    result.products.forEach(product => {
+                        const option = document.createElement('option');
+                        option.value = product;
+                        option.textContent = product;
+                        select.appendChild(option);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('상품번호 목록 로드 오류:', error);
+        }
+    }
+
+    // 필터 타입 변경
+    function changeFilterType() {
+        const filterType = document.getElementById('filterType').value;
+        document.getElementById('dateFilter').style.display = filterType === 'date' ? 'block' : 'none';
+        document.getElementById('rangeFilter').style.display = filterType === 'range' ? 'block' : 'none';
+        document.getElementById('endDateFilter').style.display = filterType === 'range' ? 'block' : 'none';
+        // 기간별 조회일 때만 요일 필터 표시
+        document.getElementById('dayFilterSection').style.display = filterType === 'range' ? 'block' : 'none';
+    }
+    
+    // 요일 필터 업데이트 (체크박스 기반)
+    function updateDayFilter() {
+        // 체크박스 변경 시 자동으로 차트 데이터 다시 로드하지 않음
+        // 조회 버튼을 눌러야 데이터 로드
+    }
+
+    // 차트 데이터 로드
+    async function loadChartData() {
+        const filterType = document.getElementById('filterType').value;
+        const productNumber = document.getElementById('filterProduct').value;
+        let url = `/api/sales-chart/data?userId=${userId}`;
+
+        // 상품번호 필터 추가
+        if (productNumber && productNumber !== '전체') {
+            url += `&productNumber=${encodeURIComponent(productNumber)}`;
+        }
+
+        if (filterType === 'date') {
+            const dateInput = document.getElementById('filterDate');
+            let date = '';
+            if (dateInput) {
+                // Flatpickr의 실제 입력값 가져오기 (Y-m-d 형식)
+                if (dateInput._flatpickr) {
+                    date = dateInput._flatpickr.input.value || '';
+                } else {
+                    date = dateInput.value || '';
+                }
+            }
+            if (date) {
+                // Y-m-d 형식을 "m월d일" 형식으로 변환
+                const convertDate = (dateStr) => {
+                    if (!dateStr) return dateStr;
+                    // "2026-01-26" 형식 파싱
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        const year = parseInt(parts[0]);
+                        const month = parseInt(parts[1]);
+                        const day = parseInt(parts[2]);
+                        return `${month}월${day}일`;
+                    }
+                    return dateStr;
+                };
+                
+                const convertedDate = convertDate(date);
+                url += `&extractDate=${encodeURIComponent(convertedDate)}`;
+            }
+        } else if (filterType === 'range') {
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            let startDate = '';
+            let endDate = '';
+            
+            if (startDateInput) {
+                // Flatpickr의 실제 입력값 가져오기 (Y-m-d 형식)
+                if (startDateInput._flatpickr) {
+                    startDate = startDateInput._flatpickr.input.value || '';
+                } else {
+                    startDate = startDateInput.value || '';
+                }
+            }
+            
+            if (endDateInput) {
+                // Flatpickr의 실제 입력값 가져오기 (Y-m-d 형식)
+                if (endDateInput._flatpickr) {
+                    endDate = endDateInput._flatpickr.input.value || '';
+                } else {
+                    endDate = endDateInput.value || '';
+                }
+            }
+            
+            if (startDate && endDate) {
+                // Y-m-d 형식을 "m월d일" 형식으로 변환
+                const convertDate = (dateStr) => {
+                    if (!dateStr) return dateStr;
+                    // "2026-01-26" 형식 파싱
+                    const parts = dateStr.split('-');
+                    if (parts.length === 3) {
+                        const year = parseInt(parts[0]);
+                        const month = parseInt(parts[1]);
+                        const day = parseInt(parts[2]);
+                        return `${month}월${day}일`;
+                    }
+                    // "2026년 01월 26일" 형식도 처리
+                    const match = dateStr.match(/(\d+)년\s*(\d+)월\s*(\d+)일/);
+                    if (match) {
+                        const year = parseInt(match[1]);
+                        const month = parseInt(match[2]);
+                        const day = parseInt(match[3]);
+                        return `${month}월${day}일`;
+                    }
+                    return dateStr;
+                };
+                
+                const convertedStartDate = convertDate(startDate);
+                const convertedEndDate = convertDate(endDate);
+                url += `&startDate=${encodeURIComponent(convertedStartDate)}&endDate=${encodeURIComponent(convertedEndDate)}`;
+            }
+            
+            // 요일 필터 추가 (체크박스 기반 - 여러 요일 선택 가능)
+            const checkedDays = Array.from(document.querySelectorAll('input[name="dayFilter"]:checked'))
+                .map(checkbox => checkbox.value);
+            
+            if (checkedDays.length > 0) {
+                // 여러 요일을 쉼표로 구분하여 전송
+                url += `&dayFilter=${encodeURIComponent(checkedDays.join(','))}`;
+            }
+        }
+
+        try {
+            const response = await fetch(url);
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                drawChart(result.data);
+            } else {
+                alert('데이터를 불러올 수 없습니다.');
+            }
+        } catch (error) {
+            console.error('차트 데이터 로드 오류:', error);
+            alert('데이터 로드 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 차트 그리기
+    function drawChart(data) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        
+        if (!data || data.length === 0) {
+            if (chart) {
+                chart.destroy();
+            }
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('표시할 데이터가 없습니다.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            return;
+        }
+
+        // 모든 시간 추출 (00h, 02h, 04h, ... 22h)
+        const allTimes = ['00h', '02h', '04h', '06h', '08h', '10h', '12h', '14h', '16h', '18h', '20h', '22h'];
+        
+        // 날짜별로 데이터 그룹화 (요일 정보 포함)
+        const dateMap = new Map();
+        data.forEach(item => {
+            const date = item.extractDate || '기타';
+            const dayOfWeek = item.dayOfWeek || '';
+            if (!dateMap.has(date)) {
+                dateMap.set(date, {
+                    dayOfWeek: dayOfWeek,
+                    timeMap: new Map()
+                });
+            }
+            const timeMap = dateMap.get(date).timeMap;
+            const time = item.time;
+            if (!timeMap.has(time)) {
+                timeMap.set(time, []);
+            }
+            timeMap.get(time).push(item);
+        });
+
+        // X축 레이블을 시간 범위 형식으로 변환 (00h-02h, 02h-04h, ...)
+        const labels = allTimes.map((time, index) => {
+            const currentHour = parseInt(time.replace('h', ''));
+            const nextHour = currentHour + 2;
+            if (nextHour >= 24) {
+                return `${time}-22h`;
+            }
+            const nextTime = nextHour.toString().padStart(2, '0') + 'h';
+            return `${time}-${nextTime}`;
+        });
+
+        // 날짜별 색상 정의
+        const colors = [
+            'rgb(229, 36, 117)',   // 핑크
+            'rgb(59, 130, 246)',   // 파랑
+            'rgb(34, 197, 94)',    // 초록
+            'rgb(251, 146, 60)',   // 주황
+            'rgb(168, 85, 247)',   // 보라
+            'rgb(236, 72, 153)',   // 로즈
+            'rgb(14, 165, 233)',   // 스카이
+            'rgb(20, 184, 166)'    // 틸
+        ];
+
+        // 날짜 정렬 함수 (월과 일을 숫자로 변환하여 정렬)
+        function sortDates(date1, date2) {
+            // "1월26일" 형식에서 월과 일 추출
+            function parseDate(dateStr) {
+                const monthMatch = dateStr.match(/(\d+)월/);
+                const dayMatch = dateStr.match(/(\d+)일/);
+                const month = monthMatch ? parseInt(monthMatch[1]) : 0;
+                const day = dayMatch ? parseInt(dayMatch[1]) : 0;
+                return month * 100 + day; // 월*100 + 일로 정렬 (예: 1월26일 = 126)
+            }
+            
+            return parseDate(date1) - parseDate(date2);
+        }
+        
+        // 날짜별 데이터셋 생성
+        const datasets = [];
+        let colorIndex = 0;
+        const sortedDates = Array.from(dateMap.keys()).sort(sortDates);
+        
+        sortedDates.forEach(date => {
+            const dateData = dateMap.get(date);
+            const timeMap = dateData.timeMap;
+            const dayOfWeek = dateData.dayOfWeek;
+            
+            const salesData = allTimes.map(time => {
+                const items = timeMap.get(time) || [];
+                return items.reduce((sum, item) => {
+                    const sales = typeof item.salesEstimate === 'number' 
+                        ? item.salesEstimate 
+                        : parseFloat(item.salesEstimate) || 0;
+                    return sum + sales;
+                }, 0);
+            });
+
+            // 레이블에 요일 정보 추가 (예: "1월26일 (월)")
+            const label = dayOfWeek ? `${date} (${dayOfWeek})` : date;
+            
+            const color = colors[colorIndex % colors.length];
+            datasets.push({
+                label: label,
+                data: salesData,
+                borderColor: color,
+                backgroundColor: color.replace('rgb', 'rgba').replace(')', ', 0.1)'),
+                tension: 0.4,
+                fill: false,
+                pointRadius: 4,
+                pointHoverRadius: 6
+            });
+            colorIndex++;
+        });
+
+        // 모든 데이터셋에서 최대값 찾기
+        let maxSales = 0;
+        datasets.forEach(dataset => {
+            const datasetMax = Math.max(...dataset.data, 0);
+            if (datasetMax > maxSales) {
+                maxSales = datasetMax;
+            }
+        });
+
+        // Y축 최대값 계산 (데이터 최대값 + 여백)
+        let yAxisMax;
+        if (maxSales === 0) {
+            yAxisMax = 1;
+        } else if (maxSales <= 10) {
+            // 작은 값일 때는 10% 여백
+            yAxisMax = Math.ceil(maxSales * 1.1);
+        } else if (maxSales <= 100) {
+            // 중간 값일 때는 5% 여백
+            yAxisMax = Math.ceil(maxSales * 1.05);
+        } else {
+            // 큰 값일 때는 적절한 간격으로 반올림
+            const magnitude = Math.pow(10, Math.floor(Math.log10(maxSales)));
+            yAxisMax = Math.ceil(maxSales / magnitude) * magnitude;
+            // 최소 5% 여백 확보
+            if (yAxisMax < maxSales * 1.05) {
+                yAxisMax = Math.ceil(maxSales * 1.05);
+            }
+        }
+
+        // 데이터가 없으면 메시지 표시
+        if (datasets.length === 0 || maxSales === 0) {
+            if (chart) {
+                chart.destroy();
+            }
+            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('표시할 데이터가 없습니다.', ctx.canvas.width / 2, ctx.canvas.height / 2);
+            
+            // 매출 합계 숨기기
+            document.getElementById('revenueSummary').style.display = 'none';
+            return;
+        }
+        
+        // 매출 합계 계산
+        let totalRevenue = 0;
+        data.forEach(item => {
+            const revenue = typeof item.revenueEstimate === 'number' 
+                ? item.revenueEstimate 
+                : parseInt(item.revenueEstimate) || 0;
+            totalRevenue += revenue;
+        });
+        
+        // 매출 합계 표시
+        const revenueSummary = document.getElementById('revenueSummary');
+        const totalRevenueElement = document.getElementById('totalRevenue');
+        if (totalRevenue > 0) {
+            totalRevenueElement.textContent = totalRevenue.toLocaleString('ko-KR') + '원';
+            revenueSummary.style.display = 'block';
+        } else {
+            revenueSummary.style.display = 'none';
+        }
+
+        // 기존 차트 제거
+        if (chart) {
+            chart.destroy();
+        }
+
+        // 새 차트 생성
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        min: 0,
+                        max: yAxisMax,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        title: {
+                            display: true,
+                            text: '판매량'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: '시간'
+                        },
+                        ticks: {
+                            maxRotation: 45,
+                            minRotation: 0
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                return '판매량: ' + context.parsed.y.toFixed(2);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 로그아웃
+    function handleLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('salesChart_userId');
+            window.location.href = '/';
+        }
+    }
+</script>
+</body>
+</html>
+

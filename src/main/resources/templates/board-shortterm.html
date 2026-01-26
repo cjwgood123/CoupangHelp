@@ -437,6 +437,259 @@
             font-size: 0.875rem;
         }
 
+        /* Sales Chart Modal */
+        .sales-chart-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sales-chart-modal.show {
+            display: flex;
+        }
+
+        .sales-chart-content {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            padding: 2rem;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .sales-chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .sales-chart-header h2 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--foreground);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--muted-foreground);
+            cursor: pointer;
+            padding: 0;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius);
+            transition: background-color 0.2s;
+        }
+
+        .close-btn:hover {
+            background-color: var(--muted);
+        }
+
+        .login-section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+        }
+
+        .login-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--foreground);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .data-input-section {
+            display: none;
+        }
+
+        .data-input-section.show {
+            display: block;
+        }
+
+        .data-input-section h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--foreground);
+        }
+
+        .data-form {
+            background-color: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+        }
+
+        .data-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .data-paste-area {
+            width: 100%;
+            min-height: 300px;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.875rem;
+            resize: vertical;
+            margin-bottom: 1rem;
+        }
+
+        .data-paste-area:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .data-preview {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--muted);
+            border-radius: var(--radius);
+        }
+
+        .data-preview h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--foreground);
+        }
+
+        .data-preview-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .data-preview-table th,
+        .data-preview-table td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .data-preview-table th {
+            background-color: var(--card);
+            font-weight: 600;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.75rem;
+            background-color: var(--secondary);
+            border-radius: var(--radius);
+            margin-bottom: 1rem;
+        }
+
+        .user-info span {
+            font-size: 0.875rem;
+            color: var(--secondary-foreground);
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--primary);
+            color: var(--primary-foreground);
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .logout-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Radio Button Styles */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: normal;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: var(--radius);
+            transition: background-color 0.2s;
+        }
+
+        .radio-label:hover {
+            background-color: var(--muted);
+        }
+
+        .radio-label input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .radio-label span {
+            font-size: 0.875rem;
+            color: var(--foreground);
+        }
+
         /* Mobile */
         @media (max-width: 768px) {
             .container {
@@ -470,6 +723,14 @@
 
             .table-wrapper {
                 overflow-x: auto;
+            }
+
+            .data-form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .sales-chart-content {
+                padding: 1rem;
             }
         }
     </style>
@@ -551,6 +812,10 @@
                 <!-- 단기간 인기 상품 -->
                 <div class="nav-section">
                     <a href="/shortterm" class="nav-item active" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+                </div>
+                <!-- 판매실적추이 그래프 -->
+                <div class="nav-section">
+                    <a href="/sales-chart" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 판매실적추이 그래프</a>
                 </div>
             </nav>
         </div>
@@ -752,7 +1017,401 @@
         navItems.classList.toggle('show');
         toggle.classList.toggle('active');
     }
+</script>
+</body>
+</html>
+            <h2>판매실적추이 그래프</h2>
+            <button class="close-btn" onclick="closeSalesChart()">×</button>
+        </div>
 
+        <!-- 로그인 섹션 -->
+        <div class="login-section" id="loginSection">
+            <h3>ID/PW 설정하기</h3>
+            <div id="loginForm">
+                <div class="form-group">
+                    <label for="userId">아이디</label>
+                    <input type="text" id="userId" placeholder="아이디를 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label for="userPw">비밀번호</label>
+                    <input type="password" id="userPw" placeholder="비밀번호를 입력하세요">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="handleLogin()">로그인</button>
+                    <button class="btn-submit" onclick="showSignupForm()" style="background-color: var(--secondary); color: var(--secondary-foreground);">회원가입</button>
+                </div>
+            </div>
+
+            <!-- 회원가입 폼 -->
+            <div id="signupForm" style="display: none;">
+                <div class="form-group">
+                    <label for="signupUserId">아이디</label>
+                    <input type="text" id="signupUserId" placeholder="아이디를 입력하세요 (최소 3자)">
+                </div>
+                <div class="form-group">
+                    <label for="signupUserPw">비밀번호</label>
+                    <input type="password" id="signupUserPw" placeholder="비밀번호를 입력하세요 (최소 4자)">
+                </div>
+                <div class="form-group">
+                    <label for="signupUserPwConfirm">비밀번호 확인</label>
+                    <input type="password" id="signupUserPwConfirm" placeholder="비밀번호를 다시 입력하세요">
+                </div>
+                <div class="form-group">
+                    <label>셀러 옵션</label>
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="sellerType" value="ROCKET_GROSS" checked onchange="toggleSellerOther()">
+                            <span>로켓그로스</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem; font-weight: normal; cursor: pointer;">
+                            <input type="radio" name="sellerType" value="OTHER" onchange="toggleSellerOther()">
+                            <span>기타</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group" id="sellerOtherGroup" style="display: none;">
+                    <label for="sellerOther">기타 셀러명</label>
+                    <input type="text" id="sellerOther" placeholder="셀러명을 입력하세요">
+                </div>
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="handleSignup()">회원가입</button>
+                    <button class="btn-cancel" onclick="showLoginForm()">취소</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 사용자 정보 및 데이터 입력 섹션 -->
+        <div class="data-input-section" id="dataInputSection">
+            <div class="user-info">
+                <span id="userInfoText">사용자: </span>
+                <button class="logout-btn" onclick="handleLogout()">로그아웃</button>
+            </div>
+
+            <div class="data-form">
+                <h3>판매 데이터 입력</h3>
+                <div class="form-group">
+                    <label for="extractDate">데이터 추출일자</label>
+                    <input type="text" id="extractDate" placeholder="예: 1월18일 (일)">
+                </div>
+                <div class="form-group">
+                    <label for="productNumber">상품번호</label>
+                    <input type="text" id="productNumber" placeholder="예: 15915369884">
+                </div>
+                
+                <div class="form-group">
+                    <label for="dataPaste">시간별 판매 데이터 (붙여넣기)</label>
+                    <textarea id="dataPaste" class="data-paste-area" placeholder="시간   판매량(추정)   매출 KRW(추정)
+00h   0.00   0
+02h   0.00   0
+04h   0.00   0
+06h   0.00   0
+08h   0.00   0
+10h   1.00   10900
+12h   0.00   0
+14h   1.00   10900
+16h   0.00   0
+18h   0.00   0
+20h   2.00   19800
+22h   0.00   0"></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <button class="btn-submit" onclick="parseAndPreview()">데이터 미리보기</button>
+                    <button class="btn-submit" onclick="saveData()" style="background-color: var(--success);">저장하기</button>
+                </div>
+
+                <div class="data-preview" id="dataPreview" style="display: none;">
+                    <h4>데이터 미리보기</h4>
+                    <table class="data-preview-table" id="previewTable">
+                        <thead>
+                            <tr>
+                                <th>시간</th>
+                                <th>판매량(추정)</th>
+                                <th>매출 KRW(추정)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleNav(id) {
+        const navItems = document.getElementById(id);
+        const toggle = navItems.previousElementSibling;
+        
+        navItems.classList.toggle('show');
+        toggle.classList.toggle('active');
+    }
+
+    // 판매실적추이 그래프 모달 관련 함수
+    function showSalesChart() {
+        const modal = document.getElementById('salesChartModal');
+        modal.classList.add('show');
+        checkLoginStatus();
+    }
+
+    function closeSalesChart() {
+        const modal = document.getElementById('salesChartModal');
+        modal.classList.remove('show');
+    }
+
+    // 모달 외부 클릭 시 닫기
+    document.getElementById('salesChartModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeSalesChart();
+        }
+    });
+
+    // 로그인 상태 확인
+    function checkLoginStatus() {
+        const userId = localStorage.getItem('salesChart_userId');
+        const loginSection = document.getElementById('loginSection');
+        const dataInputSection = document.getElementById('dataInputSection');
+        const userInfoText = document.getElementById('userInfoText');
+
+        if (userId) {
+            loginSection.style.display = 'none';
+            dataInputSection.classList.add('show');
+            userInfoText.textContent = '사용자: ' + userId;
+        } else {
+            loginSection.style.display = 'block';
+            dataInputSection.classList.remove('show');
+            showLoginForm();
+        }
+    }
+
+    // 로그인 폼 표시
+    function showLoginForm() {
+        document.getElementById('loginForm').style.display = 'block';
+        document.getElementById('signupForm').style.display = 'none';
+    }
+
+    // 회원가입 폼 표시
+    function showSignupForm() {
+        showWarningAlert();
+        document.getElementById('loginForm').style.display = 'none';
+        document.getElementById('signupForm').style.display = 'block';
+    }
+
+    // 셀러 옵션 변경 시 기타 입력란 표시/숨김
+    function toggleSellerOther() {
+        const sellerType = document.querySelector('input[name="sellerType"]:checked').value;
+        const sellerOtherGroup = document.getElementById('sellerOtherGroup');
+        const sellerOther = document.getElementById('sellerOther');
+        
+        if (sellerType === 'OTHER') {
+            sellerOtherGroup.style.display = 'block';
+            sellerOther.required = true;
+        } else {
+            sellerOtherGroup.style.display = 'none';
+            sellerOther.required = false;
+            sellerOther.value = '';
+        }
+    }
+
+    // 경고 알림 표시
+    function showWarningAlert() {
+        alert('개인정보를 따로 저장하지 않습니다.\nID/PW 찾기 시 관리자에게 문의하셔야 합니다.');
+    }
+
+    // 회원가입
+    async function handleSignup() {
+        const userId = document.getElementById('signupUserId').value.trim();
+        const userPw = document.getElementById('signupUserPw').value.trim();
+        const userPwConfirm = document.getElementById('signupUserPwConfirm').value.trim();
+        const sellerType = document.querySelector('input[name="sellerType"]:checked').value;
+        const sellerOther = document.getElementById('sellerOther').value.trim();
+
+        if (!userId || !userPw || !userPwConfirm) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        if (userPw !== userPwConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        if (sellerType === 'OTHER' && !sellerOther) {
+            alert('기타 셀러명을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/sales-chart/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    userPw: userPw,
+                    userPwConfirm: userPwConfirm,
+                    sellerType: sellerType,
+                    sellerOther: sellerType === 'OTHER' ? sellerOther : null
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('회원가입이 완료되었습니다. 자동으로 로그인됩니다.');
+                // 자동 로그인
+                localStorage.setItem('salesChart_userId', result.userId);
+                
+                // 입력 필드 초기화
+                document.getElementById('signupUserId').value = '';
+                document.getElementById('signupUserPw').value = '';
+                document.getElementById('signupUserPwConfirm').value = '';
+                document.getElementById('sellerOther').value = '';
+                
+                checkLoginStatus();
+            } else {
+                alert(result.message || '회원가입에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('회원가입 오류:', error);
+            alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+    }
+
+
+    // 로그아웃
+    function handleLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            localStorage.removeItem('salesChart_userId');
+            checkLoginStatus();
+        }
+    }
+
+    // 데이터 파싱 및 미리보기
+    function parseAndPreview() {
+        const extractDate = document.getElementById('extractDate').value.trim();
+        const productNumber = document.getElementById('productNumber').value.trim();
+        const dataPaste = document.getElementById('dataPaste').value.trim();
+
+        if (!extractDate || !productNumber) {
+            alert('데이터 추출일자와 상품번호를 입력해주세요.');
+            return;
+        }
+
+        if (!dataPaste) {
+            alert('시간별 판매 데이터를 입력해주세요.');
+            return;
+        }
+
+        const lines = dataPaste.split('\n').filter(line => line.trim());
+        const data = [];
+        
+        for (let line of lines) {
+            // 탭이나 여러 공백으로 구분된 데이터 파싱
+            const parts = line.trim().split(/\s+/);
+            if (parts.length >= 3) {
+                const time = parts[0];
+                const sales = parts[1];
+                const revenue = parts[2];
+                
+                // 숫자 형식 검증
+                if (time && !isNaN(parseFloat(sales)) && !isNaN(parseFloat(revenue))) {
+                    data.push({
+                        time: time,
+                        sales: parseFloat(sales),
+                        revenue: parseInt(revenue)
+                    });
+                }
+            }
+        }
+
+        if (data.length === 0) {
+            alert('올바른 형식의 데이터를 입력해주세요.\n예: 00h   0.00   0');
+            return;
+        }
+
+        // 미리보기 테이블 생성
+        const tbody = document.getElementById('previewTableBody');
+        tbody.innerHTML = '';
+        
+        data.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${item.time}</td>
+                <td>${item.sales.toFixed(2)}</td>
+                <td>${item.revenue.toLocaleString()}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        document.getElementById('dataPreview').style.display = 'block';
+    }
+
+    // 데이터 저장
+    function saveData() {
+        const extractDate = document.getElementById('extractDate').value.trim();
+        const productNumber = document.getElementById('productNumber').value.trim();
+        const dataPaste = document.getElementById('dataPaste').value.trim();
+
+        if (!extractDate || !productNumber || !dataPaste) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        // 데이터 파싱
+        const lines = dataPaste.split('\n').filter(line => line.trim());
+        const data = [];
+        
+        for (let line of lines) {
+            const parts = line.trim().split(/\s+/);
+            if (parts.length >= 3) {
+                const time = parts[0];
+                const sales = parts[1];
+                const revenue = parts[2];
+                
+                if (time && !isNaN(parseFloat(sales)) && !isNaN(parseFloat(revenue))) {
+                    data.push({
+                        time: time,
+                        sales: parseFloat(sales),
+                        revenue: parseInt(revenue)
+                    });
+                }
+            }
+        }
+
+        if (data.length === 0) {
+            alert('올바른 형식의 데이터를 입력해주세요.');
+            return;
+        }
+
+        // 로컬스토리지에 저장 (테이블은 나중에 만들 예정)
+        const userId = localStorage.getItem('salesChart_userId');
+        const salesData = {
+            extractDate: extractDate,
+            productNumber: productNumber,
+            data: data,
+            savedAt: new Date().toISOString()
+        };
+
+        const userData = JSON.parse(localStorage.getItem('salesChart_data_' + userId) || '[]');
+        userData.push(salesData);
+        localStorage.setItem('salesChart_data_' + userId, JSON.stringify(userData));
+
+        alert('데이터가 저장되었습니다.\n(현재는 로컬스토리지에만 저장되며, 테이블은 추후 구현 예정입니다.)');
+        
+        // 입력 필드 초기화
+        document.getElementById('extractDate').value = '';
+        document.getElementById('productNumber').value = '';
+        document.getElementById('dataPaste').value = '';
+        document.getElementById('dataPreview').style.display = 'none';
+    }
+
+    // 페이지 로드 시 로그인 상태 확인
+    window.addEventListener('load', function() {
+        // 모달이 열려있을 때만 체크
+    });
 </script>
 </body>
 </html>

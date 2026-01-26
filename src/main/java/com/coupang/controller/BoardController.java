@@ -478,5 +478,15 @@ public class BoardController {
 
         return "board-shortterm-mobile";
     }
+
+    @GetMapping("/sales-chart")
+    public String salesChart(HttpServletRequest request, Model model) {
+        // 모바일 기기 감지 후 리다이렉트 (필요시)
+        // if (MobileDetector.isMobile(request)) {
+        //     return "redirect:/mobile/sales-chart";
+        // }
+
+        return "sales-chart";
+    }
 }
 
