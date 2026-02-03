@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>판매실적추이 그래프 | 쿠팡셀러 판매 데이터 분석</title>
+    <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <link rel="canonical" th:href="@{/sales-chart}">
     
     <!-- Chart.js -->
@@ -632,6 +633,9 @@
                 <div class="form-actions">
                     <button class="btn btn-success" onclick="saveData()">저장하기</button>
                 </div>
+                
+                <!-- 인아티클 광고 (데이터 입력 섹션 아래) -->
+                <div th:replace="~{fragments/ads :: inarticle-ad}" style="margin-top: 1.5rem;"></div>
             </div>
 
             <!-- Chart Section -->
@@ -719,13 +723,67 @@
                         <span id="totalRevenue" style="font-weight: bold; font-size: 1.25rem; color: var(--primary);">0원</span>
                     </div>
                 </div>
+                
+                <!-- 디스플레이 광고 (차트 아래) -->
+                <div th:replace="~{fragments/ads :: display-ad}"></div>
             </div>
 
             <!-- Login Section -->
             <div class="section" id="loginSection">
-                <h2>로그인이 필요합니다</h2>
-                <p>판매실적추이 그래프를 사용하려면 로그인이 필요합니다.</p>
-                <button class="btn btn-primary" onclick="window.location.href='/'">홈으로 돌아가기</button>
+                <h2>ID/PW 설정하기</h2>
+                
+                <!-- 로그인 폼 -->
+                <div id="loginForm">
+                    <div class="form-group">
+                        <label for="userId">아이디</label>
+                        <input type="text" id="userId" placeholder="아이디를 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="userPw">비밀번호</label>
+                        <input type="password" id="userPw" placeholder="비밀번호를 입력하세요">
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="handleLogin()">로그인</button>
+                        <button class="btn" onclick="showSignupForm()" style="background-color: var(--secondary); color: var(--secondary-foreground);">회원가입</button>
+                    </div>
+                </div>
+
+                <!-- 회원가입 폼 -->
+                <div id="signupForm" style="display: none;">
+                    <div class="form-group">
+                        <label for="signupUserId">아이디</label>
+                        <input type="text" id="signupUserId" placeholder="아이디를 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupUserPw">비밀번호</label>
+                        <input type="password" id="signupUserPw" placeholder="비밀번호를 입력하세요 (최소 4자)">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupUserPwConfirm">비밀번호 확인</label>
+                        <input type="password" id="signupUserPwConfirm" placeholder="비밀번호를 다시 입력하세요">
+                    </div>
+                    <div class="form-group">
+                        <label>셀러 옵션</label>
+                        <div class="radio-group">
+                            <label class="radio-label">
+                                <input type="radio" name="sellerType" value="ROCKET_GROSS" checked onchange="toggleSellerOther()">
+                                <span>로켓그로스</span>
+                            </label>
+                            <label class="radio-label">
+                                <input type="radio" name="sellerType" value="OTHER" onchange="toggleSellerOther()">
+                                <span>기타</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group" id="sellerOtherGroup" style="display: none;">
+                        <label for="sellerOther">기타 셀러명</label>
+                        <input type="text" id="sellerOther" placeholder="셀러명을 입력하세요">
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn btn-primary" onclick="handleSignup()">회원가입</button>
+                        <button class="btn" onclick="showLoginForm()" style="background-color: var(--muted);">취소</button>
+                    </div>
+                </div>
             </div>
         </div>
     </main>
@@ -754,10 +812,149 @@
             // 필터 타입에 따라 요일 필터 표시/숨김
             changeFilterType();
         } else {
-            // 로그인 안 되어 있으면 홈으로 리다이렉트
-            window.location.href = '/';
+            // 로그인 안 되어 있으면 로그인 폼 표시
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('dataInputSection').style.display = 'none';
+            document.getElementById('chartSection').style.display = 'none';
+            showLoginForm();
         }
     });
+    
+    // 로그인 폼 표시
+    function showLoginForm() {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        if (loginForm) loginForm.style.display = 'block';
+        if (signupForm) signupForm.style.display = 'none';
+    }
+    
+    // 회원가입 폼 표시
+    function showSignupForm() {
+        alert('개인정보를 따로 저장하지 않습니다.\nID/PW 찾기 시 관리자에게 문의하셔야 합니다.');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        if (loginForm) loginForm.style.display = 'none';
+        if (signupForm) signupForm.style.display = 'block';
+    }
+    
+    // 셀러 옵션 변경 시 기타 입력란 표시/숨김
+    function toggleSellerOther() {
+        const sellerTypeRadio = document.querySelector('input[name="sellerType"]:checked');
+        if (!sellerTypeRadio) return;
+        
+        const sellerType = sellerTypeRadio.value;
+        const sellerOtherGroup = document.getElementById('sellerOtherGroup');
+        const sellerOther = document.getElementById('sellerOther');
+        
+        if (sellerOtherGroup && sellerOther) {
+            if (sellerType === 'OTHER') {
+                sellerOtherGroup.style.display = 'block';
+                sellerOther.required = true;
+            } else {
+                sellerOtherGroup.style.display = 'none';
+                sellerOther.required = false;
+                sellerOther.value = '';
+            }
+        }
+    }
+    
+    // 회원가입
+    async function handleSignup() {
+        const userId = document.getElementById('signupUserId')?.value.trim();
+        const userPw = document.getElementById('signupUserPw')?.value.trim();
+        const userPwConfirm = document.getElementById('signupUserPwConfirm')?.value.trim();
+        const sellerTypeRadio = document.querySelector('input[name="sellerType"]:checked');
+        const sellerOther = document.getElementById('sellerOther')?.value.trim();
+
+        if (!userId || !userPw || !userPwConfirm) {
+            alert('모든 필드를 입력해주세요.');
+            return;
+        }
+
+        if (!sellerTypeRadio) {
+            alert('셀러 옵션을 선택해주세요.');
+            return;
+        }
+
+        const sellerType = sellerTypeRadio.value;
+
+        if (userPw !== userPwConfirm) {
+            alert('비밀번호가 일치하지 않습니다.');
+            return;
+        }
+
+        if (sellerType === 'OTHER' && !sellerOther) {
+            alert('기타 셀러명을 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/sales-chart/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    userPw: userPw,
+                    userPwConfirm: userPwConfirm,
+                    sellerType: sellerType,
+                    sellerOther: sellerType === 'OTHER' ? sellerOther : null
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('회원가입이 완료되었습니다.');
+                localStorage.setItem('salesChart_userId', result.userId);
+                // 페이지 새로고침하여 로그인 상태로 전환
+                window.location.reload();
+            } else {
+                alert(result.message || '회원가입에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('회원가입 오류:', error);
+            alert('회원가입 중 오류가 발생했습니다.');
+        }
+    }
+
+    // 로그인
+    async function handleLogin() {
+        const userId = document.getElementById('userId')?.value.trim();
+        const userPw = document.getElementById('userPw')?.value.trim();
+
+        if (!userId || !userPw) {
+            alert('아이디와 비밀번호를 모두 입력해주세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/sales-chart/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    userId: userId,
+                    userPw: userPw
+                })
+            });
+
+            const result = await response.json();
+            
+            if (result.success) {
+                localStorage.setItem('salesChart_userId', result.userId);
+                // 페이지 새로고침하여 로그인 상태로 전환
+                window.location.reload();
+            } else {
+                alert(result.message || '로그인에 실패했습니다.');
+            }
+        } catch (error) {
+            console.error('로그인 오류:', error);
+            alert('로그인 중 오류가 발생했습니다.');
+        }
+    }
 
     // 입력 방식 전환
     function switchInputMode(mode) {
@@ -1459,10 +1656,15 @@
     function handleLogout() {
         if (confirm('로그아웃 하시겠습니까?')) {
             localStorage.removeItem('salesChart_userId');
-            window.location.href = '/';
+            // 페이지 새로고침하여 로그인 폼 표시
+            window.location.reload();
         }
     }
 </script>
+
+<!-- 멀티플렉스 광고 (페이지 하단) -->
+<div th:replace="~{fragments/ads :: multiplex-ad}"></div>
+
 </body>
 </html>
 

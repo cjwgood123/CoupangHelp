@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>판매 데이터 입력 - 헬쿠 마진 트래커</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --toss-blue: #3182F6;
+            --toss-blue-soft: #E8F3FF;
+            --bg: #F9FAFB;
+            --bg-soft: #F2F4F6;
+            --card: #FFFFFF;
+            --text: #191F28;
+            --text2: #8B95A1;
+            --radius: 16px;
+            --radius-lg: 20px;
+            --radius-pill: 999px;
+            --shadow-soft: 0 2px 12px rgba(0,0,0,0.06);
+            --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+            background: linear-gradient(180deg, #F1F5F9 0%, #F9FAFB 24%, var(--bg) 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 100px;
+            -webkit-font-smoothing: antialiased;
+        }
+        .header {
+            background: var(--card);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: none;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.04);
+        }
+        .back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            margin: -10px 0 -10px -10px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.4rem;
+            font-weight: 300;
+            border-radius: var(--radius);
+            transition: background 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .back-btn:active {
+            background: var(--bg-soft);
+        }
+        .header h1 {
+            flex: 1;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+        .form {
+            padding: 20px;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            margin-bottom: 12px;
+            padding: 16px 20px;
+            box-shadow: var(--shadow-soft);
+            border: 2px solid transparent;
+            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .row:active {
+            transform: scale(0.99);
+        }
+        .row.focused {
+            border-color: var(--toss-blue);
+            box-shadow: 0 2px 16px rgba(49, 130, 246, 0.2);
+        }
+        .field-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            min-height: 32px;
+            border-radius: 50%;
+            background: var(--bg-soft);
+            color: var(--text2);
+            font-size: 0.8125rem;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .row.focused .field-num {
+            background: var(--toss-blue);
+            color: #fff;
+        }
+        .row.calc .field-num {
+            background: rgba(49, 130, 246, 0.15);
+            color: var(--toss-blue);
+        }
+        .row.calc.focused .field-num {
+            background: var(--toss-blue);
+            color: #fff;
+        }
+        .field-body {
+            flex: 1;
+            min-width: 0;
+        }
+        .row label {
+            display: block;
+            font-size: 0.8125rem;
+            color: var(--text2);
+            margin-bottom: 6px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+        }
+        .row.focused label {
+            color: var(--text);
+        }
+        .row input {
+            width: 100%;
+            font-size: 1.0625rem;
+            padding: 6px 0;
+            border: none;
+            outline: none;
+            background: transparent;
+            -webkit-appearance: none;
+            appearance: none;
+            font-weight: 500;
+            letter-spacing: -0.02em;
+        }
+        .row input::placeholder {
+            color: #B1B8C0;
+        }
+        .row input[type="date"] {
+            min-height: 44px;
+            cursor: pointer;
+            color: var(--text);
+        }
+        .row .readonly {
+            color: var(--toss-blue);
+            font-weight: 600;
+            font-size: 1.0625rem;
+        }
+        .row.calc {
+            background: var(--toss-blue-soft);
+            box-shadow: 0 2px 10px rgba(49, 130, 246, 0.08);
+        }
+        .row.calc.focused {
+            background: #E0EEFF;
+            border-color: var(--toss-blue);
+            box-shadow: 0 2px 16px rgba(49, 130, 246, 0.25);
+        }
+        .save-wrap {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px 20px;
+            padding-bottom: max(20px, calc(16px + env(safe-area-inset-bottom)));
+            background: linear-gradient(to top, var(--bg) 80%, transparent);
+        }
+        .save-btn {
+            width: 100%;
+            padding: 18px 24px;
+            background: var(--toss-blue);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1.0625rem;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 14px rgba(49, 130, 246, 0.35);
+            transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+            letter-spacing: -0.02em;
+        }
+        .save-btn:not(:disabled):active {
+            transform: scale(0.98);
+        }
+        .save-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/margin-tracker" class="back-btn" id="backBtn">←</a>
+        <h1>판매 데이터 입력</h1>
+    </div>
+
+    <div class="form">
+        <div class="row" data-idx="1">
+            <span class="field-num">1</span>
+            <div class="field-body">
+                <label>상품번호 / 상품명</label>
+                <input type="text" id="f-productNumber" placeholder="상품번호나 상품명을 입력하세요" list="productList" inputmode="text" autocomplete="off">
+                <datalist id="productList"></datalist>
+            </div>
+        </div>
+        <div class="row" data-idx="2">
+            <span class="field-num">2</span>
+            <div class="field-body">
+                <label>날짜</label>
+                <input type="date" id="f-date" required>
+            </div>
+        </div>
+        <div class="row" data-idx="3">
+            <span class="field-num">3</span>
+            <div class="field-body">
+                <label>판매가</label>
+                <input type="number" id="f-sellingPrice" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row" data-idx="4">
+            <span class="field-num">4</span>
+            <div class="field-body">
+                <label>할인쿠폰</label>
+                <input type="number" id="f-discountCoupon" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row calc" data-idx="5">
+            <span class="field-num">5</span>
+            <div class="field-body">
+                <label>최종 판매가</label>
+                <input type="text" id="f-finalSellingPrice" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row" data-idx="6">
+            <span class="field-num">6</span>
+            <div class="field-body">
+                <label>가격 변동</label>
+                <input type="number" id="f-priceFluctuation" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row" data-idx="7">
+            <span class="field-num">7</span>
+            <div class="field-body">
+                <label>판매수량</label>
+                <input type="number" id="f-salesQuantity" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row calc" data-idx="8">
+            <span class="field-num">8</span>
+            <div class="field-body">
+                <label>실제 판매 매출</label>
+                <input type="text" id="f-actualSalesRevenue" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row" data-idx="9">
+            <span class="field-num">9</span>
+            <div class="field-body">
+                <label>개당 마진</label>
+                <input type="number" id="f-marginPerUnit" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row calc" data-idx="10">
+            <span class="field-num">10</span>
+            <div class="field-body">
+                <label>총 마진</label>
+                <input type="text" id="f-totalMargin" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row" data-idx="11">
+            <span class="field-num">11</span>
+            <div class="field-body">
+                <label>광고비</label>
+                <input type="number" id="f-advertisingCost" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row calc" data-idx="12">
+            <span class="field-num">12</span>
+            <div class="field-body">
+                <label>순수익</label>
+                <input type="text" id="f-netProfit" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row calc" data-idx="13">
+            <span class="field-num">13</span>
+            <div class="field-body">
+                <label>마진율 (%)</label>
+                <input type="text" id="f-marginRate" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row" data-idx="14">
+            <span class="field-num">14</span>
+            <div class="field-body">
+                <label>광고판매</label>
+                <input type="number" id="f-adSales" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row" data-idx="15">
+            <span class="field-num">15</span>
+            <div class="field-body">
+                <label>자연판매</label>
+                <input type="number" id="f-organicSales" placeholder="0" inputmode="decimal">
+            </div>
+        </div>
+        <div class="row calc" data-idx="16">
+            <span class="field-num">16</span>
+            <div class="field-body">
+                <label>자연판매비율 (%)</label>
+                <input type="text" id="f-organicSalesRatio" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+        <div class="row calc" data-idx="17">
+            <span class="field-num">17</span>
+            <div class="field-body">
+                <label>ROAS</label>
+                <input type="text" id="f-roas" class="readonly" readonly placeholder="-">
+            </div>
+        </div>
+    </div>
+
+    <div class="save-wrap">
+        <button type="button" class="save-btn" id="saveBtn" disabled>저장하기</button>
+    </div>
+
+    <script>
+        (function() {
+            var uid = localStorage.getItem('salesChart_userId');
+            if (!uid) {
+                window.location.href = '/margin-tracker';
+                return;
+            }
+
+            var editId = null;
+            var params = new URLSearchParams(window.location.search);
+            if (params.get('id')) editId = params.get('id');
+
+            var ids = ['productNumber','date','sellingPrice','discountCoupon','finalSellingPrice','priceFluctuation','salesQuantity','actualSalesRevenue','marginPerUnit','totalMargin','advertisingCost','netProfit','marginRate','adSales','organicSales','organicSalesRatio','roas'];
+            var calculated = ['finalSellingPrice','actualSalesRevenue','totalMargin','netProfit','marginRate','organicSalesRatio','roas'];
+            var computedNumbers = {};
+
+            function getData() {
+                var o = {};
+                ids.forEach(function(id) {
+                    var el = document.getElementById('f-' + id);
+                    o[id] = el ? (el.value || '').trim() : '';
+                });
+                return o;
+            }
+
+            function dateToKoStr(ymd) {
+                if (!ymd) return '';
+                var p = ymd.split('-');
+                if (p.length !== 3) return ymd;
+                return p[0] + '년 ' + parseInt(p[1],10) + '월 ' + parseInt(p[2],10) + '일';
+            }
+
+            function calc() {
+                var d = getData();
+                var sellingPrice = parseFloat(d.sellingPrice) || 0;
+                var discountCoupon = parseFloat(d.discountCoupon) || 0;
+                var salesQuantity = parseFloat(d.salesQuantity) || 0;
+                var marginPerUnit = parseFloat(d.marginPerUnit) || 0;
+                var advertisingCost = parseFloat(d.advertisingCost) || 0;
+                var adSales = parseFloat(d.adSales) || 0;
+                var organicSales = parseFloat(d.organicSales) || 0;
+
+                var finalSellingPrice = sellingPrice - discountCoupon;
+                var actualSalesRevenue = finalSellingPrice * salesQuantity;
+                var totalMargin = marginPerUnit * salesQuantity;
+                var adj = advertisingCost * 1.1;
+                var netProfit = totalMargin - adj;
+                var marginRate = finalSellingPrice > 0 ? (marginPerUnit / finalSellingPrice) * 100 : 0;
+                var organicSalesRatio = salesQuantity > 0 ? (organicSales / salesQuantity) * 100 : 0;
+                var roas = advertisingCost > 0 ? actualSalesRevenue / advertisingCost : 0;
+
+                setVal('finalSellingPrice', finalSellingPrice > 0 ? Math.round(finalSellingPrice) : '');
+                setVal('actualSalesRevenue', actualSalesRevenue > 0 ? Math.round(actualSalesRevenue) : '');
+                setVal('totalMargin', totalMargin !== 0 ? Math.round(totalMargin) : '');
+                setVal('netProfit', netProfit !== 0 ? Math.round(netProfit) : '');
+                setVal('marginRate', marginRate !== 0 ? marginRate.toFixed(1) + '%' : '');
+                setVal('organicSalesRatio', organicSalesRatio !== 0 ? organicSalesRatio.toFixed(1) + '%' : '');
+                setVal('roas', roas !== 0 ? roas.toFixed(2) : '');
+
+                computedNumbers.finalSellingPrice = finalSellingPrice > 0 ? finalSellingPrice : null;
+                computedNumbers.actualSalesRevenue = actualSalesRevenue > 0 ? actualSalesRevenue : null;
+                computedNumbers.totalMargin = totalMargin !== 0 ? totalMargin : null;
+                computedNumbers.netProfit = netProfit !== 0 ? netProfit : null;
+                computedNumbers.marginRate = marginRate !== 0 ? marginRate : null;
+                computedNumbers.organicSalesRatio = organicSalesRatio !== 0 ? organicSalesRatio : null;
+                computedNumbers.roas = roas !== 0 ? roas : null;
+
+                var all = ids.filter(function(id) { return calculated.indexOf(id) === -1; });
+                var filled = all.every(function(id) {
+                    var v = id === 'date' ? (document.getElementById('f-date').value) : (document.getElementById('f-' + id).value);
+                    return v && String(v).trim() !== '';
+                });
+                document.getElementById('saveBtn').disabled = !filled;
+            }
+
+            function setVal(id, v) {
+                var el = document.getElementById('f-' + id);
+                if (!el) return;
+                el.value = v === '' || v === null || v === undefined ? '' : v;
+            }
+
+            ids.forEach(function(id) {
+                if (calculated.indexOf(id) !== -1) return;
+                var el = document.getElementById('f-' + id);
+                if (el && !el.readOnly) {
+                    el.addEventListener('input', calc);
+                    el.addEventListener('change', calc);
+                }
+            });
+
+            function setFocusedRow(row) {
+                document.querySelectorAll('.form .row').forEach(function(r) { r.classList.remove('focused'); });
+                if (row) row.classList.add('focused');
+            }
+            document.querySelectorAll('.form .row').forEach(function(row) {
+                var input = row.querySelector('input');
+                if (!input) return;
+                row.addEventListener('click', function() {
+                    if (input && !input.readOnly) {
+                        input.focus();
+                        setFocusedRow(row);
+                    }
+                });
+                input.addEventListener('focus', function() { setFocusedRow(row); });
+                input.addEventListener('blur', function() { row.classList.remove('focused'); });
+            });
+
+            document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
+
+            loadProductList();
+            if (editId) loadRecordForEdit(editId);
+
+            function loadProductList() {
+                fetch('/api/margin-tracker/products?userId=' + encodeURIComponent(uid))
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        var list = document.getElementById('productList');
+                        if (!list) return;
+                        list.innerHTML = '';
+                        if (data.success && data.products && data.products.length) {
+                            data.products.forEach(function(p) {
+                                var num = p.productNumber || '';
+                                var name = p.productName || '';
+                                var label = name ? (num + ' / ' + name) : num;
+                                if (label) {
+                                    var opt = document.createElement('option');
+                                    opt.value = label;
+                                    list.appendChild(opt);
+                                }
+                            });
+                        }
+                    });
+            }
+
+            function loadRecordForEdit(id) {
+                fetch('/api/margin-tracker/record/' + id + '?userId=' + encodeURIComponent(uid))
+                    .then(function(res) { return res.json(); })
+                    .then(function(data) {
+                        if (!data.success || !data.record) return;
+                        var r = data.record;
+                        var productLabel = (r.productNumber && r.productName) ? (r.productNumber + ' / ' + r.productName) : (r.productNumber || r.productName || '');
+                        if (productLabel) document.getElementById('f-productNumber').value = productLabel;
+                        if (r.date) {
+                            var dStr = String(r.date);
+                            var match = dStr.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})/);
+                            if (match) {
+                                document.getElementById('f-date').value = match[1] + '-' + String(match[2]).padStart(2,'0') + '-' + String(match[3]).padStart(2,'0');
+                            } else {
+                                document.getElementById('f-date').value = dStr;
+                            }
+                        }
+                        ['sellingPrice','discountCoupon','priceFluctuation','salesQuantity','marginPerUnit','advertisingCost','adSales','organicSales'].forEach(function(k) {
+                            var v = r[k];
+                            if (v != null && v !== '') {
+                                var el = document.getElementById('f-' + k);
+                                if (el) el.value = v;
+                            }
+                        });
+                        calc();
+                    })
+                    .catch(function(err) { console.error('수정 데이터 로드 오류', err); });
+            }
+
+            document.getElementById('backBtn').addEventListener('click', function(e) {
+                var d = getData();
+                var has = ids.some(function(id) {
+                    var v = id === 'date' ? document.getElementById('f-date').value : d[id];
+                    return v && String(v).trim() !== '';
+                });
+                if (has && !confirm('입력을 취소하시겠습니까? 저장되지 않습니다.')) {
+                    e.preventDefault();
+                }
+            });
+
+            document.getElementById('saveBtn').addEventListener('click', function() {
+                var d = getData();
+                var pn = (d.productNumber || '').trim();
+                var pname = '';
+                if (pn.indexOf(' / ') !== -1) {
+                    var parts = pn.split(' / ');
+                    pn = parts[0].trim();
+                    pname = parts.slice(1).join(' / ').trim();
+                }
+                var payload = {
+                    userId: uid,
+                    productNumber: pn || null,
+                    productName: pname || null,
+                    date: d.date ? dateToKoStr(d.date) : null,
+                    sellingPrice: d.sellingPrice || null,
+                    discountCoupon: d.discountCoupon || null,
+                    finalSellingPrice: computedNumbers.finalSellingPrice != null ? computedNumbers.finalSellingPrice : (d.finalSellingPrice || null),
+                    priceFluctuation: d.priceFluctuation || null,
+                    salesQuantity: d.salesQuantity || null,
+                    actualSalesRevenue: computedNumbers.actualSalesRevenue != null ? computedNumbers.actualSalesRevenue : (d.actualSalesRevenue || null),
+                    marginPerUnit: d.marginPerUnit || null,
+                    totalMargin: computedNumbers.totalMargin != null ? computedNumbers.totalMargin : (d.totalMargin || null),
+                    advertisingCost: d.advertisingCost || null,
+                    netProfit: computedNumbers.netProfit != null ? computedNumbers.netProfit : (d.netProfit || null),
+                    marginRate: computedNumbers.marginRate != null ? computedNumbers.marginRate : (d.marginRate ? parseFloat(String(d.marginRate).replace('%','')) : null),
+                    adSales: d.adSales || null,
+                    organicSales: d.organicSales || null,
+                    organicSalesRatio: computedNumbers.organicSalesRatio != null ? computedNumbers.organicSalesRatio : (d.organicSalesRatio ? parseFloat(String(d.organicSalesRatio).replace('%','')) : null),
+                    roas: computedNumbers.roas != null ? computedNumbers.roas : (d.roas || null)
+                };
+                if (editId) payload.dataSeq = parseInt(editId, 10);
+                var btn = this;
+                btn.disabled = true;
+                fetch('/api/margin-tracker/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(function(r) { return r.json(); })
+                .then(function(res) {
+                    if (res.success) {
+                        window.location.href = '/margin-tracker';
+                    } else {
+                        alert(res.message || '저장에 실패했습니다.');
+                        btn.disabled = false;
+                    }
+                })
+                .catch(function() {
+                    alert('저장 중 오류가 발생했습니다.');
+                    btn.disabled = false;
+                });
+            });
+
+            calc();
+        })();
+    </script>
+</body>
+</html>

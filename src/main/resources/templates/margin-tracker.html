@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헬쿠 마진 트래커</title>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --helku: hsl(330, 80%, 55%);
+            --helku-soft: hsl(330, 100%, 97%);
+            --toss-blue: #3182F6;
+            --primary: #3182F6;
+            --primary-dark: #1B64DA;
+            --background: #F9FAFB;
+            --card: #FFFFFF;
+            --text-primary: #191F28;
+            --text-secondary: #8B95A1;
+            --text-disabled: #B1B8C0;
+            --border: #E8EAED;
+            --radius: 16px;
+            --radius-sm: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(180deg, #F1F5F9 0%, var(--background) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding-bottom: 100px;
+        }
+
+        /* Header */
+        .header {
+            background-color: var(--card);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: none;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+        .header-title .brand { color: var(--helku); }
+
+        .menu-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            color: var(--text-primary);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            padding: 1.25rem;
+        }
+
+        .summary-card {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .summary-label {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .summary-value .unit {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-left: 2px;
+        }
+
+        .summary-value.grey {
+            color: var(--text-primary);
+        }
+
+        /* Chart Section */
+        .chart-section {
+            background-color: var(--card);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin: 0 1.25rem 1.25rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-section.empty {
+            color: var(--text-disabled);
+            font-size: 0.875rem;
+        }
+
+        .chart-options {
+            padding: 0 1.25rem 0.75rem;
+        }
+        .chart-options .option-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .chart-options .option-row label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .chart-options .product-checks {
+            margin-top: 0.75rem;
+            padding: 0.75rem;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            display: none;
+        }
+        .chart-options .product-checks.visible {
+            display: block;
+        }
+        .chart-options .product-checks .product-check-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.35rem 0;
+            font-size: 0.8125rem;
+        }
+        .chart-options .product-checks .product-check-item input {
+            cursor: pointer;
+        }
+
+        /* Recent Records */
+        .recent-section {
+            padding: 0 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .records-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .records-carousel {
+            position: relative;
+            overflow: hidden;
+        }
+        .records-slide {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            min-height: 200px;
+        }
+        .record-item {
+            background-color: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 1rem 1rem 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .record-left {
+            flex: 1;
+            min-width: 0;
+        }
+        .record-date {
+            font-size: 0.875rem;
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+        .record-product {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        .record-profit {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .record-profit .unit {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        .record-actions {
+            display: flex;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .record-actions button {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            background: var(--background);
+            color: var(--text-secondary);
+        }
+        .record-actions button:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        .record-actions button.delete-btn:hover {
+            background: #E53935;
+            color: #fff;
+        }
+        .records-nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .records-nav button {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .records-nav button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+        .records-nav .page-info {
+            font-size: 0.8125rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-message {
+            text-align: center;
+            color: var(--text-disabled);
+            font-size: 0.875rem;
+            padding: 2rem;
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 1.25rem;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .form-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .form-actions .btn {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        .btn-secondary {
+            background-color: var(--border);
+            color: var(--text-primary);
+        }
+        .radio-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .radio-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 1.25rem;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--helku) 0%, var(--primary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(49, 130, 246, 0.4);
+            cursor: pointer;
+            z-index: 1000;
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .fab:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(66, 133, 244, 0.5);
+        }
+
+        .fab:active {
+            transform: scale(0.95);
+        }
+
+        .fab-icon {
+            color: white;
+            font-size: 24px;
+            font-weight: 300;
+            line-height: 1;
+        }
+
+
+        /* Tablet Styles */
+        @media (min-width: 768px) {
+            body {
+                max-width: 800px;
+                margin: 0 auto;
+                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .header {
+                padding: 1.25rem 2rem;
+            }
+
+            .summary-cards {
+                padding: 1.5rem 2rem;
+                gap: 1.5rem;
+            }
+
+            .summary-card {
+                padding: 1.5rem;
+            }
+
+            .summary-value {
+                font-size: 2rem;
+            }
+
+            .chart-options {
+                padding: 0 2rem 0.75rem;
+            }
+
+            .chart-section {
+                margin: 0 2rem 1.5rem;
+                padding: 1.5rem;
+                min-height: 350px;
+            }
+
+            .recent-section {
+                padding: 0 2rem;
+            }
+
+            .fab {
+                right: calc(50% - 400px + 2rem);
+                width: 64px;
+                height: 64px;
+                bottom: 2.5rem;
+            }
+
+            .fab-icon {
+                font-size: 28px;
+            }
+
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 1024px) {
+            body {
+                max-width: 900px;
+            }
+
+            .fab {
+                right: calc(50% - 450px + 2rem);
+            }
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Login Section (when not logged in) -->
+    <div id="loginSection" style="display: none;">
+        <div class="header">
+            <h1 class="header-title"><span class="brand">헬쿠</span> 마진 트래커</h1>
+        </div>
+        <div class="login-section">
+            <h2>로그인 / 회원가입</h2>
+            <p style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1rem;">판매실적추이 그래프와 동일한 계정으로 로그인하세요.</p>
+            <div id="loginForm">
+                <div class="form-group">
+                    <label for="mtUserId">아이디</label>
+                    <input type="text" id="mtUserId" placeholder="아이디">
+                </div>
+                <div class="form-group">
+                    <label for="mtUserPw">비밀번호</label>
+                    <input type="password" id="mtUserPw" placeholder="비밀번호">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="handleMtLogin()">로그인</button>
+                    <button class="btn btn-secondary" onclick="showMtSignupForm()">회원가입</button>
+                </div>
+            </div>
+            <div id="signupForm" style="display: none;">
+                <div class="form-group">
+                    <label for="mtSignupUserId">아이디</label>
+                    <input type="text" id="mtSignupUserId" placeholder="아이디">
+                </div>
+                <div class="form-group">
+                    <label for="mtSignupUserPw">비밀번호</label>
+                    <input type="password" id="mtSignupUserPw" placeholder="비밀번호 (최소 4자)">
+                </div>
+                <div class="form-group">
+                    <label for="mtSignupUserPwConfirm">비밀번호 확인</label>
+                    <input type="password" id="mtSignupUserPwConfirm" placeholder="비밀번호 확인">
+                </div>
+                <div class="form-group">
+                    <label>셀러 옵션</label>
+                    <div class="radio-group">
+                        <label class="radio-label"><input type="radio" name="mtSellerType" value="ROCKET_GROSS" checked> 로켓그로스</label>
+                        <label class="radio-label"><input type="radio" name="mtSellerType" value="OTHER"> 기타</label>
+                    </div>
+                </div>
+                <div class="form-group" id="mtSellerOtherGroup" style="display: none;">
+                    <label for="mtSellerOther">기타 셀러명</label>
+                    <input type="text" id="mtSellerOther" placeholder="셀러명">
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary" onclick="handleMtSignup()">회원가입</button>
+                    <button class="btn btn-secondary" onclick="showMtLoginForm()">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboardScreen" style="display: none;">
+        <div class="header">
+            <h1 class="header-title"><span class="brand">헬쿠</span> 마진 트래커</h1>
+            <div class="menu-icon">☰</div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="summary-card">
+                <div class="summary-label">총 순수익</div>
+                <div class="summary-value" id="totalProfit">0<span class="unit">원</span></div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-label">평균 마진율</div>
+                <div class="summary-value grey" id="avgMarginRate">0%</div>
+            </div>
+        </div>
+
+        <div class="chart-options" id="chartOptions" style="display: none;">
+            <div class="option-row">
+                <label><input type="radio" name="chartMode" value="total" checked> 총 마진</label>
+                <label><input type="radio" name="chartMode" value="byProduct"> 상품별 마진</label>
+            </div>
+            <div class="product-checks" id="productChecks">
+                <div class="product-checks-inner" id="productChecksInner"></div>
+            </div>
+        </div>
+
+        <div class="chart-section empty" id="chartSection">
+            <div>아직 데이터가 없습니다</div>
+        </div>
+
+        <div class="recent-section">
+            <h2 class="section-title">최근 기록</h2>
+            <div class="records-carousel">
+                <div class="records-slide" id="recordsList">
+                    <div class="empty-message">아직 기록이 없습니다</div>
+                </div>
+                <div class="records-nav" id="recordsNav" style="display: none;">
+                    <button type="button" id="recordsPrev">← 이전</button>
+                    <span class="page-info" id="recordsPageInfo">1 / 1</span>
+                    <button type="button" id="recordsNext">다음 →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="/margin-tracker/input" class="fab" id="fabButton" style="text-decoration: none; color: inherit; display: none;">
+        <div class="fab-icon">+</div>
+    </a>
+
+    <script>
+        const mtUserId = localStorage.getItem('salesChart_userId');
+
+        document.querySelectorAll('input[name="mtSellerType"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.getElementById('mtSellerOtherGroup').style.display = this.value === 'OTHER' ? 'block' : 'none';
+            });
+        });
+
+        function showMtLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('signupForm').style.display = 'none';
+        }
+        function showMtSignupForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('signupForm').style.display = 'block';
+        }
+
+        async function handleMtLogin() {
+            const userId = document.getElementById('mtUserId')?.value.trim();
+            const userPw = document.getElementById('mtUserPw')?.value.trim();
+            if (!userId || !userPw) {
+                alert('아이디와 비밀번호를 입력해주세요.');
+                return;
+            }
+            try {
+                const res = await fetch('/api/sales-chart/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: userId, userPw: userPw })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    localStorage.setItem('salesChart_userId', result.userId);
+                    window.location.reload();
+                } else {
+                    alert(result.message || '로그인에 실패했습니다.');
+                }
+            } catch (e) {
+                alert('로그인 중 오류가 발생했습니다.');
+            }
+        }
+
+        async function handleMtSignup() {
+            const userId = document.getElementById('mtSignupUserId')?.value.trim();
+            const userPw = document.getElementById('mtSignupUserPw')?.value.trim();
+            const userPwConfirm = document.getElementById('mtSignupUserPwConfirm')?.value.trim();
+            const sellerType = document.querySelector('input[name="mtSellerType"]:checked')?.value || 'ROCKET_GROSS';
+            const sellerOther = document.getElementById('mtSellerOther')?.value.trim();
+            if (!userId || !userPw || !userPwConfirm) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            if (userPw !== userPwConfirm) {
+                alert('비밀번호가 일치하지 않습니다.');
+                return;
+            }
+            if (sellerType === 'OTHER' && !sellerOther) {
+                alert('기타 셀러명을 입력해주세요.');
+                return;
+            }
+            try {
+                const res = await fetch('/api/sales-chart/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: userId,
+                        userPw: userPw,
+                        userPwConfirm: userPwConfirm,
+                        sellerType: sellerType,
+                        sellerOther: sellerType === 'OTHER' ? sellerOther : null
+                    })
+                });
+                const result = await res.json();
+                if (result.success) {
+                    alert('회원가입이 완료되었습니다.');
+                    localStorage.setItem('salesChart_userId', result.userId);
+                    window.location.reload();
+                } else {
+                    alert(result.message || '회원가입에 실패했습니다.');
+                }
+            } catch (e) {
+                alert('회원가입 중 오류가 발생했습니다.');
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            if (mtUserId) {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('dashboardScreen').style.display = 'block';
+                document.getElementById('fabButton').style.display = 'flex';
+                loadData();
+            } else {
+                document.getElementById('loginSection').style.display = 'block';
+                document.getElementById('dashboardScreen').style.display = 'none';
+                showMtLoginForm();
+            }
+        });
+
+        const PAGE_SIZE = 5;
+        let allRecords = [];
+        let currentRecordsPage = 1;
+        let totalRecordsCount = 0;
+
+        async function loadData() {
+            const userId = localStorage.getItem('salesChart_userId');
+            if (!userId) return;
+            try {
+                const res = await fetch('/api/margin-tracker/records?userId=' + encodeURIComponent(userId) + '&page=1&size=9999');
+                const data = await res.json();
+                allRecords = (data.success && data.records) ? data.records : [];
+                totalRecordsCount = data.total != null ? data.total : allRecords.length;
+                renderSummaryAndChart(allRecords);
+                loadRecordsPage(1);
+            } catch (e) {
+                console.error(e);
+                document.getElementById('recordsList').innerHTML = '<div class="empty-message">데이터를 불러오는데 실패했습니다.</div>';
+            }
+        }
+
+        function getDistinctProducts(records) {
+            const map = new Map();
+            records.forEach(r => {
+                const key = r.productNumber || r.productName || '미분류';
+                const label = (r.productNumber && r.productName) ? (r.productNumber + ' / ' + r.productName) : (r.productNumber || r.productName || '미분류');
+                if (!map.has(key)) map.set(key, label);
+            });
+            return Array.from(map.entries()).map(([key, label]) => ({ key, label }));
+        }
+
+        function renderProductChecks(records) {
+            const products = getDistinctProducts(records);
+            const inner = document.getElementById('productChecksInner');
+            const container = document.getElementById('productChecks');
+            if (!inner || products.length === 0) return;
+            inner.innerHTML = '';
+            products.forEach(p => {
+                const label = document.createElement('label');
+                label.className = 'product-check-item';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox';
+                cb.value = p.key;
+                cb.dataset.label = p.label;
+                cb.addEventListener('change', function() { applyChartMode(); });
+                label.appendChild(cb);
+                label.appendChild(document.createTextNode(p.label));
+                inner.appendChild(label);
+            });
+        }
+
+        function getChartMode() {
+            const r = document.querySelector('input[name="chartMode"]:checked');
+            return r ? r.value : 'total';
+        }
+
+        function getSelectedProductKeys() {
+            const checks = document.querySelectorAll('#productChecksInner input:checked');
+            return Array.from(checks).map(c => c.value);
+        }
+
+        function applyChartMode() {
+            const mode = getChartMode();
+            const container = document.getElementById('productChecks');
+            container.classList.toggle('visible', mode === 'byProduct');
+            if (mode === 'byProduct') {
+                const checked = document.querySelectorAll('#productChecksInner input:checked');
+                if (checked.length === 0) {
+                    document.querySelectorAll('#productChecksInner input').forEach(function(cb) { cb.checked = true; });
+                }
+            }
+            refreshChart();
+        }
+
+        function refreshChart() {
+            const mode = getChartMode();
+            if (mode === 'byProduct') {
+                const selected = getSelectedProductKeys();
+                updateChart(allRecords, 'byProduct', selected);
+            } else {
+                updateChart(allRecords, 'total');
+            }
+        }
+
+        function renderSummaryAndChart(records) {
+            if (records.length === 0) {
+                document.getElementById('totalProfit').innerHTML = '0<span class="unit">원</span>';
+                document.getElementById('avgMarginRate').textContent = '0%';
+                document.getElementById('chartSection').innerHTML = '<div>아직 데이터가 없습니다</div>';
+                document.getElementById('chartSection').classList.add('empty');
+                document.getElementById('chartOptions').style.display = 'none';
+                return;
+            }
+            document.getElementById('chartOptions').style.display = 'block';
+            let totalProfit = 0;
+            let totalMarginRate = 0;
+            let validMarginRates = 0;
+            records.forEach(record => {
+                totalProfit += parseFloat(record.netProfit) || 0;
+                const mr = parseFloat(record.marginRate) || 0;
+                if (mr > 0) { totalMarginRate += mr; validMarginRates++; }
+            });
+            const avgMarginRate = validMarginRates > 0 ? totalMarginRate / validMarginRates : 0;
+            document.getElementById('totalProfit').innerHTML =
+                (totalProfit >= 0 ? '+' : '') + Math.round(totalProfit).toLocaleString('ko-KR') + '<span class="unit">원</span>';
+            document.getElementById('avgMarginRate').textContent = avgMarginRate.toFixed(1) + '%';
+            renderProductChecks(records);
+            document.querySelectorAll('input[name="chartMode"]').forEach(function(radio) {
+                radio.addEventListener('change', applyChartMode);
+            });
+            applyChartMode();
+        }
+
+        async function loadRecordsPage(page) {
+            const userId = localStorage.getItem('salesChart_userId');
+            if (!userId) return;
+            try {
+                const res = await fetch('/api/margin-tracker/records?userId=' + encodeURIComponent(userId) + '&page=' + page + '&size=' + PAGE_SIZE);
+                const data = await res.json();
+                const records = (data.success && data.records) ? data.records : [];
+                totalRecordsCount = data.total != null ? data.total : 0;
+                currentRecordsPage = page;
+                renderRecordsPage(records);
+                updateRecordsNav();
+            } catch (e) {
+                document.getElementById('recordsList').innerHTML = '<div class="empty-message">불러오기 실패</div>';
+            }
+        }
+
+        function renderRecordsPage(records) {
+            const listEl = document.getElementById('recordsList');
+            if (!records.length) {
+                listEl.innerHTML = '<div class="empty-message">아직 기록이 없습니다</div>';
+                return;
+            }
+            listEl.innerHTML = '';
+            records.forEach(record => {
+                const dateStr = record.date || (record.timestamp ? new Date(record.timestamp).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' }) : '-');
+                const profit = parseFloat(record.netProfit) || 0;
+                const productLabel = record.productNumber && record.productName
+                    ? (record.productNumber + ' / ' + record.productName)
+                    : (record.productNumber || record.productName || '');
+                const div = document.createElement('div');
+                div.className = 'record-item';
+                div.innerHTML =
+                    '<div class="record-left">' +
+                    '<div class="record-date">' + escapeHtml(dateStr) + '</div>' +
+                    (productLabel ? '<div class="record-product">' + escapeHtml(productLabel) + '</div>' : '') +
+                    '</div>' +
+                    '<div class="record-profit">' + (profit >= 0 ? '+' : '') + Math.round(profit).toLocaleString('ko-KR') + '<span class="unit">원</span></div>' +
+                    '<div class="record-actions">' +
+                    '<button type="button" class="edit-btn" data-id="' + record.id + '">수정</button>' +
+                    '<button type="button" class="delete-btn" data-id="' + record.id + '">삭제</button>' +
+                    '</div>';
+                listEl.appendChild(div);
+            });
+            listEl.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    window.location.href = '/margin-tracker/input?id=' + this.getAttribute('data-id');
+                });
+            });
+            listEl.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (!confirm('이 기록을 삭제할까요?')) return;
+                    deleteRecord(this.getAttribute('data-id'));
+                });
+            });
+        }
+
+        function escapeHtml(s) {
+            const div = document.createElement('div');
+            div.textContent = s;
+            return div.innerHTML;
+        }
+
+        function updateRecordsNav() {
+            const totalPages = Math.max(1, Math.ceil(totalRecordsCount / PAGE_SIZE));
+            const nav = document.getElementById('recordsNav');
+            if (totalRecordsCount <= PAGE_SIZE) {
+                nav.style.display = 'none';
+                return;
+            }
+            nav.style.display = 'flex';
+            document.getElementById('recordsPageInfo').textContent = currentRecordsPage + ' / ' + totalPages;
+            document.getElementById('recordsPrev').disabled = currentRecordsPage <= 1;
+            document.getElementById('recordsNext').disabled = currentRecordsPage >= totalPages;
+        }
+
+        document.getElementById('recordsPrev').addEventListener('click', function() {
+            if (currentRecordsPage > 1) loadRecordsPage(currentRecordsPage - 1);
+        });
+        document.getElementById('recordsNext').addEventListener('click', function() {
+            const totalPages = Math.max(1, Math.ceil(totalRecordsCount / PAGE_SIZE));
+            if (currentRecordsPage < totalPages) loadRecordsPage(currentRecordsPage + 1);
+        });
+
+        async function deleteRecord(id) {
+            const userId = localStorage.getItem('salesChart_userId');
+            if (!userId) return;
+            try {
+                const res = await fetch('/api/margin-tracker/record/' + id + '?userId=' + encodeURIComponent(userId), { method: 'DELETE' });
+                const data = await res.json();
+                if (data.success) {
+                    loadData();
+                } else {
+                    alert(data.message || '삭제에 실패했습니다.');
+                }
+            } catch (e) {
+                alert('삭제 중 오류가 발생했습니다.');
+            }
+        }
+
+        const CHART_COLORS = ['#3182F6', '#e91e63', '#34A853', '#FF9800', '#9C27B0', '#00BCD4', '#795548', '#607D8B'];
+
+        function updateChart(records, mode, selectedProductKeys) {
+            const chartSection = document.getElementById('chartSection');
+            if (records.length === 0) {
+                chartSection.innerHTML = '<div>아직 데이터가 없습니다</div>';
+                chartSection.classList.add('empty');
+                return;
+            }
+            mode = mode || 'total';
+            selectedProductKeys = selectedProductKeys || [];
+
+            if (mode === 'byProduct' && selectedProductKeys.length === 0) {
+                chartSection.classList.remove('empty');
+                chartSection.innerHTML = '<div class="empty-message">상품을 선택하세요 (위 상품별 마진에서 체크)</div>';
+                if (window.profitChart) {
+                    window.profitChart.destroy();
+                    window.profitChart = null;
+                }
+                return;
+            }
+
+            chartSection.classList.remove('empty');
+            let labels, datasets;
+
+            if (mode === 'total') {
+                const withTimestamp = records.map(r => ({ ...r, _ts: r.timestamp || r.date }));
+                withTimestamp.sort((a, b) => (a._ts || '').localeCompare(b._ts || ''));
+                labels = withTimestamp.map(r => {
+                    if (r.date) return r.date.replace(/년\s/g, '/').replace(/월\s/g, '/').replace(/일/g, '');
+                    if (r.timestamp) return new Date(r.timestamp).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' });
+                    return '';
+                });
+                const profitData = withTimestamp.map(r => parseFloat(r.netProfit) || 0);
+                datasets = [{
+                    label: '순수익',
+                    data: profitData,
+                    borderColor: CHART_COLORS[0],
+                    backgroundColor: 'rgba(49, 130, 246, 0.15)',
+                    borderWidth: 2,
+                    tension: 0.35,
+                    fill: true,
+                    showLine: true,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }];
+            } else {
+                function dateToSortKey(dStr, timestamp) {
+                    if (timestamp) {
+                        try { return new Date(timestamp).toISOString().slice(0, 10); } catch (e) {}
+                    }
+                    if (!dStr || typeof dStr !== 'string') return '';
+                    var m = dStr.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+                    if (m) return m[1] + '-' + String(m[2]).padStart(2,'0') + '-' + String(m[3]).padStart(2,'0');
+                    m = dStr.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+                    if (m) {
+                        var y = new Date().getFullYear();
+                        return y + '-' + String(m[1]).padStart(2,'0') + '-' + String(m[2]).padStart(2,'0');
+                    }
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dStr)) return dStr;
+                    return '';
+                }
+                const dateToLabel = new Map();
+                records.forEach(r => {
+                    const d = r.date || (r.timestamp ? new Date(r.timestamp).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', year: r.timestamp ? 'numeric' : undefined }) : null);
+                    if (!d) return;
+                    const sortKey = dateToSortKey(d, r.timestamp) || dateToSortKey(r.date, r.timestamp);
+                    if (sortKey) dateToLabel.set(sortKey, d);
+                });
+                var sortedKeys = Array.from(dateToLabel.keys()).sort(function(a, b) { return a.localeCompare(b); });
+                                labels = sortedKeys.map(k => dateToLabel.get(k));
+                                const productLabels = getDistinctProducts(records);
+                                const keyToLabel = new Map(productLabels.map(p => [p.key, p.label]));
+
+                                datasets = selectedProductKeys.map((key, idx) => {
+                                    const filtered = records.filter(r => (r.productNumber || r.productName || '미분류') === key);
+                                    const byDate = new Map();
+                                    filtered.forEach(r => {
+                                        const d = r.date || (r.timestamp ? new Date(r.timestamp).toLocaleDateString('ko-KR') : '');
+                                        if (!d) return;
+                                        const sortKey = dateToSortKey(d, r.timestamp) || dateToSortKey(r.date, r.timestamp);
+                                        if (!sortKey) return;
+                                        const profit = parseFloat(r.netProfit) || 0;
+                                        byDate.set(sortKey, (byDate.get(sortKey) || 0) + profit);
+                                    });
+                                    const data = sortedKeys.map(sk => byDate.has(sk) ? byDate.get(sk) : null);
+                                    const color = CHART_COLORS[idx % CHART_COLORS.length];
+                                    const hexToRgba = (hex, a) => {
+                                        const m = hex.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+                                        if (!m) return 'rgba(49,130,246,' + a + ')';
+                                        return 'rgba(' + parseInt(m[1],16) + ',' + parseInt(m[2],16) + ',' + parseInt(m[3],16) + ',' + a + ')';
+                                    };
+                                    return {
+                                        label: keyToLabel.get(key) || key,
+                                        data: data,
+                                        borderColor: color,
+                                        backgroundColor: hexToRgba(color, 0.15),
+                                        borderWidth: 2,
+                                        tension: 0.35,
+                                        fill: true,
+                                        spanGaps: true,
+                                        showLine: true,
+                                        pointRadius: 4,
+                                        pointHoverRadius: 6
+                                    };
+                                });
+            }
+
+            let canvas = chartSection.querySelector('canvas');
+            if (!canvas) {
+                canvas = document.createElement('canvas');
+                chartSection.innerHTML = '';
+                chartSection.appendChild(canvas);
+            }
+            if (chartSection.querySelector('.empty-message')) {
+                chartSection.innerHTML = '';
+                chartSection.appendChild(canvas);
+            }
+
+            if (window.profitChart) window.profitChart.destroy();
+            const ctx = canvas.getContext('2d');
+            window.profitChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: mode === 'byProduct' && datasets.length > 0
+                        }
+                    },
+                    scales: {
+                        y: { beginAtZero: false }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

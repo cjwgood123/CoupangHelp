@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
@@ -164,6 +165,33 @@ public class IndexController {
     @GetMapping("/dropshipping-guide")
     public String dropshippingGuide() {
         return "dropshipping-guide";
+    }
+
+    @GetMapping("/margin-tracker")
+    public String marginTracker() {
+        return "margin-tracker";
+    }
+
+    @GetMapping("/margin-tracker/input")
+    public String marginTrackerInput(HttpServletRequest request) {
+        String ua = request.getHeader("User-Agent");
+        if (ua != null && isMobileUserAgent(ua)) {
+            String qs = request.getQueryString();
+            return "redirect:/margin-tracker/input/mobile" + (qs != null && !qs.isEmpty() ? "?" + qs : "");
+        }
+        return "margin-tracker-input";
+    }
+
+    @GetMapping("/margin-tracker/input/mobile")
+    public String marginTrackerInputMobile() {
+        return "margin-tracker-input-mobile";
+    }
+
+    private static boolean isMobileUserAgent(String ua) {
+        if (ua == null) return false;
+        String lower = ua.toLowerCase();
+        return lower.contains("android") || lower.contains("iphone") || lower.contains("ipod")
+                || lower.contains("mobile") || lower.contains("webos") || lower.contains("blackberry");
     }
 
     @GetMapping("/event")
