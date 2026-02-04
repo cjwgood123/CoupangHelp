@@ -103,6 +103,51 @@
             margin-bottom: 0.5rem;
         }
 
+        .nav-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--foreground);
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .nav-toggle:hover {
+            background-color: var(--muted);
+        }
+
+        .nav-toggle svg,
+        .nav-chevron {
+            width: 16px;
+            height: 16px;
+            min-width: 16px;
+            min-height: 16px;
+            flex-shrink: 0;
+            transition: transform 0.2s;
+        }
+
+        .nav-toggle.active svg,
+        .nav-toggle.active .nav-chevron {
+            transform: rotate(180deg);
+        }
+
+        .nav-items {
+            display: none;
+            padding-left: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .nav-items.show {
+            display: block;
+        }
+
         .nav-item {
             padding: 0.75rem;
             border-radius: var(--radius);
@@ -489,14 +534,7 @@
                 </div>
             </a>
 
-            <nav class="nav">
-                <div class="nav-section">
-                    <a href="/dropshipping-guide" class="nav-item">📦 위탁판매 가이드</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/sales-chart" class="nav-item active">📊 판매실적추이 그래프</a>
-                </div>
-            </nav>
+            <div th:replace="~{fragments/sidebar-nav :: nav}"></div>
         </div>
     </aside>
 
@@ -791,7 +829,14 @@
 
 <script>
     let chart = null;
-    const userId = localStorage.getItem('salesChart_userId');
+    var userId = localStorage.getItem('salesChart_userId');
+    var loginTime = localStorage.getItem('salesChart_loginTime');
+    var SESSION_MINUTES = 30;
+    if (userId && loginTime && (Date.now() - parseInt(loginTime, 10)) > SESSION_MINUTES * 60 * 1000) {
+        localStorage.removeItem('salesChart_userId');
+        localStorage.removeItem('salesChart_loginTime');
+        userId = null;
+    }
 
     // 페이지 로드 시
     window.addEventListener('load', function() {
@@ -908,7 +953,7 @@
             if (result.success) {
                 alert('회원가입이 완료되었습니다.');
                 localStorage.setItem('salesChart_userId', result.userId);
-                // 페이지 새로고침하여 로그인 상태로 전환
+                localStorage.setItem('salesChart_loginTime', Date.now().toString());
                 window.location.reload();
             } else {
                 alert(result.message || '회원가입에 실패했습니다.');
@@ -945,7 +990,7 @@
             
             if (result.success) {
                 localStorage.setItem('salesChart_userId', result.userId);
-                // 페이지 새로고침하여 로그인 상태로 전환
+                localStorage.setItem('salesChart_loginTime', Date.now().toString());
                 window.location.reload();
             } else {
                 alert(result.message || '로그인에 실패했습니다.');
@@ -1652,11 +1697,21 @@
         });
     }
 
+    // 사이드바 메뉴 접기/펼치기
+    function toggleNav(id) {
+        var el = document.getElementById(id);
+        var btn = event && event.currentTarget;
+        if (el && btn) {
+            el.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
+    }
+
     // 로그아웃
     function handleLogout() {
         if (confirm('로그아웃 하시겠습니까?')) {
             localStorage.removeItem('salesChart_userId');
-            // 페이지 새로고침하여 로그인 폼 표시
+            localStorage.removeItem('salesChart_loginTime');
             window.location.reload();
         }
     }

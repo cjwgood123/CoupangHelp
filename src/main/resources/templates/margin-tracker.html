@@ -333,6 +333,78 @@
         .radio-group { display: flex; gap: 1rem; flex-wrap: wrap; }
         .radio-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
 
+        /* Layout: sidebar + main (다른 메뉴와 동일) */
+        .mt-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .mt-sidebar {
+            width: 320px;
+            background-color: var(--card);
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+        }
+        .mt-sidebar-header {
+            padding: 1.5rem;
+        }
+        .mt-sidebar .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+        }
+        .mt-sidebar .logo-icon {
+            width: 40px;
+            height: 40px;
+            background-color: var(--helku);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .mt-sidebar .logo-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+        }
+        .mt-sidebar .logo-text h2 { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+        .mt-sidebar .logo-text p { font-size: 0.75rem; color: var(--text-secondary); }
+        .mt-sidebar .nav { padding: 0 1.5rem 1.5rem; }
+        .mt-sidebar .nav-section { margin-bottom: 0.5rem; }
+        .mt-sidebar .nav-toggle {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+        .mt-sidebar .nav-toggle:hover { background-color: var(--background); }
+        .mt-sidebar .nav-toggle svg { width: 16px; height: 16px; transition: transform 0.2s; }
+        .mt-sidebar .nav-toggle.active svg { transform: rotate(180deg); }
+        .mt-sidebar .nav-items { display: none; padding-left: 0.75rem; margin-top: 0.25rem; }
+        .mt-sidebar .nav-items.show { display: block; }
+        .mt-sidebar .nav-item {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.875rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.25rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            display: block;
+        }
+        .mt-sidebar .nav-item:hover { background-color: var(--background); }
+        .mt-sidebar .nav-item.active { background-color: rgba(49, 130, 246, 0.15); color: var(--primary); font-weight: 600; }
+        .mt-main { flex: 1; min-width: 0; }
+
         /* Floating Action Button */
         .fab {
             position: fixed;
@@ -369,13 +441,19 @@
         }
 
 
+        @media (max-width: 768px) {
+            .mt-container { flex-direction: column; }
+            .mt-sidebar { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+        }
+
         /* Tablet Styles */
         @media (min-width: 768px) {
             body {
-                max-width: 800px;
-                margin: 0 auto;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+                max-width: none;
+                margin: 0;
+                box-shadow: none;
             }
+            .mt-main { max-width: 800px; margin: 0 auto; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); }
 
             .header {
                 padding: 1.25rem 2rem;
@@ -423,10 +501,7 @@
 
         /* Desktop Styles */
         @media (min-width: 1024px) {
-            body {
-                max-width: 900px;
-            }
-
+            .mt-main { max-width: 900px; }
             .fab {
                 right: calc(50% - 450px + 2rem);
             }
@@ -436,6 +511,24 @@
     </style>
 </head>
 <body>
+    <div class="mt-container">
+        <aside class="mt-sidebar">
+            <div class="mt-sidebar-header">
+                <a href="/" class="logo" style="text-decoration: none; color: inherit;">
+                    <div class="logo-icon">
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                    </div>
+                    <div class="logo-text">
+                        <h2>헬쿠</h2>
+                        <p>셀러 데이터 분석</p>
+                    </div>
+                </a>
+                <div th:replace="~{fragments/sidebar-nav :: nav}"></div>
+            </div>
+        </aside>
+        <main class="mt-main">
     <!-- Login Section (when not logged in) -->
     <div id="loginSection" style="display: none;">
         <div class="header">
@@ -541,8 +634,32 @@
         <div class="fab-icon">+</div>
     </a>
 
+        </main>
+    </div>
+
     <script>
-        const mtUserId = localStorage.getItem('salesChart_userId');
+    function toggleNav(id) {
+        var navItems = document.getElementById(id);
+        var btn = event && event.currentTarget;
+        if (navItems && btn) {
+            if (navItems.classList.contains('show')) {
+                navItems.classList.remove('show');
+                btn.classList.remove('active');
+            } else {
+                navItems.classList.add('show');
+                btn.classList.add('active');
+            }
+        }
+    }
+    </script>
+    <script>
+        var mtUserId = localStorage.getItem('salesChart_userId');
+        var mtLoginTime = localStorage.getItem('salesChart_loginTime');
+        if (mtUserId && mtLoginTime && (Date.now() - parseInt(mtLoginTime, 10)) > 30 * 60 * 1000) {
+            localStorage.removeItem('salesChart_userId');
+            localStorage.removeItem('salesChart_loginTime');
+            mtUserId = null;
+        }
 
         document.querySelectorAll('input[name="mtSellerType"]').forEach(function(radio) {
             radio.addEventListener('change', function() {
@@ -575,6 +692,7 @@
                 const result = await res.json();
                 if (result.success) {
                     localStorage.setItem('salesChart_userId', result.userId);
+                    localStorage.setItem('salesChart_loginTime', Date.now().toString());
                     window.location.reload();
                 } else {
                     alert(result.message || '로그인에 실패했습니다.');
@@ -618,6 +736,7 @@
                 if (result.success) {
                     alert('회원가입이 완료되었습니다.');
                     localStorage.setItem('salesChart_userId', result.userId);
+                    localStorage.setItem('salesChart_loginTime', Date.now().toString());
                     window.location.reload();
                 } else {
                     alert(result.message || '회원가입에 실패했습니다.');

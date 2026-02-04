@@ -716,66 +716,7 @@
                 </div>
             </a>
 
-            <nav class="nav">
-                <!-- 구매했어요 -->
-                <div class="nav-section">
-                    <button class="nav-toggle active" onclick="toggleNav('nov2025')">
-                        <span>구매했어요</span>
-                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div class="nav-items show" id="nov2025">
-                        <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
-                        <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
-                        <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
-                        <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
-                        <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
-                        <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
-                        <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
-                        <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
-                        <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
-                        <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                        <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                        <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                        <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                        <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
-                    </div>
-                </div>
-                <!-- 만족했어요 -->
-                <div class="nav-section">
-                    <button class="nav-toggle active" onclick="toggleNav('satisfied')">
-                        <span>만족했어요</span>
-                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
-                        </svg>
-                    </button>
-                    <div class="nav-items show" id="satisfied">
-                        <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 구매</a>
-                        <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 구매</a>
-                        <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 구매</a>
-                        <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 구매</a>
-                        <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 구매</a>
-                        <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 구매</a>
-                        <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 구매</a>
-                        <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 구매</a>
-                        <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 구매</a>
-                        <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
-                        <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
-                        <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
-                        <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
-                        <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
-                    </div>
-                </div>
-                <!-- 단기간 인기 상품 -->
-                <div class="nav-section">
-                    <a href="/shortterm" class="nav-item active" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
-                </div>
-                <!-- 판매실적추이 그래프 -->
-                <div class="nav-section">
-                    <a href="/sales-chart" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 판매실적추이 그래프</a>
-                </div>
-            </nav>
+            <div th:replace="~{fragments/sidebar-nav :: nav}"></div>
         </div>
     </aside>
 
