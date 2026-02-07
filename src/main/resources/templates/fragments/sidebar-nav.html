@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <!-- 좌측 사이드바 네비게이션: 매출 일지, 소개할게요, 구매/만족 토글, 단기간 인기 상품, 헬쿠 셀러 팁(토글), 판매실적추이 그래프 -->
+    <nav class="nav" th:fragment="nav">
+        <!-- 매출 일지 (제일 위로) -->
+        <div class="nav-section">
+            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 매출 일지</a>
+        </div>
+        <!-- 소개할게요 -->
+        <div class="nav-section">
+            <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+        </div>
+        <!-- 구매했어요 -->
+        <div class="nav-section">
+            <button type="button" class="nav-toggle" onclick="toggleNav('nov2025')">
+                <span>구매했어요</span>
+                <svg class="nav-chevron" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items" id="nov2025">
+                <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
+                <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
+                <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
+                <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
+                <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
+                <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
+                <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
+                <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
+                <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
+                <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+            </div>
+        </div>
+        <!-- 만족했어요 -->
+        <div class="nav-section">
+            <button type="button" class="nav-toggle" onclick="toggleNav('satisfied')">
+                <span>만족했어요</span>
+                <svg class="nav-chevron" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items" id="satisfied">
+                <a href="/satisfied/100" class="nav-item">⚡ 100명 이상 만족</a>
+                <a href="/satisfied/200" class="nav-item">⚡ 200명 이상 만족</a>
+                <a href="/satisfied/300" class="nav-item">⚡ 300명 이상 만족</a>
+                <a href="/satisfied/400" class="nav-item">⚡ 400명 이상 만족</a>
+                <a href="/satisfied/500" class="nav-item">⚡ 500명 이상 만족</a>
+                <a href="/satisfied/600" class="nav-item">⚡ 600명 이상 만족</a>
+                <a href="/satisfied/700" class="nav-item">⚡ 700명 이상 만족</a>
+                <a href="/satisfied/800" class="nav-item">⚡ 800명 이상 만족</a>
+                <a href="/satisfied/900" class="nav-item">⚡ 900명 이상 만족</a>
+                <a href="/satisfied/1000" class="nav-item">⚡ 1000명 이상 만족</a>
+                <a href="/satisfied/2000" class="nav-item">⚡ 2000명 이상 만족</a>
+                <a href="/satisfied/3000" class="nav-item">⚡ 3000명 이상 만족</a>
+                <a href="/satisfied/4000" class="nav-item">⚡ 4000명 이상 만족</a>
+                <a href="/satisfied/5000" class="nav-item">⚡ 5000명 이상 만족</a>
+            </div>
+        </div>
+        <!-- 단기간 인기 상품 -->
+        <div class="nav-section">
+            <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+        </div>
+        <!-- 헬쿠 셀러 팁 (접기/펼치기) -->
+        <div class="nav-section">
+            <button type="button" class="nav-toggle" onclick="toggleNav('helku-seller-tips')">
+                <span style="font-weight: 600;">💡 헬쿠 셀러 팁</span>
+                <svg class="nav-chevron" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items" id="helku-seller-tips">
+                <a href="/seller-guide" class="nav-item">📚 쿠팡 판매 A to Z</a>
+                <a href="/coupang-entry-guide" class="nav-item">🚪 쿠팡 입점 가이드</a>
+                <a href="/product-finding-guide" class="nav-item">🔍 잘 팔리는 상품 찾는 법</a>
+                <a href="/1688-sourcing-guide" class="nav-item">🏭 1688 중국 공장 소싱</a>
+                <a href="/rocket-gross-guide" class="nav-item">🚀 로켓그로스 초보 소싱</a>
+                <a href="/wing-express-guide" class="nav-item">🚀 윙 익스프레스 기본 개념</a>
+                <a href="/item-winner-guide" class="nav-item">🏆 아이템위너 전략</a>
+                <a href="/beginner-seller-strategy" class="nav-item">📖 초보 셀러 전략</a>
+                <a href="/product-registration-guide" class="nav-item">📝 상품 등록 가이드</a>
+                <a href="/margin-template-guide" class="nav-item">💰 마진표 템플릿</a>
+                <a href="/product-detail-writing-guide" class="nav-item">✍️ 상세페이지 작성법</a>
+                <a href="/item-winner-safety-checklist" class="nav-item">✅ 아이템위너 체크리스트</a>
+                <a href="/blog-structure-guide" class="nav-item">📊 블로그 구조 설계</a>
+                <a href="/dropshipping-guide" class="nav-item">📦 위탁판매 가이드</a>
+            </div>
+        </div>
+        <!-- 판매실적추이 그래프 (개발중) -->
+        <div class="nav-section">
+            <a href="/sales-chart" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 판매실적추이 그래프 (개발중)</a>
+        </div>
+    </nav>
+</body>
+</html>
