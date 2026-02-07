@@ -187,6 +187,11 @@ public class IndexController {
         return "margin-tracker-input-mobile";
     }
 
+    @GetMapping("/margin-tracker/product-register")
+    public String marginTrackerProductRegister() {
+        return "margin-tracker-product-register";
+    }
+
     private static boolean isMobileUserAgent(String ua) {
         if (ua == null) return false;
         String lower = ua.toLowerCase();

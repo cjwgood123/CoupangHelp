@@ -8,6 +8,8 @@ public class MarginTrackerDataDto {
     private String userId;
     private String productNumber;
     private String productName;
+    private String optionId;
+    private String optionAlias;
     private String saleDate;
     private BigDecimal sellingPrice;
     private BigDecimal discountCoupon;
@@ -35,6 +37,10 @@ public class MarginTrackerDataDto {
     public void setProductNumber(String productNumber) { this.productNumber = productNumber; }
     public String getProductName() { return productName; }
     public void setProductName(String productName) { this.productName = productName; }
+    public String getOptionId() { return optionId; }
+    public void setOptionId(String optionId) { this.optionId = optionId; }
+    public String getOptionAlias() { return optionAlias; }
+    public void setOptionAlias(String optionAlias) { this.optionAlias = optionAlias; }
     public String getSaleDate() { return saleDate; }
     public void setSaleDate(String saleDate) { this.saleDate = saleDate; }
     public BigDecimal getSellingPrice() { return sellingPrice; }

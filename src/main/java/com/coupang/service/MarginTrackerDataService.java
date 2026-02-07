@@ -32,6 +32,8 @@ public class MarginTrackerDataService {
         dto.setUserId(rs.getString("user_id"));
         dto.setProductNumber(rs.getString("product_number"));
         try { dto.setProductName(rs.getString("product_name")); } catch (Exception ignored) { /* column may not exist */ }
+        try { dto.setOptionId(rs.getString("option_id")); } catch (Exception ignored) { /* column may not exist */ }
+        try { dto.setOptionAlias(rs.getString("option_alias")); } catch (Exception ignored) { /* column may not exist */ }
         dto.setSaleDate(rs.getString("sale_date"));
         dto.setSellingPrice(toBigDecimal(rs, "selling_price"));
         dto.setDiscountCoupon(toBigDecimal(rs, "discount_coupon"));
@@ -63,16 +65,18 @@ public class MarginTrackerDataService {
     public void save(MarginTrackerDataDto dto) {
         String sql = """
             INSERT INTO margin_tracker_data (
-                user_id, product_number, product_name, sale_date, selling_price, discount_coupon,
+                user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                 final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                 margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
                 net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
         jdbcTemplate.update(sql,
             dto.getUserId(),
             dto.getProductNumber(),
             dto.getProductName(),
+            dto.getOptionId(),
+            dto.getOptionAlias(),
             dto.getSaleDate(),
             dto.getSellingPrice(),
             dto.getDiscountCoupon(),
@@ -95,13 +99,13 @@ public class MarginTrackerDataService {
 
     public List<MarginTrackerDataDto> findByUserId(String userId) {
         String sql = """
-            SELECT data_seq, user_id, product_number, product_name, sale_date, selling_price, discount_coupon,
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
                    net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
             FROM margin_tracker_data
             WHERE user_id = ?
-            ORDER BY reg_date DESC
+            ORDER BY sale_date DESC, reg_date DESC
             """;
         return jdbcTemplate.query(sql, ROW_MAPPER, userId);
     }
@@ -109,13 +113,13 @@ public class MarginTrackerDataService {
     public List<MarginTrackerDataDto> findByUserId(String userId, int page, int size) {
         int offset = (page - 1) * size;
         String sql = """
-            SELECT data_seq, user_id, product_number, product_name, sale_date, selling_price, discount_coupon,
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
                    net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
             FROM margin_tracker_data
             WHERE user_id = ?
-            ORDER BY reg_date DESC
+            ORDER BY sale_date DESC, reg_date DESC
             LIMIT ? OFFSET ?
             """;
         return jdbcTemplate.query(sql, ROW_MAPPER, userId, size, offset);
@@ -129,7 +133,7 @@ public class MarginTrackerDataService {
 
     public java.util.Optional<MarginTrackerDataDto> findByIdAndUserId(Long dataSeq, String userId) {
         String sql = """
-            SELECT data_seq, user_id, product_number, product_name, sale_date, selling_price, discount_coupon,
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
                    net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
@@ -143,7 +147,7 @@ public class MarginTrackerDataService {
     public void update(MarginTrackerDataDto dto) {
         String sql = """
             UPDATE margin_tracker_data SET
-                product_number = ?, product_name = ?, sale_date = ?, selling_price = ?, discount_coupon = ?,
+                product_number = ?, product_name = ?, option_id = ?, option_alias = ?, sale_date = ?, selling_price = ?, discount_coupon = ?,
                 final_selling_price = ?, price_fluctuation = ?, sales_quantity = ?, actual_sales_revenue = ?,
                 margin_per_unit = ?, total_margin = ?, advertising_cost = ?, advertising_cost_adjusted = ?,
                 net_profit = ?, margin_rate = ?, ad_sales = ?, organic_sales = ?, organic_sales_ratio = ?, roas = ?
@@ -152,6 +156,8 @@ public class MarginTrackerDataService {
         jdbcTemplate.update(sql,
             dto.getProductNumber(),
             dto.getProductName(),
+            dto.getOptionId(),
+            dto.getOptionAlias(),
             dto.getSaleDate(),
             dto.getSellingPrice(),
             dto.getDiscountCoupon(),
@@ -178,6 +184,39 @@ public class MarginTrackerDataService {
         String sql = "DELETE FROM margin_tracker_data WHERE data_seq = ? AND user_id = ?";
         int n = jdbcTemplate.update(sql, dataSeq, userId);
         return n > 0;
+    }
+
+    /** 같은 날짜, 같은 상품의 모든 기록 조회 (수정 시 모든 옵션 표시용) */
+    public List<MarginTrackerDataDto> findByUserIdProductAndDate(String userId, String productNumber, String saleDate) {
+        String sql = """
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
+                   final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
+                   margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+            FROM margin_tracker_data
+            WHERE user_id = ? AND product_number = ? AND sale_date = ?
+            ORDER BY reg_date ASC
+            """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, userId, productNumber, saleDate);
+    }
+
+    /** 해당 상품의 가장 최근 입력 데이터 1건 조회 (판매가 변동 등 이전 값 자동 설정용) */
+    public java.util.Optional<MarginTrackerDataDto> findLatestByUserIdAndProductNumber(String userId, String productNumber) {
+        if (userId == null || productNumber == null || productNumber.isBlank()) {
+            return java.util.Optional.empty();
+        }
+        String sql = """
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
+                   final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
+                   margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+            FROM margin_tracker_data
+            WHERE user_id = ? AND product_number = ?
+            ORDER BY reg_date DESC
+            LIMIT 1
+            """;
+        List<MarginTrackerDataDto> list = jdbcTemplate.query(sql, ROW_MAPPER, userId, productNumber);
+        return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
     }
 
     /** 상품번호/상품명 목록 (기존 입력 데이터에서 추출) */

@@ -1,563 +1,2128 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>판매 데이터 입력 - 헬쿠 마진 트래커</title>
+    <title>판매 데이터 입력 - 헬쿠 매출 일지</title>
+    
+    <!-- Flatpickr (날짜 선택 라이브러리) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
-            --toss-blue: #3182F6;
-            --toss-blue-soft: #E8F3FF;
-            --bg: #F9FAFB;
-            --bg-soft: #F2F4F6;
+            --primary: #4285F4;
+            --primary-dark: #3367D6;
+            --background: #F5F5F5;
             --card: #FFFFFF;
-            --text: #191F28;
-            --text2: #8B95A1;
-            --radius: 16px;
-            --radius-lg: 20px;
-            --radius-pill: 999px;
-            --shadow-soft: 0 2px 12px rgba(0,0,0,0.06);
-            --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+            --text-primary: #202124;
+            --text-secondary: #5F6368;
+            --text-disabled: #9AA0A6;
+            --border: #E8EAED;
+            --success: #34A853;
+            --error: #EA4335;
         }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-            background: linear-gradient(180deg, #F1F5F9 0%, #F9FAFB 24%, var(--bg) 100%);
-            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
             min-height: 100vh;
-            padding-bottom: 100px;
-            -webkit-font-smoothing: antialiased;
         }
-        .header {
-            background: var(--card);
-            padding: 14px 20px;
+
+        /* Header */
+        .input-header {
+            background-color: var(--card);
+            padding: 1rem 1.25rem;
             display: flex;
             align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
             position: sticky;
             top: 0;
             z-index: 100;
-            border-bottom: none;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.04);
         }
-        .back-btn {
+
+        .back-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 0.5rem;
             display: flex;
             align-items: center;
+            min-width: 44px;
+            min-height: 44px;
             justify-content: center;
-            width: 44px;
-            height: 44px;
-            margin: -10px 0 -10px -10px;
-            color: var(--text);
-            text-decoration: none;
-            font-size: 1.4rem;
-            font-weight: 300;
-            border-radius: var(--radius);
-            transition: background 0.2s ease;
             -webkit-tap-highlight-color: transparent;
         }
-        .back-btn:active {
-            background: var(--bg-soft);
+
+        .back-button:hover {
+            background-color: var(--background);
+            border-radius: 50%;
         }
-        .header h1 {
+
+        .input-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
             flex: 1;
             text-align: center;
-            font-size: 1.05rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
         }
-        .form {
-            padding: 20px;
+
+        .progress-info {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            min-width: 50px;
+            text-align: right;
         }
-        .row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: var(--card);
-            border-radius: var(--radius-lg);
-            margin-bottom: 12px;
-            padding: 16px 20px;
-            box-shadow: var(--shadow-soft);
-            border: 2px solid transparent;
-            transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+
+        .progress-bar {
+            height: 3px;
+            background-color: var(--border);
+            position: relative;
         }
-        .row:active {
-            transform: scale(0.99);
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            transition: width 0.3s ease;
         }
-        .row.focused {
-            border-color: var(--toss-blue);
-            box-shadow: 0 2px 16px rgba(49, 130, 246, 0.2);
+
+        /* Input Fields */
+        .input-fields {
+            padding: 1.5rem 2rem;
+            padding-bottom: 2rem;
         }
-        .field-num {
+
+        .input-field {
+            margin-bottom: 1rem;
+            opacity: 0.4;
+            transition: opacity 0.3s;
+        }
+
+        .input-field.active {
+            opacity: 1;
+        }
+
+        .input-field.completed {
+            opacity: 0.6;
+        }
+
+        .field-number {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 32px;
-            height: 32px;
-            min-width: 32px;
-            min-height: 32px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: var(--bg-soft);
-            color: var(--text2);
-            font-size: 0.8125rem;
+            background-color: var(--border);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
             font-weight: 600;
+            margin-right: 0.75rem;
             flex-shrink: 0;
         }
-        .row.focused .field-num {
-            background: var(--toss-blue);
-            color: #fff;
+
+        .input-field.active .field-number {
+            background-color: var(--primary);
+            color: white;
         }
-        .row.calc .field-num {
-            background: rgba(49, 130, 246, 0.15);
-            color: var(--toss-blue);
+
+        .field-container {
+            background-color: var(--card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 72px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
         }
-        .row.calc.focused .field-num {
-            background: var(--toss-blue);
-            color: #fff;
+
+        .input-field.active .field-container {
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.2);
+            border: 2px solid var(--primary) !important;
+            outline: none;
         }
-        .field-body {
+        
+        .input-field.active .field-input {
+            color: var(--primary) !important;
+        }
+
+        .field-label {
             flex: 1;
-            min-width: 0;
-        }
-        .row label {
-            display: block;
-            font-size: 0.8125rem;
-            color: var(--text2);
-            margin-bottom: 6px;
-            font-weight: 500;
-            letter-spacing: -0.01em;
-        }
-        .row.focused label {
-            color: var(--text);
-        }
-        .row input {
-            width: 100%;
             font-size: 1.0625rem;
-            padding: 6px 0;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .field-input {
+            flex: 1;
             border: none;
             outline: none;
+            font-size: 1.25rem;
+            color: var(--text-primary);
             background: transparent;
-            -webkit-appearance: none;
-            appearance: none;
-            font-weight: 500;
-            letter-spacing: -0.02em;
-        }
-        .row input::placeholder {
-            color: #B1B8C0;
-        }
-        .row input[type="date"] {
-            min-height: 44px;
-            cursor: pointer;
-            color: var(--text);
-        }
-        .row .readonly {
-            color: var(--toss-blue);
-            font-weight: 600;
-            font-size: 1.0625rem;
-        }
-        .row.calc {
-            background: var(--toss-blue-soft);
-            box-shadow: 0 2px 10px rgba(49, 130, 246, 0.08);
-        }
-        .row.calc.focused {
-            background: #E0EEFF;
-            border-color: var(--toss-blue);
-            box-shadow: 0 2px 16px rgba(49, 130, 246, 0.25);
-        }
-        .save-wrap {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 16px 20px;
-            padding-bottom: max(20px, calc(16px + env(safe-area-inset-bottom)));
-            background: linear-gradient(to top, var(--bg) 80%, transparent);
-        }
-        .save-btn {
+            text-align: right;
             width: 100%;
-            padding: 18px 24px;
-            background: var(--toss-blue);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
+            min-height: 24px;
+            padding: 0.25rem 0;
+        }
+
+        .field-input::placeholder {
+            color: var(--text-disabled);
+        }
+
+        .field-input:focus {
+            color: var(--primary);
+        }
+
+        .field-icon {
+            margin-left: 0.75rem;
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        /* 날짜 필드: 다른 필드와 동일한 파란 원·폰트 유지 */
+        .date-field-container .field-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background-color: var(--border);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+        .input-field.active[data-field="date"] .date-field-container .field-number {
+            background-color: var(--primary);
+            color: white;
+        }
+        .date-field-container .field-input,
+        #field-date {
+            font-family: inherit;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            text-align: right;
+        }
+        .date-field-container .field-label {
             font-size: 1.0625rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .field-value {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-left: auto;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .calculated-field {
+            background-color: #F0F7FF;
+        }
+
+        .calculated-field .field-value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Save Button */
+        .save-button-container {
+            display: flex;
+            flex-direction: row;
+            gap: 0.5rem;
+            padding: 1.5rem 2rem;
+            padding-top: 0;
+            position: sticky;
+            bottom: 0;
+            background-color: var(--background);
+            border-top: 1px solid var(--border);
+        }
+
+        .save-button {
+            flex: 1;
+            min-width: 0;
+            padding: 1.25rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.125rem;
             font-weight: 600;
             cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.2s, transform 0.1s;
+            min-height: 56px;
             -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 14px rgba(49, 130, 246, 0.35);
-            transition: opacity 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
-            letter-spacing: -0.02em;
         }
-        .save-btn:not(:disabled):active {
-            transform: scale(0.98);
+
+        .save-button:not(:disabled):hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
-        .save-btn:disabled {
-            opacity: 0.4;
+
+        .save-button:not(:disabled):active {
+            transform: translateY(0);
+        }
+
+        .save-button:disabled {
             cursor: not-allowed;
-            box-shadow: none;
+        }
+
+        /* Flatpickr Calendar Positioning */
+        .flatpickr-calendar {
+            z-index: 3000 !important;
+        }
+
+        .flatpickr-calendar.open {
+            position: fixed !important;
+            left: 50% !important;
+            top: 50% !important;
+            transform: translate(-50%, -50%) !important;
+            margin: 0 !important;
+        }
+
+        .flatpickr-calendar:not(.open) {
+            display: none !important;
+        }
+
+        /* 모바일 최적화 스타일 */
+        body {
+            width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        .input-header {
+            padding: 1rem 1.25rem;
+        }
+
+        .input-title {
+            font-size: 1.125rem;
+        }
+
+        .input-fields {
+            padding: 1rem 1rem;
+            padding-bottom: 1.5rem;
+        }
+
+        .field-container {
+            padding: 1.25rem 1rem;
+            min-height: 64px;
+        }
+
+        .field-label {
+            font-size: 0.9375rem;
+        }
+
+        .field-input,
+        .date-field-container .field-input,
+        #field-date {
+            font-size: 1rem;
+            padding: 0.5rem 0;
+        }
+
+        .field-value {
+            font-size: 1rem;
+        }
+
+        .field-number {
+            width: 24px;
+            height: 24px;
+            font-size: 0.6875rem;
+            margin-right: 0.625rem;
+        }
+
+        .save-button-container {
+            padding: 1rem;
+            padding-top: 0.5rem;
+        }
+
+        .save-button {
+            padding: 1rem;
+            font-size: 1rem;
+            min-height: 48px;
+        }
+
+        /* 터치 친화적인 버튼 크기 */
+        .back-button {
+            min-width: 48px;
+            min-height: 48px;
+            font-size: 1.75rem;
+        }
+
+        /* 입력 필드 터치 영역 확대 */
+        .field-container {
+            -webkit-tap-highlight-color: rgba(66, 133, 244, 0.1);
+        }
+
+        /* 모바일에서 키보드가 올라올 때 스크롤 최적화 */
+        @supports (-webkit-overflow-scrolling: touch) {
+            body {
+                -webkit-overflow-scrolling: touch;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="header">
-        <a href="/margin-tracker" class="back-btn" id="backBtn">←</a>
-        <h1>판매 데이터 입력</h1>
-    </div>
+    <!-- Input Screen -->
+    <div class="input-screen">
+        <div class="input-header">
+            <a href="/margin-tracker" class="back-button" id="backButton">←</a>
+            <div class="input-title">판매 데이터 입력</div>
+            <div class="progress-info" id="progressInfo">1/17</div>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 5.88%"></div>
+        </div>
 
-    <div class="form">
-        <div class="row" data-idx="1">
-            <span class="field-num">1</span>
-            <div class="field-body">
-                <label>상품번호 / 상품명</label>
-                <input type="text" id="f-productNumber" placeholder="상품번호나 상품명을 입력하세요" list="productList" inputmode="text" autocomplete="off">
-                <datalist id="productList"></datalist>
+        <div class="input-fields" id="inputFields">
+            <!-- 상품 정보 표시 영역 -->
+            <div id="productInfoSection" style="display: none; margin-bottom: 1rem; padding: 1rem; background: var(--card); border-radius: 12px;">
+                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">상품 정보</div>
+                <div id="productInfoDisplay" style="font-size: 1rem; font-weight: 600; color: var(--text-primary);"></div>
             </div>
-        </div>
-        <div class="row" data-idx="2">
-            <span class="field-num">2</span>
-            <div class="field-body">
-                <label>날짜</label>
-                <input type="date" id="f-date" required>
-            </div>
-        </div>
-        <div class="row" data-idx="3">
-            <span class="field-num">3</span>
-            <div class="field-body">
-                <label>판매가</label>
-                <input type="number" id="f-sellingPrice" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row" data-idx="4">
-            <span class="field-num">4</span>
-            <div class="field-body">
-                <label>할인쿠폰</label>
-                <input type="number" id="f-discountCoupon" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row calc" data-idx="5">
-            <span class="field-num">5</span>
-            <div class="field-body">
-                <label>최종 판매가</label>
-                <input type="text" id="f-finalSellingPrice" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row" data-idx="6">
-            <span class="field-num">6</span>
-            <div class="field-body">
-                <label>가격 변동</label>
-                <input type="number" id="f-priceFluctuation" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row" data-idx="7">
-            <span class="field-num">7</span>
-            <div class="field-body">
-                <label>판매수량</label>
-                <input type="number" id="f-salesQuantity" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row calc" data-idx="8">
-            <span class="field-num">8</span>
-            <div class="field-body">
-                <label>실제 판매 매출</label>
-                <input type="text" id="f-actualSalesRevenue" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row" data-idx="9">
-            <span class="field-num">9</span>
-            <div class="field-body">
-                <label>개당 마진</label>
-                <input type="number" id="f-marginPerUnit" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row calc" data-idx="10">
-            <span class="field-num">10</span>
-            <div class="field-body">
-                <label>총 마진</label>
-                <input type="text" id="f-totalMargin" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row" data-idx="11">
-            <span class="field-num">11</span>
-            <div class="field-body">
-                <label>광고비</label>
-                <input type="number" id="f-advertisingCost" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row calc" data-idx="12">
-            <span class="field-num">12</span>
-            <div class="field-body">
-                <label>순수익</label>
-                <input type="text" id="f-netProfit" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row calc" data-idx="13">
-            <span class="field-num">13</span>
-            <div class="field-body">
-                <label>마진율 (%)</label>
-                <input type="text" id="f-marginRate" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row" data-idx="14">
-            <span class="field-num">14</span>
-            <div class="field-body">
-                <label>광고판매</label>
-                <input type="number" id="f-adSales" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row" data-idx="15">
-            <span class="field-num">15</span>
-            <div class="field-body">
-                <label>자연판매</label>
-                <input type="number" id="f-organicSales" placeholder="0" inputmode="decimal">
-            </div>
-        </div>
-        <div class="row calc" data-idx="16">
-            <span class="field-num">16</span>
-            <div class="field-body">
-                <label>자연판매비율 (%)</label>
-                <input type="text" id="f-organicSalesRatio" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-        <div class="row calc" data-idx="17">
-            <span class="field-num">17</span>
-            <div class="field-body">
-                <label>ROAS</label>
-                <input type="text" id="f-roas" class="readonly" readonly placeholder="-">
-            </div>
-        </div>
-    </div>
 
-    <div class="save-wrap">
-        <button type="button" class="save-btn" id="saveBtn" disabled>저장하기</button>
+            <!-- Field 1: 상품번호/상품명 (옵션이 없을 때만 표시) -->
+            <div class="input-field active" data-field="productNumber" id="productNumberField">
+                <div class="field-container">
+                    <span class="field-number">1</span>
+                    <span class="field-label">상품번호 / 상품명</span>
+                    <input type="text" class="field-input" id="field-productNumber" placeholder="상품번호나 상품명을 입력하세요" list="productList" autocomplete="off">
+                    <datalist id="productList"></datalist>
+                </div>
+            </div>
+
+            <!-- Field 2: 날짜 -->
+            <div class="input-field" data-field="date">
+                <div class="field-container date-field-container">
+                    <span class="field-number">2</span>
+                    <span class="field-label">날짜 : 자동/수정가능</span>
+                    <input type="text" class="field-input" id="field-date" placeholder="날짜 선택">
+                    <span class="field-icon">📅</span>
+                </div>
+            </div>
+
+            <!-- 옵션 탭 영역 -->
+            <div id="optionTabsSection" style="display: none; margin: 1rem 0; border-top: 2px solid var(--border); padding-top: 1rem;">
+                <div id="optionTabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;"></div>
+            </div>
+
+            <!-- 옵션별 입력 필드 영역 -->
+            <div id="optionFieldsSection" style="display: none;"></div>
+
+            <!-- 기존 필드들 (옵션이 없을 때 사용) -->
+            <div id="legacyFields" style="display: none;">
+                <!-- Field 3: 판매가 -->
+                <div class="input-field" data-field="sellingPrice">
+                    <div class="field-container">
+                        <span class="field-number">3</span>
+                        <span class="field-label">판매가</span>
+                        <input type="number" class="field-input" id="field-sellingPrice" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 4: 할인쿠폰 -->
+                <div class="input-field" data-field="discountCoupon">
+                    <div class="field-container">
+                        <span class="field-number">4</span>
+                        <span class="field-label">할인쿠폰</span>
+                        <input type="number" class="field-input" id="field-discountCoupon" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 5: 최종 판매가 -->
+                <div class="input-field calculated-field" data-field="finalSellingPrice">
+                    <div class="field-container">
+                        <span class="field-number">5</span>
+                        <span class="field-label">최종 판매가</span>
+                        <div class="field-value" id="value-finalSellingPrice">-</div>
+                        <input type="number" class="field-input" id="field-finalSellingPrice" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 6: 가격 변동 -->
+                <div class="input-field" data-field="priceFluctuation">
+                    <div class="field-container">
+                        <span class="field-number">6</span>
+                        <span class="field-label">가격 변동</span>
+                        <input type="number" class="field-input" id="field-priceFluctuation" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 7: 판매수량 -->
+                <div class="input-field" data-field="salesQuantity">
+                    <div class="field-container">
+                        <span class="field-number">7</span>
+                        <span class="field-label">판매수량</span>
+                        <input type="number" class="field-input" id="field-salesQuantity" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 8: 실제 판매 매출 -->
+                <div class="input-field calculated-field" data-field="actualSalesRevenue">
+                    <div class="field-container">
+                        <span class="field-number">8</span>
+                        <span class="field-label">실제 판매 매출</span>
+                        <div class="field-value" id="value-actualSalesRevenue">-</div>
+                        <input type="number" class="field-input" id="field-actualSalesRevenue" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 9: 개당 마진 -->
+                <div class="input-field" data-field="marginPerUnit">
+                    <div class="field-container">
+                        <span class="field-number">9</span>
+                        <span class="field-label">개당 마진</span>
+                        <input type="number" class="field-input" id="field-marginPerUnit" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 10: 총 마진 -->
+                <div class="input-field calculated-field" data-field="totalMargin">
+                    <div class="field-container">
+                        <span class="field-number">10</span>
+                        <span class="field-label">총 마진</span>
+                        <div class="field-value" id="value-totalMargin">-</div>
+                        <input type="number" class="field-input" id="field-totalMargin" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 11: 광고비 -->
+                <div class="input-field" data-field="advertisingCost">
+                    <div class="field-container">
+                        <span class="field-number">11</span>
+                        <span class="field-label">광고비</span>
+                        <input type="number" class="field-input" id="field-advertisingCost" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 12: 순수익 -->
+                <div class="input-field calculated-field" data-field="netProfit">
+                    <div class="field-container">
+                        <span class="field-number">12</span>
+                        <span class="field-label">순수익</span>
+                        <div class="field-value" id="value-netProfit">-</div>
+                        <input type="number" class="field-input" id="field-netProfit" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 13: 마진율 -->
+                <div class="input-field calculated-field" data-field="marginRate">
+                    <div class="field-container">
+                        <span class="field-number">13</span>
+                        <span class="field-label">마진율 (%)</span>
+                        <div class="field-value" id="value-marginRate">-</div>
+                        <input type="number" class="field-input" id="field-marginRate" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 14: 광고판매 -->
+                <div class="input-field" data-field="adSales">
+                    <div class="field-container">
+                        <span class="field-number">14</span>
+                        <span class="field-label">광고판매</span>
+                        <input type="number" class="field-input" id="field-adSales" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 15: 자연판매 -->
+                <div class="input-field" data-field="organicSales">
+                    <div class="field-container">
+                        <span class="field-number">15</span>
+                        <span class="field-label">자연판매</span>
+                        <input type="number" class="field-input" id="field-organicSales" placeholder="0">
+                    </div>
+                </div>
+
+                <!-- Field 16: 자연판매비율 -->
+                <div class="input-field calculated-field" data-field="organicSalesRatio">
+                    <div class="field-container">
+                        <span class="field-number">16</span>
+                        <span class="field-label">자연판매비율 (%)</span>
+                        <div class="field-value" id="value-organicSalesRatio">-</div>
+                        <input type="number" class="field-input" id="field-organicSalesRatio" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+
+                <!-- Field 17: ROAS -->
+                <div class="input-field calculated-field" data-field="roas">
+                    <div class="field-container">
+                        <span class="field-number">17</span>
+                        <span class="field-label">ROAS</span>
+                        <div class="field-value" id="value-roas">-</div>
+                        <input type="number" class="field-input" id="field-roas" placeholder="0" style="display: none;">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Button -->
+        <div class="save-button-container">
+            <button id="saveButton" class="save-button" disabled>등록</button>
+            <button id="nextProductButton" class="save-button save-button-next" style="background: var(--border); color: var(--text-primary); display: none;">다음상품</button>
+            <button id="backToTrackerButton" class="save-button save-button-back" style="background: var(--background); color: var(--text-primary); border: 1px solid var(--border);">돌아가기</button>
+        </div>
     </div>
 
     <script>
-        (function() {
-            var uid = localStorage.getItem('salesChart_userId');
+        // State
+        let currentStep = 0;
+        let formData = {
+            productNumber: '',
+            date: '',
+            sellingPrice: '',
+            discountCoupon: '',
+            finalSellingPrice: '',
+            priceFluctuation: '',
+            salesQuantity: '',
+            actualSalesRevenue: '',
+            marginPerUnit: '',
+            totalMargin: '',
+            advertisingCost: '',
+            netProfit: '',
+            marginRate: '',
+            adSales: '',
+            organicSales: '',
+            organicSalesRatio: '',
+            roas: ''
+        };
+
+        const fields = [
+            'productNumber', 'date', 'sellingPrice', 'discountCoupon', 'finalSellingPrice',
+            'priceFluctuation', 'salesQuantity', 'actualSalesRevenue', 'marginPerUnit',
+            'totalMargin', 'advertisingCost', 'netProfit', 'marginRate',
+            'adSales', 'organicSales', 'organicSalesRatio', 'roas'
+        ];
+
+        const calculatedFields = [
+            'finalSellingPrice', 'actualSalesRevenue', 'totalMargin', 
+            'netProfit', 'marginRate', 'organicSalesRatio', 'roas'
+        ];
+
+        let editId = null;
+        let currentProductOptions = [];
+        let currentProductInfo = null;
+        let currentOptionIndex = 0;
+        let optionDataSets = [];
+        let allRegisteredProducts = [];
+        let currentProductIndex = -1;
+        let updateNextProductButtonFn = null;
+        /** 동일 상품 입력 시 판매가 변동 자동 설정용 - 해당 상품의 최근 입력값 */
+        let lastPriceFluctuationForProduct = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const uid = localStorage.getItem('salesChart_userId');
             if (!uid) {
                 window.location.href = '/margin-tracker';
                 return;
             }
-
-            var editId = null;
-            var params = new URLSearchParams(window.location.search);
-            if (params.get('id')) editId = params.get('id');
-
-            var ids = ['productNumber','date','sellingPrice','discountCoupon','finalSellingPrice','priceFluctuation','salesQuantity','actualSalesRevenue','marginPerUnit','totalMargin','advertisingCost','netProfit','marginRate','adSales','organicSales','organicSalesRatio','roas'];
-            var calculated = ['finalSellingPrice','actualSalesRevenue','totalMargin','netProfit','marginRate','organicSalesRatio','roas'];
-            var computedNumbers = {};
-
-            function getData() {
-                var o = {};
-                ids.forEach(function(id) {
-                    var el = document.getElementById('f-' + id);
-                    o[id] = el ? (el.value || '').trim() : '';
-                });
-                return o;
-            }
-
-            function dateToKoStr(ymd) {
-                if (!ymd) return '';
-                var p = ymd.split('-');
-                if (p.length !== 3) return ymd;
-                return p[0] + '년 ' + parseInt(p[1],10) + '월 ' + parseInt(p[2],10) + '일';
-            }
-
-            function calc() {
-                var d = getData();
-                var sellingPrice = parseFloat(d.sellingPrice) || 0;
-                var discountCoupon = parseFloat(d.discountCoupon) || 0;
-                var salesQuantity = parseFloat(d.salesQuantity) || 0;
-                var marginPerUnit = parseFloat(d.marginPerUnit) || 0;
-                var advertisingCost = parseFloat(d.advertisingCost) || 0;
-                var adSales = parseFloat(d.adSales) || 0;
-                var organicSales = parseFloat(d.organicSales) || 0;
-
-                var finalSellingPrice = sellingPrice - discountCoupon;
-                var actualSalesRevenue = finalSellingPrice * salesQuantity;
-                var totalMargin = marginPerUnit * salesQuantity;
-                var adj = advertisingCost * 1.1;
-                var netProfit = totalMargin - adj;
-                var marginRate = finalSellingPrice > 0 ? (marginPerUnit / finalSellingPrice) * 100 : 0;
-                var organicSalesRatio = salesQuantity > 0 ? (organicSales / salesQuantity) * 100 : 0;
-                var roas = advertisingCost > 0 ? actualSalesRevenue / advertisingCost : 0;
-
-                setVal('finalSellingPrice', finalSellingPrice > 0 ? Math.round(finalSellingPrice) : '');
-                setVal('actualSalesRevenue', actualSalesRevenue > 0 ? Math.round(actualSalesRevenue) : '');
-                setVal('totalMargin', totalMargin !== 0 ? Math.round(totalMargin) : '');
-                setVal('netProfit', netProfit !== 0 ? Math.round(netProfit) : '');
-                setVal('marginRate', marginRate !== 0 ? marginRate.toFixed(1) + '%' : '');
-                setVal('organicSalesRatio', organicSalesRatio !== 0 ? organicSalesRatio.toFixed(1) + '%' : '');
-                setVal('roas', roas !== 0 ? roas.toFixed(2) : '');
-
-                computedNumbers.finalSellingPrice = finalSellingPrice > 0 ? finalSellingPrice : null;
-                computedNumbers.actualSalesRevenue = actualSalesRevenue > 0 ? actualSalesRevenue : null;
-                computedNumbers.totalMargin = totalMargin !== 0 ? totalMargin : null;
-                computedNumbers.netProfit = netProfit !== 0 ? netProfit : null;
-                computedNumbers.marginRate = marginRate !== 0 ? marginRate : null;
-                computedNumbers.organicSalesRatio = organicSalesRatio !== 0 ? organicSalesRatio : null;
-                computedNumbers.roas = roas !== 0 ? roas : null;
-
-                var all = ids.filter(function(id) { return calculated.indexOf(id) === -1; });
-                var filled = all.every(function(id) {
-                    var v = id === 'date' ? (document.getElementById('f-date').value) : (document.getElementById('f-' + id).value);
-                    return v && String(v).trim() !== '';
-                });
-                document.getElementById('saveBtn').disabled = !filled;
-            }
-
-            function setVal(id, v) {
-                var el = document.getElementById('f-' + id);
-                if (!el) return;
-                el.value = v === '' || v === null || v === undefined ? '' : v;
-            }
-
-            ids.forEach(function(id) {
-                if (calculated.indexOf(id) !== -1) return;
-                var el = document.getElementById('f-' + id);
-                if (el && !el.readOnly) {
-                    el.addEventListener('input', calc);
-                    el.addEventListener('change', calc);
-                }
-            });
-
-            function setFocusedRow(row) {
-                document.querySelectorAll('.form .row').forEach(function(r) { r.classList.remove('focused'); });
-                if (row) row.classList.add('focused');
-            }
-            document.querySelectorAll('.form .row').forEach(function(row) {
-                var input = row.querySelector('input');
-                if (!input) return;
-                row.addEventListener('click', function() {
-                    if (input && !input.readOnly) {
-                        input.focus();
-                        setFocusedRow(row);
-                    }
-                });
-                input.addEventListener('focus', function() { setFocusedRow(row); });
-                input.addEventListener('blur', function() { row.classList.remove('focused'); });
-            });
-
-            document.getElementById('f-date').value = new Date().toISOString().slice(0, 10);
-
+            const params = new URLSearchParams(window.location.search);
+            editId = params.get('id');
+            const productParam = params.get('product');
+            const dateParam = params.get('date');
+            initEventListeners();
+            initDatePicker();
             loadProductList();
-            if (editId) loadRecordForEdit(editId);
+            if (editId) {
+                loadRecordForEdit(editId);
+            } else {
+                updateSaveButtonText();
+                if (productParam) {
+                    handleProductSelect(productParam, dateParam);
+                } else {
+                    setCurrentStep(0);
+                }
+            }
+        });
 
-            function loadProductList() {
-                fetch('/api/margin-tracker/products?userId=' + encodeURIComponent(uid))
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        var list = document.getElementById('productList');
-                        if (!list) return;
-                        list.innerHTML = '';
-                        if (data.success && data.products && data.products.length) {
-                            data.products.forEach(function(p) {
-                                var num = p.productNumber || '';
-                                var name = p.productName || '';
-                                var label = name ? (num + ' / ' + name) : num;
-                                if (label) {
-                                    var opt = document.createElement('option');
-                                    opt.value = label;
-                                    list.appendChild(opt);
-                                }
-                            });
+        async function loadProductList() {
+            const uid = localStorage.getItem('salesChart_userId');
+            if (!uid) return;
+            try {
+                const res = await fetch('/api/margin-tracker/registered-products?userId=' + encodeURIComponent(uid));
+                const data = await res.json();
+                allRegisteredProducts = (data.success && data.products) ? data.products : [];
+                const list = document.getElementById('productList');
+                list.innerHTML = '';
+                if (allRegisteredProducts.length > 0) {
+                    allRegisteredProducts.forEach(function(p) {
+                        const num = p.productNumber || '';
+                        const name = p.productName || '';
+                        const label = name ? (num + ' / ' + name) : num;
+                        if (label) {
+                            const opt = document.createElement('option');
+                            opt.value = label;
+                            list.appendChild(opt);
                         }
                     });
-            }
+                }
+                const res2 = await fetch('/api/margin-tracker/products?userId=' + encodeURIComponent(uid));
+                const data2 = await res2.json();
+                if (data2.success && data2.products && data2.products.length) {
+                    data2.products.forEach(function(p) {
+                        const num = p.productNumber || '';
+                        const name = p.productName || '';
+                        const label = name ? (num + ' / ' + name) : num;
+                        if (label && !Array.from(list.options).some(o => o.value === label)) {
+                            const opt = document.createElement('option');
+                            opt.value = label;
+                            list.appendChild(opt);
+                        }
+                    });
+                }
+            } catch (e) {}
+        }
 
-            function loadRecordForEdit(id) {
-                fetch('/api/margin-tracker/record/' + id + '?userId=' + encodeURIComponent(uid))
-                    .then(function(res) { return res.json(); })
-                    .then(function(data) {
-                        if (!data.success || !data.record) return;
-                        var r = data.record;
-                        var productLabel = (r.productNumber && r.productName) ? (r.productNumber + ' / ' + r.productName) : (r.productNumber || r.productName || '');
-                        if (productLabel) document.getElementById('f-productNumber').value = productLabel;
-                        if (r.date) {
-                            var dStr = String(r.date);
-                            var match = dStr.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})/);
-                            if (match) {
-                                document.getElementById('f-date').value = match[1] + '-' + String(match[2]).padStart(2,'0') + '-' + String(match[3]).padStart(2,'0');
+        async function handleProductSelect(productNumber, dateParam) {
+            const uid = localStorage.getItem('salesChart_userId');
+            if (!uid) return;
+            try {
+                // 동일 상품 최근 판매가 변동값 조회 (자동 설정용, 수정 가능 유지)
+                lastPriceFluctuationForProduct = null;
+                try {
+                    const latestRes = await fetch('/api/margin-tracker/latest-record?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                    const latestData = await latestRes.json();
+                    if (latestData.success && latestData.priceFluctuation != null && latestData.priceFluctuation !== '') {
+                        lastPriceFluctuationForProduct = latestData.priceFluctuation;
+                    }
+                } catch (e) { /* 무시 */ }
+
+                const res = await fetch('/api/margin-tracker/product-options?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                const data = await res.json();
+                if (data.success && data.options && data.options.length > 0) {
+                    currentProductOptions = data.options;
+                    // 옵션 데이터 확인 및 디버깅
+                    console.log('옵션 데이터 로드:', data.options);
+                    data.options.forEach(function(opt, idx) {
+                        console.log('옵션 ' + idx + ':', {
+                            optionAlias: opt.optionAlias,
+                            marginPerUnit: opt.marginPerUnit,
+                            marginPerUnitType: typeof opt.marginPerUnit
+                        });
+                    });
+                    currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: '' };
+                    document.getElementById('productInfoSection').style.display = 'block';
+                    document.getElementById('productInfoDisplay').textContent = (currentProductInfo.productNumber || '') + ' / ' + (currentProductInfo.productName || '');
+                    document.getElementById('productNumberField').style.display = 'none';
+                    document.getElementById('optionTabsSection').style.display = 'block';
+                    document.getElementById('optionFieldsSection').style.display = 'block';
+                    document.getElementById('legacyFields').style.display = 'none';
+                    currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
+                    if (updateNextProductButtonFn) {
+                        updateNextProductButtonFn();
+                    }
+                    renderOptionTabs();
+                    renderOptionFields(0);
+                    if (dateParam) {
+                        const dateInput = document.getElementById('field-date');
+                        if (dateInput && dateInput._flatpickr) {
+                            const d = new Date(dateParam);
+                            dateInput._flatpickr.setDate(d, false);
+                            formData.date = dateInput.value;
+                        }
+                    }
+                } else {
+                    // 레거시 모드: 옵션이 없는 경우
+                    document.getElementById('productInfoSection').style.display = 'none';
+                    document.getElementById('productNumberField').style.display = 'block';
+                    document.getElementById('optionTabsSection').style.display = 'none';
+                    document.getElementById('optionFieldsSection').style.display = 'none';
+                    document.getElementById('legacyFields').style.display = 'block';
+                    const productInput = document.getElementById('field-productNumber');
+                    if (productInput) {
+                        const p = allRegisteredProducts.find(p => p.productNumber === productNumber);
+                        if (p) {
+                            productInput.value = (p.productNumber || '') + ' / ' + (p.productName || '');
+                            formData.productNumber = productInput.value;
+                            // 이전 판매가 변동값 자동 설정 (수정 가능)
+                            if (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') {
+                                const v = String(lastPriceFluctuationForProduct);
+                                formData.priceFluctuation = v;
+                                const pfInput = document.getElementById('field-priceFluctuation');
+                                if (pfInput) pfInput.value = v;
+                                calculateDerivedFields();
+                            }
+                            // 상품 등록 시 저장된 옵션 정보가 있으면 첫 번째 옵션의 개당 마진을 자동 설정
+                            if (data.options && data.options.length > 0) {
+                                const firstOption = data.options[0];
+                                if (firstOption.marginPerUnit) {
+                                    formData.marginPerUnit = firstOption.marginPerUnit;
+                                    const marginInput = document.getElementById('field-marginPerUnit');
+                                    if (marginInput) {
+                                        marginInput.value = firstOption.marginPerUnit;
+                                    }
+                                    calculateDerivedFields();
+                                }
                             } else {
-                                document.getElementById('f-date').value = dStr;
+                                // 옵션이 없어도 상품이 등록되어 있으면, 옵션 정보를 다시 확인
+                                // (옵션이 없을 수도 있으므로 사용자가 수동으로 입력해야 함)
+                                console.log('등록된 상품이지만 옵션이 없습니다. 개당 마진을 수동으로 입력해주세요.');
                             }
                         }
-                        ['sellingPrice','discountCoupon','priceFluctuation','salesQuantity','marginPerUnit','advertisingCost','adSales','organicSales'].forEach(function(k) {
-                            var v = r[k];
-                            if (v != null && v !== '') {
-                                var el = document.getElementById('f-' + k);
-                                if (el) el.value = v;
+                    }
+                }
+            } catch (e) {
+                console.error('옵션 로드 실패', e);
+            }
+        }
+
+        let optionTabsCurrentPage = 0;
+        const optionTabsPerPage = 3;
+
+        function renderOptionTabs() {
+            const container = document.getElementById('optionTabs');
+            container.innerHTML = '';
+            const startIdx = optionTabsCurrentPage * optionTabsPerPage;
+            const endIdx = Math.min(startIdx + optionTabsPerPage, currentProductOptions.length);
+            const visibleOptions = currentProductOptions.slice(startIdx, endIdx);
+            visibleOptions.forEach(function(opt, localIdx) {
+                const idx = startIdx + localIdx;
+                const tab = document.createElement('button');
+                tab.type = 'button';
+                tab.className = 'option-tab' + (idx === currentOptionIndex ? ' active' : '');
+                tab.textContent = opt.optionAlias || opt.optionId || ('옵션' + String.fromCharCode(65 + idx));
+                tab.style.cssText = 'padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: var(--text-primary); font-size: 0.875rem; cursor: pointer; flex: 1; min-width: 0;';
+                if (idx === currentOptionIndex) {
+                    tab.style.background = 'var(--primary)';
+                    tab.style.color = '#fff';
+                    tab.style.borderColor = 'var(--primary)';
+                }
+                tab.addEventListener('click', function() {
+                    currentOptionIndex = idx;
+                    optionTabsCurrentPage = Math.floor(idx / optionTabsPerPage);
+                    renderOptionTabs();
+                    renderOptionFields(idx);
+                    // 포커스 설정을 renderOptionFields 완료 후 실행
+                    setTimeout(function() {
+                        const fieldsSection = document.getElementById('optionFieldsSection');
+                        if (fieldsSection) {
+                            fieldsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            setTimeout(function() {
+                                const priceFluctuationField = document.getElementById('optionPriceFluctuationField');
+                                const priceFluctuationInput = fieldsSection.querySelector('.opt-price-fluctuation');
+                                if (priceFluctuationInput && priceFluctuationField) {
+                                    // input-field에 active 클래스 유지
+                                    priceFluctuationField.classList.add('active');
+                                    // 입력 필드에 포커스
+                                    priceFluctuationInput.focus();
+                                    priceFluctuationInput.select();
+                                    // 포커스 이벤트 강제 발생
+                                    priceFluctuationInput.dispatchEvent(new Event('focus', { bubbles: true }));
+                                }
+                            }, 500);
+                        }
+                    }, 150);
+                });
+                container.appendChild(tab);
+            });
+            if (currentProductOptions.length > optionTabsPerPage) {
+                const navContainer = document.createElement('div');
+                navContainer.style.cssText = 'display: flex; gap: 0.5rem; margin-top: 0.5rem; justify-content: center;';
+                if (optionTabsCurrentPage > 0) {
+                    const prevBtn = document.createElement('button');
+                    prevBtn.textContent = '← 이전';
+                    prevBtn.style.cssText = 'padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 6px; background: var(--background); cursor: pointer; font-size: 0.875rem;';
+                    prevBtn.addEventListener('click', function() {
+                        optionTabsCurrentPage--;
+                        renderOptionTabs();
+                    });
+                    navContainer.appendChild(prevBtn);
+                }
+                if (endIdx < currentProductOptions.length) {
+                    const nextBtn = document.createElement('button');
+                    nextBtn.textContent = '다음 →';
+                    nextBtn.style.cssText = 'padding: 0.5rem 1rem; border: 1px solid var(--border); border-radius: 6px; background: var(--background); cursor: pointer; font-size: 0.875rem;';
+                    nextBtn.addEventListener('click', function() {
+                        optionTabsCurrentPage++;
+                        renderOptionTabs();
+                    });
+                    navContainer.appendChild(nextBtn);
+                }
+                container.appendChild(navContainer);
+            }
+        }
+
+        function renderOptionFields(optionIdx) {
+            const container = document.getElementById('optionFieldsSection');
+            container.innerHTML = '';
+            const opt = currentProductOptions[optionIdx];
+            if (!opt) return;
+            if (!optionDataSets[optionIdx]) {
+                var initPriceFluctuation = (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') ? String(lastPriceFluctuationForProduct) : '';
+                optionDataSets[optionIdx] = {
+                    sellingPrice: opt.sellingPrice || 0,
+                    priceFluctuation: initPriceFluctuation,
+                    finalSellingPrice: opt.sellingPrice || 0,
+                    salesQuantity: '',
+                    advertisingCost: '',
+                    adSales: '',
+                    organicSales: 0,
+                    netProfit: 0,
+                    marginRate: 0,
+                    roas: 0
+                };
+            }
+            const data = optionDataSets[optionIdx];
+            const sellingPrice = parseFloat(data.sellingPrice) || 0;
+            const priceFluctuation = parseFloat(data.priceFluctuation) || 0;
+            const finalPrice = sellingPrice + priceFluctuation;
+            const salesQty = parseFloat(data.salesQuantity) || 0;
+            const adCost = parseFloat(data.advertisingCost) || 0;
+            const adSalesQty = parseFloat(data.adSales) || 0;
+            const organicSalesQty = Math.max(0, salesQty - adSalesQty);
+            const actualRevenue = finalPrice * salesQty;
+            // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
+            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
+            // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+            let baseMarginPerUnit = 0;
+            if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
+                baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+            }
+            console.log('renderOptionFields - 옵션 개당 마진:', {
+                optionAlias: opt.optionAlias,
+                marginPerUnit: opt.marginPerUnit,
+                parsedMarginPerUnit: baseMarginPerUnit,
+                salesQty: salesQty,
+                priceFluctuation: priceFluctuation,
+                adCost: adCost
+            });
+            const marginFromBase = baseMarginPerUnit * salesQty;  // 개당 마진 * 판매 수량
+            const marginFromFluctuation = priceFluctuation * salesQty;  // 판매가 변동 * 판매 수량
+            const netProfit = marginFromBase + marginFromFluctuation - adCost;
+            console.log('renderOptionFields - 순이익 계산:', {
+                marginFromBase: marginFromBase,
+                marginFromFluctuation: marginFromFluctuation,
+                adCost: adCost,
+                netProfit: netProfit
+            });
+            const roas = adCost > 0 ? actualRevenue / adCost : 0;
+            // 마진율 계산: 조정된 개당 마진 기준으로 계산
+            const adjustedMarginPerUnit = baseMarginPerUnit + priceFluctuation;
+            let marginRate = 0;
+            if (adjustedMarginPerUnit > 0 && finalPrice > 0) {
+                marginRate = (adjustedMarginPerUnit / finalPrice) * 100;
+            } else if (actualRevenue > 0) {
+                marginRate = (netProfit / actualRevenue) * 100;
+            }
+            container.innerHTML = '<div style="border-top: 2px solid var(--border); padding-top: 1rem; margin-top: 1rem;">' +
+                '<div class="input-field"><div class="field-container"><span class="field-number">1</span><span class="field-label">판매가 : 자동 (수정불가)</span><div class="field-value" style="color: var(--text-secondary);">' + Math.round(sellingPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
+                '<div class="input-field" id="optionPriceFluctuationField"><div class="field-container"><span class="field-number">2</span><span class="field-label">판매가 변동 : 수동 (필수아님)</span><input type="number" class="field-input opt-price-fluctuation" placeholder="예: +1000, -1000" value="' + (priceFluctuation !== 0 ? priceFluctuation : '') + '"></div></div>' +
+                '<div class="input-field" id="optionSalesQtyField"><div class="field-container"><span class="field-number">3</span><span class="field-label">판매 개수 : 수동(필수)</span><input type="number" class="field-input opt-sales-qty" placeholder="0" value="' + (salesQty > 0 ? salesQty : '') + '" required></div></div>' +
+                '<div class="input-field" id="optionAdCostField"><div class="field-container"><span class="field-number">4</span><span class="field-label">광고비 : 수동(필수)</span><input type="number" class="field-input opt-ad-cost" placeholder="0" value="' + (adCost > 0 ? adCost : '') + '" required></div></div>' +
+                '<div class="input-field" id="optionAdSalesField"><div class="field-container"><span class="field-number">5</span><span class="field-label">광고 판매 개수 : 수동(필수)</span><input type="number" class="field-input opt-ad-sales" placeholder="0" value="' + (adSalesQty > 0 ? adSalesQty : '') + '" required></div></div>' +
+                '<div style="border-top: 2px solid var(--border); margin: 1rem 0; padding-top: 1rem;"></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">6</span><span class="field-label">최종 판매가 : 자동 (수정불가)</span><div class="field-value opt-final-price">' + Math.round(finalPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">7</span><span class="field-label">자연판매개수 : 자동 (수정 불가)</span><div class="field-value opt-organic-sales">' + Math.max(0, Math.round(organicSalesQty)) + '</div></div></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">8</span><span class="field-label">순이익 (입력값 아님)</span><div class="field-value opt-net-profit">' + Math.round(netProfit).toLocaleString('ko-KR') + '원</div></div></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">9</span><span class="field-label">ROAS (입력값아님)</span><div class="field-value opt-roas">' + (roas > 0 ? roas.toFixed(2) : '-') + '</div></div></div>' +
+                '</div>';
+            const priceFluctuationInput = container.querySelector('.opt-price-fluctuation');
+            const salesQtyInput = container.querySelector('.opt-sales-qty');
+            const adCostInput = container.querySelector('.opt-ad-cost');
+            const adSalesInput = container.querySelector('.opt-ad-sales');
+            
+            const priceFluctuationField = document.getElementById('optionPriceFluctuationField');
+            const salesQtyField = document.getElementById('optionSalesQtyField');
+            const adCostField = document.getElementById('optionAdCostField');
+            const adSalesField = document.getElementById('optionAdSalesField');
+            
+            // 포커싱 효과를 위한 이벤트 리스너 추가
+            function addFocusBlurListeners(inputElement, fieldElement) {
+                if (!inputElement || !fieldElement) return;
+                inputElement.addEventListener('focus', function() {
+                    fieldElement.classList.add('active');
+                });
+                inputElement.addEventListener('blur', function() {
+                    fieldElement.classList.remove('active');
+                });
+            }
+            
+            // 모바일: 첫 번째 필드(판매가 변동) 자동 활성화 및 포커스
+            if (priceFluctuationInput && priceFluctuationField) {
+                priceFluctuationField.classList.add('active');
+                setTimeout(function() {
+                    priceFluctuationInput.focus();
+                }, 300);
+                
+                priceFluctuationInput.addEventListener('input', function() {
+                    updateOptionCalculations(optionIdx);
+                });
+                addFocusBlurListeners(priceFluctuationInput, priceFluctuationField);
+                
+                // 엔터키/탭키로 다음 필드(판매 개수)로 이동
+                priceFluctuationInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+                        e.preventDefault();
+                        priceFluctuationField.classList.remove('active');
+                        if (salesQtyInput && salesQtyField) {
+                            salesQtyField.classList.add('active');
+                            setTimeout(function() {
+                                salesQtyInput.focus();
+                                salesQtyInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    }
+                });
+            }
+            
+            if (salesQtyInput && salesQtyField) {
+                salesQtyInput.addEventListener('input', function() {
+                    updateOptionCalculations(optionIdx);
+                });
+                addFocusBlurListeners(salesQtyInput, salesQtyField);
+                
+                // 엔터키/탭키로 다음 필드(광고비)로 이동
+                salesQtyInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+                        e.preventDefault();
+                        salesQtyField.classList.remove('active');
+                        if (adCostInput && adCostField) {
+                            adCostField.classList.add('active');
+                            setTimeout(function() {
+                                adCostInput.focus();
+                                adCostInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    }
+                });
+            }
+            
+            if (adCostInput && adCostField) {
+                adCostInput.addEventListener('input', function() {
+                    updateOptionCalculations(optionIdx);
+                });
+                addFocusBlurListeners(adCostInput, adCostField);
+                
+                // 엔터키/탭키로 다음 필드(광고 판매 개수)로 이동
+                adCostInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+                        e.preventDefault();
+                        adCostField.classList.remove('active');
+                        if (adSalesInput && adSalesField) {
+                            adSalesField.classList.add('active');
+                            setTimeout(function() {
+                                adSalesInput.focus();
+                                adSalesInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        }
+                    }
+                });
+            }
+            
+            if (adSalesInput && adSalesField) {
+                adSalesInput.addEventListener('input', function() {
+                    updateOptionCalculations(optionIdx);
+                });
+                addFocusBlurListeners(adSalesInput, adSalesField);
+                
+                // 엔터키/탭키로 버튼(등록하기/다음상품)으로 포커스 이동
+                adSalesInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || (e.key === 'Tab' && !e.shiftKey)) {
+                        e.preventDefault();
+                        adSalesField.classList.remove('active');
+                        // 등록하기 버튼으로 포커스 이동
+                        const saveButton = document.getElementById('saveButton');
+                        if (saveButton && !saveButton.disabled) {
+                            setTimeout(function() {
+                                saveButton.focus();
+                                saveButton.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }, 100);
+                        } else {
+                            // 등록하기 버튼이 비활성화되어 있으면 다음상품 버튼 확인
+                            const nextProductBtn = document.getElementById('nextProductButton');
+                            if (nextProductBtn && nextProductBtn.style.display !== 'none') {
+                                setTimeout(function() {
+                                    nextProductBtn.focus();
+                                    nextProductBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }, 100);
+                            } else {
+                                // 매출일지로 돌아가기 버튼으로 포커스 이동
+                                const backToTrackerBtn = document.getElementById('backToTrackerButton');
+                                if (backToTrackerBtn) {
+                                    setTimeout(function() {
+                                        backToTrackerBtn.focus();
+                                        backToTrackerBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }, 100);
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function updateOptionCalculations(optionIdx) {
+            const container = document.getElementById('optionFieldsSection');
+            const opt = currentProductOptions[optionIdx];
+            if (!opt || !optionDataSets[optionIdx]) return;
+            const sellingPrice = parseFloat(opt.sellingPrice) || 0;
+            const priceFluctuation = parseFloat(container.querySelector('.opt-price-fluctuation').value) || 0;
+            const finalPrice = sellingPrice + priceFluctuation;
+            const salesQty = parseFloat(container.querySelector('.opt-sales-qty').value) || 0;
+            const adCost = parseFloat(container.querySelector('.opt-ad-cost').value) || 0;
+            const adSalesQty = parseFloat(container.querySelector('.opt-ad-sales').value) || 0;
+            const organicSalesQty = Math.max(0, salesQty - adSalesQty);
+            const actualRevenue = finalPrice * salesQty;
+            // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
+            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
+            // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+            let baseMarginPerUnit = 0;
+            if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
+                baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+            }
+            console.log('updateOptionCalculations - 옵션 개당 마진:', {
+                optionIdx: optionIdx,
+                optionAlias: opt.optionAlias,
+                marginPerUnit: opt.marginPerUnit,
+                parsedMarginPerUnit: baseMarginPerUnit,
+                salesQty: salesQty,
+                priceFluctuation: priceFluctuation,
+                adCost: adCost
+            });
+            const marginFromBase = baseMarginPerUnit * salesQty;  // 개당 마진 * 판매 수량
+            const marginFromFluctuation = priceFluctuation * salesQty;  // 판매가 변동 * 판매 수량
+            const netProfit = marginFromBase + marginFromFluctuation - adCost;
+            console.log('updateOptionCalculations - 순이익 계산:', {
+                marginFromBase: marginFromBase,
+                marginFromFluctuation: marginFromFluctuation,
+                adCost: adCost,
+                netProfit: netProfit
+            });
+            const roas = adCost > 0 ? actualRevenue / adCost : 0;
+            // 마진율 계산: 조정된 개당 마진 기준으로 계산
+            const adjustedMarginPerUnit = baseMarginPerUnit + priceFluctuation;
+            let marginRate = 0;
+            if (adjustedMarginPerUnit > 0 && finalPrice > 0) {
+                marginRate = (adjustedMarginPerUnit / finalPrice) * 100;
+            } else if (actualRevenue > 0) {
+                marginRate = (netProfit / actualRevenue) * 100;
+            }
+            // 기존 dataSeq 유지 (수정 모드일 때)
+            const existingDataSeq = optionDataSets[optionIdx] ? optionDataSets[optionIdx].dataSeq : null;
+            optionDataSets[optionIdx] = {
+                sellingPrice: sellingPrice,
+                priceFluctuation: priceFluctuation,
+                finalSellingPrice: finalPrice,
+                salesQuantity: salesQty,
+                actualSalesRevenue: actualRevenue,
+                advertisingCost: adCost,
+                adSales: adSalesQty,
+                organicSales: organicSalesQty,
+                netProfit: netProfit,
+                marginRate: marginRate,
+                roas: roas,
+                dataSeq: existingDataSeq || null
+            };
+            const finalPriceEl = container.querySelector('.opt-final-price');
+            const organicSalesEl = container.querySelector('.opt-organic-sales');
+            const netProfitEl = container.querySelector('.opt-net-profit');
+            const roasEl = container.querySelector('.opt-roas');
+            if (finalPriceEl) finalPriceEl.textContent = Math.round(finalPrice).toLocaleString('ko-KR') + '원';
+            if (organicSalesEl) organicSalesEl.textContent = Math.max(0, Math.round(organicSalesQty));
+            if (netProfitEl) netProfitEl.textContent = Math.round(netProfit).toLocaleString('ko-KR') + '원';
+            if (roasEl) roasEl.textContent = roas > 0 ? roas.toFixed(2) : '-';
+            checkCanSave();
+            updateSaveButtonText();
+        }
+
+        function checkCanSave() {
+            let canSave = false;
+            if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                // 옵션 기반 입력 모드: 최소 하나의 옵션에 필수 값이 입력되어야 함
+                canSave = optionDataSets.some(function(d, idx) {
+                    if (!d) return false;
+                    const salesQty = parseFloat(d.salesQuantity) || 0;
+                    const adCost = parseFloat(d.advertisingCost) || 0;
+                    const adSales = parseFloat(d.adSales) || 0;
+                    return salesQty > 0 && adCost >= 0 && adSales >= 0;
+                });
+            } else {
+                // 레거시 모드: 기존 로직
+                canSave = formData.salesQuantity && formData.advertisingCost && formData.adSales;
+            }
+            const saveBtn = document.getElementById('saveButton');
+            if (saveBtn) {
+                saveBtn.disabled = !canSave;
+                saveBtn.style.opacity = canSave ? '1' : '0.5';
+                saveBtn.style.cursor = canSave ? 'pointer' : 'not-allowed';
+            }
+        }
+        
+        function updateSaveButtonText() {
+            const saveBtn = document.getElementById('saveButton');
+            if (!saveBtn) return;
+            // 수정 모드 감지: editId가 있거나 optionDataSets에 dataSeq가 있는 경우
+            const isEditMode = editId !== null || (optionDataSets.length > 0 && optionDataSets.some(d => d && d.dataSeq));
+            if (isEditMode) {
+                saveBtn.textContent = '수정';
+            } else {
+                saveBtn.textContent = '등록';
+            }
+        }
+
+        async function loadRecordForEdit(id) {
+            const uid = localStorage.getItem('salesChart_userId');
+            if (!uid) return;
+            try {
+                const res = await fetch('/api/margin-tracker/record/' + id + '?userId=' + encodeURIComponent(uid));
+                const data = await res.json();
+                if (!data.success || !data.record) {
+                    console.warn('수정 데이터 로드 실패', data);
+                    return;
+                }
+                const r = data.record;
+                const productNumber = r.productNumber;
+                const saleDate = r.date;
+                
+                // 상품번호가 있고 옵션 기반 입력이 가능한 경우
+                if (productNumber) {
+                    // 해당 상품의 옵션 목록 조회
+                    const optRes = await fetch('/api/margin-tracker/product-options?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                    const optData = await optRes.json();
+                    
+                    if (optData.success && optData.options && optData.options.length > 0) {
+                        // 옵션 기반 입력 모드로 전환
+                        currentProductOptions = optData.options;
+                        currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: r.productName || '' };
+                        document.getElementById('productInfoSection').style.display = 'block';
+                        document.getElementById('productInfoDisplay').textContent = (currentProductInfo.productNumber || '') + ' / ' + (currentProductInfo.productName || '');
+                        document.getElementById('productNumberField').style.display = 'none';
+                        document.getElementById('optionTabsSection').style.display = 'block';
+                        document.getElementById('optionFieldsSection').style.display = 'block';
+                        document.getElementById('legacyFields').style.display = 'none';
+                        if (allRegisteredProducts.length > 1) {
+                            document.getElementById('nextProductButton').style.display = 'block';
+                            currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
+                        }
+                        
+                        // 날짜 설정
+                        if (saleDate) {
+                            formData.date = saleDate;
+                            const dateInput = document.getElementById('field-date');
+                            if (dateInput) {
+                                dateInput.value = saleDate;
+                                if (dateInput._flatpickr) {
+                                    const dateMatch = saleDate.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
+                                    if (dateMatch) {
+                                        const y = parseInt(dateMatch[1], 10);
+                                        const m = parseInt(dateMatch[2], 10) - 1;
+                                        const d = parseInt(dateMatch[3], 10);
+                                        const dateObj = new Date(y, m, d);
+                                        dateInput._flatpickr.setDate(dateObj, false);
+                                    } else if (/^\d{4}-\d{2}-\d{2}/.test(saleDate)) {
+                                        const dateObj = new Date(saleDate);
+                                        dateInput._flatpickr.setDate(dateObj, false);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 같은 날짜의 모든 옵션 데이터 로드
+                        const allRecordsForDate = data.allRecordsForDate || [];
+                        optionDataSets = [];
+                        // 수정 시에도 기존 기록 없는 옵션에는 이전 판매가 변동 자동 설정용
+                        lastPriceFluctuationForProduct = null;
+                        try {
+                            const latestRes = await fetch('/api/margin-tracker/latest-record?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                            const latestData = await latestRes.json();
+                            if (latestData.success && latestData.priceFluctuation != null && latestData.priceFluctuation !== '') {
+                                lastPriceFluctuationForProduct = latestData.priceFluctuation;
+                            }
+                        } catch (e) { /* 무시 */ }
+
+                        // 각 옵션에 대해 데이터 매칭
+                        currentProductOptions.forEach(function(opt, idx) {
+                            const existingRecord = allRecordsForDate.find(function(rec) {
+                                // 옵션 ID나 별칭이 일치하는 경우
+                                if (opt.optionId && rec.optionId && opt.optionId === rec.optionId) return true;
+                                if (opt.optionAlias && rec.optionAlias && opt.optionAlias === rec.optionAlias) return true;
+                                // 옵션이 없는 경우 첫 번째 옵션에 매칭
+                                if (!opt.optionId && !opt.optionAlias && !rec.optionId && !rec.optionAlias && idx === 0) return true;
+                                return false;
+                            });
+                            
+                            if (existingRecord) {
+                                const sellingPrice = parseFloat(existingRecord.sellingPrice) || opt.sellingPrice || 0;
+                                const priceFluctuation = parseFloat(existingRecord.priceFluctuation) || 0;
+                                const finalPrice = sellingPrice + priceFluctuation;
+                                const salesQty = parseFloat(existingRecord.salesQuantity) || 0;
+                                const adCost = parseFloat(existingRecord.advertisingCost) || 0;
+                                const adSalesQty = parseFloat(existingRecord.adSales) || 0;
+                                const organicSalesQty = Math.max(0, salesQty - adSalesQty);
+                                const actualRevenue = finalPrice * salesQty;
+                                // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
+                                // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
+                                // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+                                let baseMarginPerUnit = 0;
+                                if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
+                                    baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+                                }
+                                const marginFromBase = baseMarginPerUnit * salesQty;  // 개당 마진 * 판매 수량
+                                const marginFromFluctuation = priceFluctuation * salesQty;  // 판매가 변동 * 판매 수량
+                                const netProfit = marginFromBase + marginFromFluctuation - adCost;
+                                const roas = adCost > 0 ? actualRevenue / adCost : 0;
+                                // 마진율 계산
+                                const adjustedMarginPerUnit = baseMarginPerUnit + priceFluctuation;
+                                let marginRate = parseFloat(existingRecord.marginRate) || 0;
+                                if (marginRate <= 0) {
+                                    if (adjustedMarginPerUnit > 0 && finalPrice > 0) {
+                                        marginRate = (adjustedMarginPerUnit / finalPrice) * 100;
+                                    } else if (actualRevenue > 0) {
+                                        marginRate = (netProfit / actualRevenue) * 100;
+                                    }
+                                }
+                                
+                                optionDataSets[idx] = {
+                                    sellingPrice: sellingPrice,
+                                    priceFluctuation: priceFluctuation,
+                                    finalSellingPrice: finalPrice,
+                                    salesQuantity: salesQty,
+                                    actualSalesRevenue: actualRevenue,
+                                    advertisingCost: adCost,
+                                    adSales: adSalesQty,
+                                    organicSales: organicSalesQty,
+                                    netProfit: netProfit,
+                                    marginRate: marginRate,
+                                    roas: roas,
+                                    dataSeq: existingRecord.id
+                                };
+                            } else {
+                                var prevPriceFluctuation = (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') ? String(lastPriceFluctuationForProduct) : '';
+                                optionDataSets[idx] = {
+                                    sellingPrice: opt.sellingPrice || 0,
+                                    priceFluctuation: prevPriceFluctuation,
+                                    finalSellingPrice: opt.sellingPrice || 0,
+                                    salesQuantity: '',
+                                    advertisingCost: '',
+                                    adSales: '',
+                                    organicSales: 0,
+                                    netProfit: 0,
+                                    marginRate: 0,
+                                    roas: 0,
+                                    dataSeq: null
+                                };
                             }
                         });
-                        calc();
-                    })
-                    .catch(function(err) { console.error('수정 데이터 로드 오류', err); });
+                        
+                        // 첫 번째 옵션 표시
+                        currentOptionIndex = 0;
+                        renderOptionTabs();
+                        renderOptionFields(0);
+                        
+                        // 수정 모드인 경우 버튼 텍스트 변경 및 활성화 상태 확인
+                        updateSaveButtonText();
+                        checkCanSave();
+                        
+                        if (updateNextProductButtonFn) {
+                            updateNextProductButtonFn();
+                        }
+                        return;
+                    }
+                }
+                
+                // 옵션이 없거나 레거시 모드인 경우
+                function val(v) { return v != null && v !== '' ? String(v) : ''; }
+                const productLabel = (r.productNumber && r.productName) ? (r.productNumber + ' / ' + r.productName) : (r.productNumber || r.productName || '');
+                formData.productNumber = productLabel;
+                const productInput = document.getElementById('field-productNumber');
+                if (productInput) productInput.value = productLabel;
+
+                if (r.date) {
+                    formData.date = val(r.date);
+                    const dateInput = document.getElementById('field-date');
+                    if (dateInput) dateInput.value = formData.date;
+                }
+
+                ['sellingPrice','discountCoupon','priceFluctuation','salesQuantity','marginPerUnit','advertisingCost','adSales','organicSales'].forEach(function(k) {
+                    const v = val(r[k]);
+                    if (v) {
+                        formData[k] = v;
+                        const el = document.getElementById('field-' + k);
+                        if (el) el.value = v;
+                    }
+                });
+
+                calculateDerivedFields();
+
+                ['finalSellingPrice','actualSalesRevenue','totalMargin','netProfit','marginRate','organicSalesRatio','roas'].forEach(function(k) {
+                    const v = r[k];
+                    if (v != null && v !== '') {
+                        formData[k] = String(v);
+                        const valueEl = document.getElementById('value-' + k);
+                        if (valueEl) {
+                            const n = parseFloat(v);
+                            if (k === 'marginRate' || k === 'organicSalesRatio') valueEl.textContent = isNaN(n) ? '-' : n.toFixed(1) + '%';
+                            else if (k === 'roas') valueEl.textContent = isNaN(n) ? '-' : n.toFixed(2);
+                            else valueEl.textContent = isNaN(n) ? '-' : Math.round(n).toLocaleString('ko-KR');
+                        }
+                    }
+                });
+
+                fields.forEach(function(f, i) { updateFieldState(i); });
+                checkCanProceed(0);
+            } catch (e) {
+                console.error('수정 데이터 로드 오류', e);
+            }
+        }
+
+        // Event Listeners
+        function initEventListeners() {
+            // Back Button
+            document.getElementById('backButton').addEventListener('click', function(e) {
+                if (hasUnsavedChanges()) {
+                    if (!confirm('입력을 취소하시겠습니까? 입력한 내용이 저장되지 않습니다.')) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+                window.location.href = '/margin-tracker';
+            });
+
+            const productInput = document.getElementById('field-productNumber');
+            if (productInput) {
+                productInput.addEventListener('change', function() {
+                    const val = this.value.trim();
+                    if (val && val.indexOf(' / ') !== -1) {
+                        const parts = val.split(' / ');
+                        const productNumber = parts[0].trim();
+                        handleProductSelect(productNumber, null);
+                    }
+                });
             }
 
-            document.getElementById('backBtn').addEventListener('click', function(e) {
-                var d = getData();
-                var has = ids.some(function(id) {
-                    var v = id === 'date' ? document.getElementById('f-date').value : d[id];
-                    return v && String(v).trim() !== '';
-                });
-                if (has && !confirm('입력을 취소하시겠습니까? 저장되지 않습니다.')) {
-                    e.preventDefault();
+            // Input Fields
+            fields.forEach((field, index) => {
+                const fieldElement = document.querySelector(`[data-field="${field}"]`);
+                const inputElement = document.getElementById(`field-${field}`);
+                const valueElement = document.getElementById(`value-${field}`);
+                const isCalculated = calculatedFields.includes(field);
+
+                if (fieldElement) {
+                    // Click to focus
+                    fieldElement.addEventListener('click', () => {
+                        if (index <= currentStep) {
+                            setCurrentStep(index);
+                            if (isCalculated && valueElement && inputElement) {
+                                // 계산된 필드: 클릭하면 입력 모드로 전환
+                                if (valueElement.classList.contains('hidden')) {
+                                    // 이미 입력 모드
+                                    inputElement.focus();
+                                } else {
+                                    // 표시 모드 -> 입력 모드로 전환
+                                    const currentValue = valueElement.textContent;
+                                    if (currentValue && currentValue !== '-') {
+                                        // 숫자만 추출 (콤마, % 등 제거)
+                                        const numValue = currentValue.replace(/[^0-9.-]/g, '');
+                                        inputElement.value = numValue;
+                                    }
+                                    valueElement.classList.add('hidden');
+                                    inputElement.classList.add('active');
+                                    inputElement.style.display = 'block';
+                                    setTimeout(() => inputElement.focus(), 50);
+                                }
+                            } else if (inputElement) {
+                                // 일반 입력 필드
+                                inputElement.focus();
+                            }
+                        }
+                    });
+
+                    if (inputElement) {
+                        // Input events (값만 반영, 자동 이동 없음)
+                        inputElement.addEventListener('input', (e) => {
+                            formData[field] = e.target.value;
+                            if (!isCalculated) {
+                                calculateDerivedFields();
+                            }
+                            updateFieldState(index);
+                            checkCanProceed(index);
+                        });
+
+                        // Blur event for calculated fields
+                        if (isCalculated) {
+                            inputElement.addEventListener('blur', () => {
+                                // 입력 모드 -> 표시 모드로 전환
+                                if (inputElement.value) {
+                                    formData[field] = inputElement.value;
+                                    updateCalculatedFieldDisplay(field, parseFloat(inputElement.value));
+                                } else {
+                                    calculateDerivedFields();
+                                }
+                                valueElement.classList.remove('hidden');
+                                inputElement.classList.remove('active');
+                                inputElement.style.display = 'none';
+                            });
+                        }
+
+                        inputElement.addEventListener('keydown', (e) => {
+                            // 계산된 필드는 엔터로 넘어가지 않음
+                            if (isCalculated && e.key === 'Enter') {
+                                e.preventDefault();
+                                inputElement.blur();
+                                return;
+                            }
+
+                            // 날짜 필드는 엔터로 날짜 선택기 열기
+                            if (field === 'date' && e.key === 'Enter') {
+                                e.preventDefault();
+                                openDatePicker();
+                                return;
+                            }
+
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                // 엔터 키로 다음 필드로 이동
+                                moveToNextInputField(index);
+                            }
+                            // Tab key also moves to next field
+                            if (e.key === 'Tab' && !e.shiftKey) {
+                                e.preventDefault();
+                                moveToNextInputField(index);
+                            }
+                        });
+                    }
                 }
             });
 
-            document.getElementById('saveBtn').addEventListener('click', function() {
-                var d = getData();
-                var pn = (d.productNumber || '').trim();
-                var pname = '';
+            // Save Button
+            document.getElementById('saveButton').addEventListener('click', function() {
+                saveData();
+            });
+
+            // Next Product Button
+            const nextProductBtn = document.getElementById('nextProductButton');
+            if (nextProductBtn) {
+                updateNextProductButtonFn = function() {
+                    if (allRegisteredProducts.length === 0 || !currentProductInfo) {
+                        nextProductBtn.style.display = 'none';
+                        return;
+                    }
+                    const currentIdx = allRegisteredProducts.findIndex(p => p.productNumber === currentProductInfo.productNumber);
+                    if (currentIdx === -1 || currentIdx === allRegisteredProducts.length - 1) {
+                        nextProductBtn.style.display = 'none';
+                        return;
+                    }
+                    const next = allRegisteredProducts[currentIdx + 1];
+                    if (next) {
+                        nextProductBtn.textContent = '다음상품(' + (next.productName || next.productNumber) + ')';
+                        nextProductBtn.style.display = 'block';
+                    } else {
+                        nextProductBtn.style.display = 'none';
+                    }
+                };
+                nextProductBtn.addEventListener('click', async function() {
+                    if (allRegisteredProducts.length === 0 || !currentProductInfo) return;
+                    const currentIdx = allRegisteredProducts.findIndex(p => p.productNumber === currentProductInfo.productNumber);
+                    if (currentIdx === -1 || currentIdx === allRegisteredProducts.length - 1) return;
+                    const next = allRegisteredProducts[currentIdx + 1];
+                    if (next) {
+                        // 다음 상품 URL 생성
+                        const dateInput = document.getElementById('field-date');
+                        const dateStr = dateInput && dateInput.value ? dateInput.value : null;
+                        const nextUrl = '/margin-tracker/input?product=' + encodeURIComponent(next.productNumber) + (dateStr ? '&date=' + encodeURIComponent(dateStr) : '');
+                        // 현재 데이터 저장 후 다음 상품으로 이동
+                        await saveData(nextUrl);
+                    }
+                });
+                updateNextProductButtonFn();
+            }
+
+            // Back to Tracker Button
+            const backToTrackerBtn = document.getElementById('backToTrackerButton');
+            if (backToTrackerBtn) {
+                backToTrackerBtn.addEventListener('click', function() {
+                    if (hasUnsavedChanges()) {
+                        if (!confirm('입력을 취소하시겠습니까? 입력한 내용이 저장되지 않습니다.')) {
+                            return;
+                        }
+                    }
+                    window.location.href = '/margin-tracker';
+                });
+            }
+
+            // 날짜 필드: 클릭 + 터치 모두에서 달력 열기 (모바일에서 터치 필수)
+            function bindDateFieldOpen() {
+                const dateInput = document.getElementById('field-date');
+                const dateFieldContainer = document.querySelector('.date-field-container');
+                if (!dateInput) return;
+
+                function openAndMaybePrevent(e) {
+                    setCurrentStep(1);
+                    openDatePicker();
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+
+                [dateInput, dateFieldContainer].filter(Boolean).forEach(function(el) {
+                    el.addEventListener('click', function(e) {
+                        openAndMaybePrevent(e);
+                    }, true);
+                    el.addEventListener('touchend', function(e) {
+                        openAndMaybePrevent(e);
+                    }, { passive: false, capture: true });
+                });
+            }
+            bindDateFieldOpen();
+        }
+
+        // 다음 입력 필드로 이동하는 함수
+        function moveToNextInputField(currentIndex) {
+            if (currentIndex < fields.length - 1) {
+                let nextIndex = currentIndex + 1;
+                while (nextIndex < fields.length) {
+                    const nextField = fields[nextIndex];
+                    const nextInput = document.getElementById(`field-${nextField}`);
+                    if (nextInput && !nextInput.readOnly && !calculatedFields.includes(nextField)) {
+                        setCurrentStep(nextIndex);
+                        setTimeout(() => {
+                            nextInput.focus();
+                            // 필드 컨테이너 찾기
+                            const fieldElement = document.querySelector(`[data-field="${nextField}"]`);
+                            if (fieldElement) {
+                                // 필드 컨테이너로 스크롤
+                                fieldElement.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+                            } else {
+                                // 필드 컨테이너를 찾을 수 없으면 입력 필드로 스크롤
+                                nextInput.scrollIntoView({ 
+                                    behavior: 'smooth', 
+                                    block: 'center',
+                                    inline: 'nearest'
+                                });
+                            }
+                        }, 150);
+                        break;
+                    }
+                    nextIndex++;
+                }
+            }
+        }
+
+        // Date Picker
+        let datePickerInstance = null;
+        
+        function openDatePicker() {
+            const dateInput = document.getElementById('field-date');
+            if (!dateInput) {
+                return;
+            }
+
+            // 날짜 선택기가 없으면 초기화
+            if (!dateInput._flatpickr && !datePickerInstance) {
+                initDatePicker();
+            }
+            
+            // clickOpens를 true로 변경하여 클릭 시 열리도록
+            try {
+                if (dateInput._flatpickr && dateInput._flatpickr.config) {
+                    dateInput._flatpickr.config.clickOpens = true;
+                }
+            } catch (e) {
+                console.log('Error setting clickOpens on _flatpickr:', e);
+            }
+            
+            try {
+                if (datePickerInstance && datePickerInstance.config) {
+                    datePickerInstance.config.clickOpens = true;
+                }
+            } catch (e) {
+                console.log('Error setting clickOpens on datePickerInstance:', e);
+            }
+
+            // 날짜 선택기 열기
+            setTimeout(() => {
+                let fpInstance = null;
+                if (dateInput._flatpickr) {
+                    fpInstance = dateInput._flatpickr;
+                } else if (datePickerInstance) {
+                    fpInstance = datePickerInstance;
+                } else {
+                    initDatePicker();
+                    setTimeout(() => {
+                        const retryInput = document.getElementById('field-date');
+                        if (retryInput && retryInput._flatpickr) {
+                            fpInstance = retryInput._flatpickr;
+                        } else {
+                            return;
+                        }
+                    }, 200);
+                }
+                
+                if (fpInstance) {
+                    var calendar = fpInstance.calendarContainer;
+                    if (calendar) {
+                        calendar.style.zIndex = '3000';
+                        calendar.style.display = '';
+                        calendar.style.visibility = '';
+                        calendar.style.opacity = '';
+                    }
+                    fpInstance.open();
+                }
+            }, 50);
+        }
+        
+        function initDatePicker() {
+            const dateInput = document.getElementById('field-date');
+            if (!dateInput) {
+                return;
+            }
+
+            // 이미 초기화되어 있으면 제거 후 재초기화
+            if (dateInput._flatpickr) {
+                try {
+                    if (dateInput._flatpickr.destroy && typeof dateInput._flatpickr.destroy === 'function') {
+                        dateInput._flatpickr.destroy();
+                    }
+                } catch (e) {
+                    console.log('Error destroying flatpickr:', e);
+                }
+                dateInput._flatpickr = null;
+            }
+            
+            if (datePickerInstance) {
+                try {
+                    if (datePickerInstance.destroy && typeof datePickerInstance.destroy === 'function') {
+                        datePickerInstance.destroy();
+                    }
+                } catch (e) {
+                    console.log('Error destroying datePickerInstance:', e);
+                }
+                datePickerInstance = null;
+            }
+
+            // flatpickr이 로드되었는지 확인
+            if (typeof flatpickr === 'undefined') {
+                console.error('Flatpickr library is not loaded');
+                return false;
+            }
+
+            try {
+                // 오늘 날짜로 기본값 설정
+                const today = new Date();
+                const todayStr = today.getFullYear() + '년 ' + (today.getMonth() + 1) + '월 ' + today.getDate() + '일';
+                
+                // 값이 없을 때만 설정
+                if (!dateInput.value || dateInput.value === '') {
+                    dateInput.value = todayStr;
+                    formData.date = todayStr;
+                }
+
+                datePickerInstance = flatpickr(dateInput, {
+                    locale: "ko",
+                    dateFormat: "Y년 m월 d일",
+                    defaultDate: today,
+                    clickOpens: true,
+                    allowInput: false,
+                    inline: false,
+                    static: false,
+                    appendTo: document.body,
+                    disableMobile: false,
+                    positionElement: dateInput,
+                    openOnReady: false,
+                    onReady: function(selectedDates, dateStr, instance) {
+                        var input = instance.input;
+                        if (input) {
+                            input.setAttribute('readonly', 'readonly');
+                        }
+                        if (instance.isOpen) {
+                            instance.close();
+                        }
+                    },
+                    onChange: function(selectedDates, dateStr, instance) {
+                        formData.date = dateStr;
+                        calculateDerivedFields();
+                        updateFieldState(1);
+                        checkCanProceed(1);
+                        
+                        // 날짜 선택 시 달력 강제로 닫기
+                        setTimeout(() => {
+                            if (instance && instance.isOpen) {
+                                instance.close();
+                            }
+                        }, 50);
+                        
+                        // 날짜 선택 완료 시 즉시 다음 필드로 이동 (date=index 1 -> sellingPrice=index 2)
+                        setCurrentStep(2);
+                        setTimeout(() => {
+                            const nextInput = document.getElementById('field-sellingPrice');
+                            if (nextInput) {
+                                const fieldElement = document.querySelector('[data-field="sellingPrice"]');
+                                if (fieldElement) {
+                                    fieldElement.scrollIntoView({ 
+                                        behavior: 'smooth', 
+                                        block: 'center',
+                                        inline: 'nearest'
+                                    });
+                                }
+                                setTimeout(() => {
+                                    nextInput.focus();
+                                }, 100);
+                            }
+                        }, 300);
+                    }
+                });
+
+                return true;
+            } catch (error) {
+                console.error('Error initializing date picker:', error);
+                return false;
+            }
+        }
+
+        // Step Management
+        function setCurrentStep(step) {
+            currentStep = step;
+            
+            // Update field states
+            fields.forEach((field, index) => {
+                const fieldElement = document.querySelector(`[data-field="${field}"]`);
+                if (fieldElement) {
+                    fieldElement.classList.remove('active', 'completed');
+                    if (index === step) {
+                        fieldElement.classList.add('active');
+                    } else if (index < step) {
+                        fieldElement.classList.add('completed');
+                    }
+                }
+            });
+
+            // Update progress
+            const progress = ((step + 1) / fields.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressInfo').textContent = `${step + 1}/${fields.length}`;
+        }
+
+        function updateFieldState(index) {
+            const field = fields[index];
+            const fieldElement = document.querySelector(`[data-field="${field}"]`);
+            const value = formData[field];
+
+            if (fieldElement && value && value !== '') {
+                fieldElement.classList.add('completed');
+            }
+        }
+
+        function checkCanProceed(step) {
+            const field = fields[step];
+            const value = formData[field];
+
+            // Check if all required fields are filled
+            const allFilled = fields.every(f => {
+                if (calculatedFields.includes(f)) {
+                    return true; // Calculated fields are optional
+                }
+                return formData[f] && formData[f] !== '';
+            });
+
+            const saveButton = document.getElementById('saveButton');
+            if (saveButton) {
+                saveButton.disabled = !allFilled;
+                saveButton.style.opacity = allFilled ? '1' : '0.5';
+                saveButton.style.cursor = allFilled ? 'pointer' : 'not-allowed';
+            }
+        }
+
+        // Calculations
+        function calculateDerivedFields() {
+            const sellingPrice = parseFloat(formData.sellingPrice) || 0;
+            const discountCoupon = parseFloat(formData.discountCoupon) || 0;
+            const priceFluctuation = parseFloat(formData.priceFluctuation) || 0;
+            const salesQuantity = parseFloat(formData.salesQuantity) || 0;
+            const marginPerUnit = parseFloat(formData.marginPerUnit) || 0;
+            const advertisingCost = parseFloat(formData.advertisingCost) || 0;
+            const adSales = parseFloat(formData.adSales) || 0;
+            const organicSales = parseFloat(formData.organicSales) || 0;
+
+            // 최종 판매가 = 판매가 - 할인쿠폰
+            const finalSellingPrice = sellingPrice - discountCoupon;
+            formData.finalSellingPrice = finalSellingPrice > 0 ? finalSellingPrice : '';
+            updateCalculatedField('finalSellingPrice', finalSellingPrice);
+
+            // 실제 판매 매출 = 최종 판매가 * 판매수량
+            const actualSalesRevenue = finalSellingPrice * salesQuantity;
+            formData.actualSalesRevenue = actualSalesRevenue > 0 ? actualSalesRevenue : '';
+            updateCalculatedField('actualSalesRevenue', actualSalesRevenue);
+
+            // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
+            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
+            const marginFromBase = marginPerUnit * salesQuantity;  // 개당 마진 * 판매 수량
+            const marginFromFluctuation = priceFluctuation * salesQuantity;  // 판매가 변동 * 판매 수량
+            const totalMargin = marginFromBase + marginFromFluctuation;
+            formData.totalMargin = totalMargin !== 0 ? totalMargin : '';
+            updateCalculatedField('totalMargin', totalMargin);
+
+            // 광고비 (1.1배)
+            const adjustedAdvertisingCost = advertisingCost * 1.1;
+            formData.advertisingCostAdjusted = adjustedAdvertisingCost;
+
+            // 순수익 = (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비(1.1배)
+            const netProfit = totalMargin - adjustedAdvertisingCost;
+            formData.netProfit = netProfit !== 0 ? netProfit : '';
+            updateCalculatedField('netProfit', netProfit);
+
+            // 마진율 = (조정된 개당 마진 / 최종 판매가) * 100
+            const adjustedMarginPerUnit = marginPerUnit + priceFluctuation;
+            const marginRate = finalSellingPrice > 0 ? (adjustedMarginPerUnit / finalSellingPrice) * 100 : 0;
+            formData.marginRate = marginRate !== 0 ? marginRate : '';
+            updateCalculatedField('marginRate', marginRate);
+
+            // 자연판매비율 = (자연판매 / 판매수량) * 100
+            const organicSalesRatio = salesQuantity > 0 ? (organicSales / salesQuantity) * 100 : 0;
+            formData.organicSalesRatio = organicSalesRatio !== 0 ? organicSalesRatio : '';
+            updateCalculatedField('organicSalesRatio', organicSalesRatio);
+
+            // ROAS = 실제 판매 매출 / 광고비 (광고비가 0보다 클 때)
+            const roas = advertisingCost > 0 ? actualSalesRevenue / advertisingCost : 0;
+            formData.roas = roas !== 0 ? roas : '';
+            updateCalculatedField('roas', roas);
+        }
+
+        function updateCalculatedField(field, value) {
+            const valueElement = document.getElementById(`value-${field}`);
+            const inputElement = document.getElementById(`field-${field}`);
+            
+            if (valueElement) {
+                // 입력 모드가 아닐 때만 업데이트
+                if (!valueElement.classList.contains('hidden')) {
+                    if (value === 0 || isNaN(value) || !isFinite(value)) {
+                        valueElement.textContent = '-';
+                    } else {
+                        if (field === 'marginRate' || field === 'organicSalesRatio') {
+                            valueElement.textContent = value.toFixed(1) + '%';
+                        } else if (field === 'roas') {
+                            valueElement.textContent = value.toFixed(2);
+                        } else {
+                            valueElement.textContent = Math.round(value).toLocaleString('ko-KR');
+                        }
+                    }
+                }
+            }
+            
+            // 입력 필드에도 값 저장 (수동 입력 시)
+            if (inputElement && formData[field] === '') {
+                formData[field] = value.toString();
+            }
+        }
+
+        function updateCalculatedFieldDisplay(field, value) {
+            const valueElement = document.getElementById(`value-${field}`);
+            if (valueElement) {
+                if (value === 0 || isNaN(value) || !isFinite(value)) {
+                    valueElement.textContent = '-';
+                } else {
+                    if (field === 'marginRate' || field === 'organicSalesRatio') {
+                        valueElement.textContent = value.toFixed(1) + '%';
+                    } else if (field === 'roas') {
+                        valueElement.textContent = value.toFixed(2);
+                    } else {
+                        valueElement.textContent = Math.round(value).toLocaleString('ko-KR');
+                    }
+                }
+            }
+        }
+
+        function hasUnsavedChanges() {
+            return fields.some(f => formData[f] && formData[f] !== '');
+        }
+
+        function resetForm() {
+            currentStep = 0;
+            formData = {};
+            
+            // flatpickr 인스턴스 정리
+            const dateInput = document.getElementById('field-date');
+            if (dateInput && dateInput._flatpickr) {
+                try {
+                    if (dateInput._flatpickr.destroy && typeof dateInput._flatpickr.destroy === 'function') {
+                        if (dateInput._flatpickr.calendarContainer) {
+                            dateInput._flatpickr.destroy();
+                        }
+                    }
+                } catch (e) {
+                    console.log('Error destroying flatpickr in resetForm:', e);
+                }
+                dateInput._flatpickr = null;
+            }
+            
+            if (datePickerInstance) {
+                try {
+                    if (datePickerInstance.destroy && typeof datePickerInstance.destroy === 'function') {
+                        if (datePickerInstance.calendarContainer) {
+                            datePickerInstance.destroy();
+                        }
+                    }
+                } catch (e) {
+                    console.log('Error destroying datePickerInstance in resetForm:', e);
+                }
+                datePickerInstance = null;
+            }
+            
+            fields.forEach(field => {
+                formData[field] = '';
+                const input = document.getElementById(`field-${field}`);
+                if (input) {
+                    input.value = '';
+                    input.style.display = '';
+                    input.classList.remove('active');
+                }
+                const value = document.getElementById(`value-${field}`);
+                if (value) {
+                    value.textContent = '-';
+                    value.classList.remove('hidden');
+                }
+            });
+            setCurrentStep(0);
+        }
+
+        // Save Data (API)
+        async function saveData(redirectUrl) {
+            const userId = localStorage.getItem('salesChart_userId');
+            if (!userId) {
+                alert('로그인이 필요합니다.');
+                window.location.href = '/margin-tracker';
+                return;
+            }
+            if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                let dateStr = formData.date || document.getElementById('field-date').value;
+                if (!dateStr) {
+                    alert('날짜를 입력해주세요.');
+                    return;
+                }
+                if (dateStr.indexOf('년') !== -1) {
+                    const match = dateStr.match(/(\d+)년\s*(\d+)월\s*(\d+)일/);
+                    if (match) {
+                        const y = match[1];
+                        const m = String(match[2]).padStart(2, '0');
+                        const d = String(match[3]).padStart(2, '0');
+                        dateStr = y + '년 ' + parseInt(m, 10) + '월 ' + parseInt(d, 10) + '일';
+                    }
+                }
+                let successCount = 0;
+                for (let i = 0; i < currentProductOptions.length; i++) {
+                    const opt = currentProductOptions[i];
+                    const data = optionDataSets[i];
+                    if (!data || !data.salesQuantity || data.salesQuantity <= 0) continue;
+                    const payload = {
+                        userId: userId,
+                        productNumber: currentProductInfo.productNumber || null,
+                        productName: currentProductInfo.productName || null,
+                        optionId: opt.optionId || null,
+                        optionAlias: opt.optionAlias || null,
+                        date: dateStr,
+                        sellingPrice: data.sellingPrice || null,
+                        priceFluctuation: data.priceFluctuation || null,
+                        finalSellingPrice: data.finalSellingPrice || null,
+                        salesQuantity: data.salesQuantity || null,
+                        actualSalesRevenue: data.actualSalesRevenue || null,
+                        advertisingCost: data.advertisingCost || null,
+                        adSales: data.adSales || null,
+                        organicSales: data.organicSales || null,
+                        netProfit: data.netProfit || null,
+                        marginRate: data.marginRate || null,
+                        roas: data.roas || null
+                    };
+                    // 수정 모드인 경우 dataSeq 추가
+                    if (data.dataSeq) {
+                        payload.dataSeq = data.dataSeq;
+                    }
+                    try {
+                        const res = await fetch('/api/margin-tracker/save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+                        const result = await res.json();
+                        if (result.success) successCount++;
+                    } catch (e) {
+                        console.error('옵션 저장 실패', i, e);
+                    }
+                }
+                if (successCount > 0) {
+                    if (redirectUrl) {
+                        window.location.href = redirectUrl;
+                    } else {
+                        alert(successCount + '개 옵션 데이터가 저장되었습니다.');
+                        window.location.href = '/margin-tracker';
+                    }
+                } else {
+                    alert('저장에 실패했습니다.');
+                }
+            } else {
+                let pn = (formData.productNumber || '').trim();
+                let pname = '';
                 if (pn.indexOf(' / ') !== -1) {
-                    var parts = pn.split(' / ');
+                    const parts = pn.split(' / ');
                     pn = parts[0].trim();
                     pname = parts.slice(1).join(' / ').trim();
                 }
-                var payload = {
-                    userId: uid,
+                const payload = {
+                    userId: userId,
                     productNumber: pn || null,
                     productName: pname || null,
-                    date: d.date ? dateToKoStr(d.date) : null,
-                    sellingPrice: d.sellingPrice || null,
-                    discountCoupon: d.discountCoupon || null,
-                    finalSellingPrice: computedNumbers.finalSellingPrice != null ? computedNumbers.finalSellingPrice : (d.finalSellingPrice || null),
-                    priceFluctuation: d.priceFluctuation || null,
-                    salesQuantity: d.salesQuantity || null,
-                    actualSalesRevenue: computedNumbers.actualSalesRevenue != null ? computedNumbers.actualSalesRevenue : (d.actualSalesRevenue || null),
-                    marginPerUnit: d.marginPerUnit || null,
-                    totalMargin: computedNumbers.totalMargin != null ? computedNumbers.totalMargin : (d.totalMargin || null),
-                    advertisingCost: d.advertisingCost || null,
-                    netProfit: computedNumbers.netProfit != null ? computedNumbers.netProfit : (d.netProfit || null),
-                    marginRate: computedNumbers.marginRate != null ? computedNumbers.marginRate : (d.marginRate ? parseFloat(String(d.marginRate).replace('%','')) : null),
-                    adSales: d.adSales || null,
-                    organicSales: d.organicSales || null,
-                    organicSalesRatio: computedNumbers.organicSalesRatio != null ? computedNumbers.organicSalesRatio : (d.organicSalesRatio ? parseFloat(String(d.organicSalesRatio).replace('%','')) : null),
-                    roas: computedNumbers.roas != null ? computedNumbers.roas : (d.roas || null)
+                    date: formData.date || null,
+                    sellingPrice: formData.sellingPrice || null,
+                    discountCoupon: formData.discountCoupon || null,
+                    finalSellingPrice: formData.finalSellingPrice || null,
+                    priceFluctuation: formData.priceFluctuation || null,
+                    salesQuantity: formData.salesQuantity || null,
+                    actualSalesRevenue: formData.actualSalesRevenue || null,
+                    marginPerUnit: formData.marginPerUnit || null,
+                    totalMargin: formData.totalMargin || null,
+                    advertisingCost: formData.advertisingCost || null,
+                    netProfit: formData.netProfit || null,
+                    marginRate: formData.marginRate || null,
+                    adSales: formData.adSales || null,
+                    organicSales: formData.organicSales || null,
+                    organicSalesRatio: formData.organicSalesRatio || null,
+                    roas: formData.roas || null
                 };
                 if (editId) payload.dataSeq = parseInt(editId, 10);
-                var btn = this;
-                btn.disabled = true;
-                fetch('/api/margin-tracker/save', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(function(r) { return r.json(); })
-                .then(function(res) {
-                    if (res.success) {
-                        window.location.href = '/margin-tracker';
+                try {
+                    const res = await fetch('/api/margin-tracker/save', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await res.json();
+                    if (result.success) {
+                        if (redirectUrl) {
+                            window.location.href = redirectUrl;
+                        } else {
+                            window.location.href = '/margin-tracker';
+                        }
                     } else {
-                        alert(res.message || '저장에 실패했습니다.');
-                        btn.disabled = false;
+                        alert(result.message || '저장에 실패했습니다.');
                     }
-                })
-                .catch(function() {
+                } catch (e) {
+                    console.error(e);
                     alert('저장 중 오류가 발생했습니다.');
-                    btn.disabled = false;
-                });
-            });
-
-            calc();
-        })();
+                }
+            }
+        }
     </script>
 </body>
 </html>

@@ -449,6 +449,15 @@
 
     <!-- Mobile Menu -->
     <nav class="mobile-menu" id="mobileMenu">
+        <!-- 매출 일지 (제일 위로) -->
+        <div class="nav-section">
+            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 매출 일지</a>
+        </div>
+        <!-- 소개할게요 -->
+        <div class="nav-section">
+            <a href="/about" class="nav-item" style="padding: 0.75rem; font-weight: 600;">소개할게요</a>
+        </div>
+        <!-- 구매했어요 -->
         <div class="nav-section">
             <button class="nav-toggle" onclick="toggleNav('nov2025')">
                 <span>구매했어요</span>
@@ -473,6 +482,7 @@
                 <a href="/mobile/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
             </div>
         </div>
+        <!-- 만족했어요 -->
         <div class="nav-section">
             <button class="nav-toggle active" onclick="toggleNav('satisfied')">
                 <span>만족했어요</span>
@@ -497,8 +507,38 @@
                 <a href="/mobile/satisfied/5000" class="nav-item" th:classappend="${selectedStar == 5000} ? 'active' : ''">⚡ 5000명 이상 만족</a>
             </div>
         </div>
+        <!-- 단기간 인기 상품 -->
         <div class="nav-section">
-            <a href="#" class="nav-item active" onclick="showPasswordModal(); return false;">⚡ 단기간 인기 상품</a>
+            <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
+        </div>
+        <!-- 헬쿠 셀러 팁 -->
+        <div class="nav-section">
+            <button class="nav-toggle" onclick="toggleNav('helku-seller-tips')">
+                <span style="font-weight: 600;">💡 헬쿠 셀러 팁</span>
+                <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                </svg>
+            </button>
+            <div class="nav-items" id="helku-seller-tips">
+                <a href="/seller-guide" class="nav-item">📚 쿠팡 판매 A to Z</a>
+                <a href="/coupang-entry-guide" class="nav-item">🚪 쿠팡 입점 가이드</a>
+                <a href="/product-finding-guide" class="nav-item">🔍 잘 팔리는 상품 찾는 법</a>
+                <a href="/1688-sourcing-guide" class="nav-item">🏭 1688 중국 공장 소싱</a>
+                <a href="/rocket-gross-guide" class="nav-item">🚀 로켓그로스 초보 소싱</a>
+                <a href="/wing-express-guide" class="nav-item">🚀 윙 익스프레스 기본 개념</a>
+                <a href="/item-winner-guide" class="nav-item">🏆 아이템위너 전략</a>
+                <a href="/beginner-seller-strategy" class="nav-item">📖 초보 셀러 전략</a>
+                <a href="/product-registration-guide" class="nav-item">📝 상품 등록 가이드</a>
+                <a href="/margin-template-guide" class="nav-item">💰 마진표 템플릿</a>
+                <a href="/product-detail-writing-guide" class="nav-item">✍️ 상세페이지 작성법</a>
+                <a href="/item-winner-safety-checklist" class="nav-item">✅ 아이템위너 체크리스트</a>
+                <a href="/blog-structure-guide" class="nav-item">📊 블로그 구조 설계</a>
+                <a href="/dropshipping-guide" class="nav-item">📦 위탁판매 가이드</a>
+            </div>
+        </div>
+        <!-- 판매실적추이 그래프 -->
+        <div class="nav-section">
+            <a href="/sales-chart" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 판매실적추이 그래프 (개발중)</a>
         </div>
     </nav>
 
