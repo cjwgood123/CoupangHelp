@@ -119,34 +119,20 @@
         }
 
         .field-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background-color: var(--border);
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 0.75rem;
-            flex-shrink: 0;
-        }
-
-        .input-field.active .field-number {
-            background-color: var(--primary);
-            color: white;
+            display: none !important;
         }
 
         .field-container {
             background-color: var(--card);
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1rem 1rem;
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 0.5rem;
             cursor: pointer;
             transition: all 0.2s;
-            min-height: 72px;
+            min-height: 56px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border: 2px solid transparent;
         }
@@ -162,23 +148,29 @@
         }
 
         .field-label {
-            flex: 1;
-            font-size: 1.0625rem;
+            font-size: clamp(0.75rem, 2.5vw, 0.9375rem);
+            line-height: 1.25;
             color: var(--text-primary);
             font-weight: 500;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            display: block;
+        }
+
+        .field-container .field-value,
+        .field-container .field-input {
+            font-size: 1rem;
+            color: var(--text-primary);
+            text-align: right;
+            min-height: 24px;
+            padding: 0.25rem 0;
         }
 
         .field-input {
-            flex: 1;
             border: none;
             outline: none;
-            font-size: 1.25rem;
-            color: var(--text-primary);
             background: transparent;
-            text-align: right;
             width: 100%;
-            min-height: 24px;
-            padding: 0.25rem 0;
         }
 
         .field-input::placeholder {
@@ -196,43 +188,51 @@
             flex-shrink: 0;
         }
 
-        /* 날짜 필드: 다른 필드와 동일한 파란 원·폰트 유지 */
-        .date-field-container .field-number {
-            display: inline-flex;
+        /* row당 1개 데이터: 명칭 좌측, 값 우측 한 줄 (날짜·판매갯수·순이익·ROAS 동일 스타일) */
+        .field-container.field-row-single,
+        .field-container.date-field-container.field-row-single {
+            flex-direction: row !important;
+            flex-wrap: nowrap;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background-color: var(--border);
-            color: var(--text-secondary);
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-right: 0.75rem;
-            flex-shrink: 0;
+            gap: 0.5rem;
+            padding: 1rem 1rem;
+            min-height: 56px;
         }
-        .input-field.active[data-field="date"] .date-field-container .field-number {
-            background-color: var(--primary);
-            color: white;
+        .field-container.field-row-single .field-label,
+        .date-field-container.field-row-single .field-label {
+            text-align: left;
+            flex: 1 1 auto;
+            min-width: 0;
+            margin-right: 0.5rem;
+        }
+        .field-container.field-row-single .field-value,
+        .field-container.field-row-single .field-input,
+        .date-field-container.field-row-single .field-input {
+            flex: 0 0 auto !important;
+            width: auto !important;
+            max-width: 60%;
+            text-align: right;
+        }
+        .date-field-container.field-row-single .field-input {
+            min-width: 100px;
+        }
+        .date-field-container .field-icon {
+            flex: 0 0 auto;
+            margin-left: 0.25rem;
         }
         .date-field-container .field-input,
         #field-date {
             font-family: inherit;
-            font-size: 1.25rem;
+            font-size: 1rem;
             font-weight: 500;
             color: var(--text-primary);
             text-align: right;
         }
-        .date-field-container .field-label {
-            font-size: 1.0625rem;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
 
         .field-value {
-            font-size: 1.25rem;
+            font-size: 1rem;
             color: var(--text-primary);
-            margin-left: auto;
             font-weight: 500;
             text-align: right;
         }
@@ -251,12 +251,18 @@
             display: flex;
             flex-direction: row;
             gap: 0.5rem;
-            padding: 1.5rem 2rem;
-            padding-top: 0;
-            position: sticky;
+            padding: 1rem 1rem;
+            position: fixed;
             bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
             background-color: var(--background);
             border-top: 1px solid var(--border);
+        }
+        /* 버튼 고정 시 본문 하단이 가리지 않도록 여백 */
+        .input-fields {
+            padding-bottom: 5.5rem;
         }
 
         .save-button {
@@ -323,12 +329,18 @@
 
         .input-fields {
             padding: 1rem 1rem;
-            padding-bottom: 1.5rem;
+            padding-bottom: 5.5rem;
         }
 
         .field-container {
             padding: 1.25rem 1rem;
             min-height: 64px;
+        }
+        /* 날짜·판매갯수·순이익·ROAS 한 줄 유지 (모바일에서도) */
+        .field-container.field-row-single,
+        .field-container.date-field-container.field-row-single {
+            flex-direction: row !important;
+            flex-wrap: nowrap;
         }
 
         .field-label {
@@ -346,22 +358,77 @@
             font-size: 1rem;
         }
 
-        .field-number {
-            width: 24px;
-            height: 24px;
-            font-size: 0.6875rem;
-            margin-right: 0.625rem;
-        }
-
         .save-button-container {
             padding: 1rem;
-            padding-top: 0.5rem;
         }
 
         .save-button {
             padding: 1rem;
             font-size: 1rem;
             min-height: 48px;
+        }
+
+        /* 옵션 탭 (이미지와 동일: 가로 배치, 선택 시 파란색) */
+        #optionTabsSection {
+            border-top: 2px solid var(--border);
+            padding-top: 1rem;
+            margin: 1rem 0;
+        }
+        #optionTabs {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: nowrap;
+            min-width: 0;
+        }
+        .option-tab {
+            padding: 0.75rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--background);
+            color: var(--text-secondary);
+            font-size: clamp(0.7rem, 2vw, 0.875rem);
+            font-weight: 500;
+            cursor: pointer;
+            flex: 1 1 0;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .option-tab.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+        }
+
+        /* 옵션 필드 그리드: 2,3,4 한 줄 / 5,6,7 한 줄 / 8,9 풀너비 */
+        .option-fields-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+        .option-fields-grid .input-field {
+            margin-bottom: 0;
+        }
+        .option-fields-grid .field-container {
+            padding: 1rem 0.75rem;
+            min-height: 64px;
+        }
+        /* 그리드 안 한 줄 필드(판매 개수·순이익·ROAS)는 날짜와 동일 스타일 */
+        .option-fields-grid .field-container.field-row-single {
+            padding: 1rem 1rem;
+            min-height: 56px;
+        }
+        .option-field-full {
+            grid-column: 1 / -1;
+        }
+        .option-divider {
+            grid-column: 1 / -1;
+            border-top: 2px solid var(--border);
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
         }
 
         /* 터치 친화적인 버튼 크기 */
@@ -389,7 +456,7 @@
     <div class="input-screen">
         <div class="input-header">
             <a href="/margin-tracker" class="back-button" id="backButton">←</a>
-            <div class="input-title">판매 데이터 입력</div>
+            <div class="input-title" id="pageTitle">판매 데이터 입력</div>
             <div class="progress-info" id="progressInfo">1/17</div>
         </div>
         <div class="progress-bar">
@@ -397,12 +464,6 @@
         </div>
 
         <div class="input-fields" id="inputFields">
-            <!-- 상품 정보 표시 영역 -->
-            <div id="productInfoSection" style="display: none; margin-bottom: 1rem; padding: 1rem; background: var(--card); border-radius: 12px;">
-                <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 0.5rem;">상품 정보</div>
-                <div id="productInfoDisplay" style="font-size: 1rem; font-weight: 600; color: var(--text-primary);"></div>
-            </div>
-
             <!-- Field 1: 상품번호/상품명 (옵션이 없을 때만 표시) -->
             <div class="input-field active" data-field="productNumber" id="productNumberField">
                 <div class="field-container">
@@ -413,9 +474,9 @@
                 </div>
             </div>
 
-            <!-- Field 2: 날짜 -->
+            <!-- Field 2: 날짜 (순이익/ROAS와 동일 한 줄 스타일) -->
             <div class="input-field" data-field="date">
-                <div class="field-container date-field-container">
+                <div class="field-container date-field-container field-row-single">
                     <span class="field-number">2</span>
                     <span class="field-label">날짜 : 자동/수정가능</span>
                     <input type="text" class="field-input" id="field-date" placeholder="날짜 선택">
@@ -470,9 +531,9 @@
                     </div>
                 </div>
 
-                <!-- Field 7: 판매수량 -->
+                <!-- Field 7: 판매수량 (한 줄: 명칭 좌측, 값 우측) -->
                 <div class="input-field" data-field="salesQuantity">
-                    <div class="field-container">
+                    <div class="field-container field-row-single">
                         <span class="field-number">7</span>
                         <span class="field-label">판매수량</span>
                         <input type="number" class="field-input" id="field-salesQuantity" placeholder="0">
@@ -517,9 +578,10 @@
                     </div>
                 </div>
 
-                <!-- Field 12: 순수익 -->
+                <div class="option-divider" style="margin: 0.5rem 0;"></div>
+                <!-- Field 12: 순수익 (한 줄: 명칭 좌측, 값 우측) -->
                 <div class="input-field calculated-field" data-field="netProfit">
-                    <div class="field-container">
+                    <div class="field-container field-row-single">
                         <span class="field-number">12</span>
                         <span class="field-label">순수익</span>
                         <div class="field-value" id="value-netProfit">-</div>
@@ -565,9 +627,9 @@
                     </div>
                 </div>
 
-                <!-- Field 17: ROAS -->
+                <!-- Field 17: ROAS (한 줄: 명칭 좌측, 값 우측) -->
                 <div class="input-field calculated-field" data-field="roas">
-                    <div class="field-container">
+                    <div class="field-container field-row-single">
                         <span class="field-number">17</span>
                         <span class="field-label">ROAS</span>
                         <div class="field-value" id="value-roas">-</div>
@@ -722,12 +784,14 @@
                         });
                     });
                     currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: '' };
-                    document.getElementById('productInfoSection').style.display = 'block';
-                    document.getElementById('productInfoDisplay').textContent = (currentProductInfo.productNumber || '') + ' / ' + (currentProductInfo.productName || '');
+                    var pageTitleEl = document.getElementById('pageTitle');
+                    if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력 - ' + (currentProductInfo.productName || currentProductInfo.productNumber || '');
                     document.getElementById('productNumberField').style.display = 'none';
                     document.getElementById('optionTabsSection').style.display = 'block';
                     document.getElementById('optionFieldsSection').style.display = 'block';
                     document.getElementById('legacyFields').style.display = 'none';
+                    var dateNum = document.querySelector('[data-field="date"] .field-number');
+                    if (dateNum) dateNum.textContent = '1';
                     currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
                     if (updateNextProductButtonFn) {
                         updateNextProductButtonFn();
@@ -744,10 +808,13 @@
                     }
                 } else {
                     // 레거시 모드: 옵션이 없는 경우
-                    document.getElementById('productInfoSection').style.display = 'none';
+                    var pageTitleEl = document.getElementById('pageTitle');
+                    if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력';
                     document.getElementById('productNumberField').style.display = 'block';
                     document.getElementById('optionTabsSection').style.display = 'none';
                     document.getElementById('optionFieldsSection').style.display = 'none';
+                    var dateNum = document.querySelector('[data-field="date"] .field-number');
+                    if (dateNum) dateNum.textContent = '2';
                     document.getElementById('legacyFields').style.display = 'block';
                     const productInput = document.getElementById('field-productNumber');
                     if (productInput) {
@@ -802,12 +869,6 @@
                 tab.type = 'button';
                 tab.className = 'option-tab' + (idx === currentOptionIndex ? ' active' : '');
                 tab.textContent = opt.optionAlias || opt.optionId || ('옵션' + String.fromCharCode(65 + idx));
-                tab.style.cssText = 'padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: 8px; background: var(--background); color: var(--text-primary); font-size: 0.875rem; cursor: pointer; flex: 1; min-width: 0;';
-                if (idx === currentOptionIndex) {
-                    tab.style.background = 'var(--primary)';
-                    tab.style.color = '#fff';
-                    tab.style.borderColor = 'var(--primary)';
-                }
                 tab.addEventListener('click', function() {
                     currentOptionIndex = idx;
                     optionTabsCurrentPage = Math.floor(idx / optionTabsPerPage);
@@ -925,17 +986,21 @@
             } else if (actualRevenue > 0) {
                 marginRate = (netProfit / actualRevenue) * 100;
             }
-            container.innerHTML = '<div style="border-top: 2px solid var(--border); padding-top: 1rem; margin-top: 1rem;">' +
-                '<div class="input-field"><div class="field-container"><span class="field-number">1</span><span class="field-label">판매가 : 자동 (수정불가)</span><div class="field-value" style="color: var(--text-secondary);">' + Math.round(sellingPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
-                '<div class="input-field" id="optionPriceFluctuationField"><div class="field-container"><span class="field-number">2</span><span class="field-label">판매가 변동 : 수동 (필수아님)</span><input type="number" class="field-input opt-price-fluctuation" placeholder="예: +1000, -1000" value="' + (priceFluctuation !== 0 ? priceFluctuation : '') + '"></div></div>' +
-                '<div class="input-field" id="optionSalesQtyField"><div class="field-container"><span class="field-number">3</span><span class="field-label">판매 개수 : 수동(필수)</span><input type="number" class="field-input opt-sales-qty" placeholder="0" value="' + (salesQty > 0 ? salesQty : '') + '" required></div></div>' +
-                '<div class="input-field" id="optionAdCostField"><div class="field-container"><span class="field-number">4</span><span class="field-label">광고비 : 수동(필수)</span><input type="number" class="field-input opt-ad-cost" placeholder="0" value="' + (adCost > 0 ? adCost : '') + '" required></div></div>' +
-                '<div class="input-field" id="optionAdSalesField"><div class="field-container"><span class="field-number">5</span><span class="field-label">광고 판매 개수 : 수동(필수)</span><input type="number" class="field-input opt-ad-sales" placeholder="0" value="' + (adSalesQty > 0 ? adSalesQty : '') + '" required></div></div>' +
-                '<div style="border-top: 2px solid var(--border); margin: 1rem 0; padding-top: 1rem;"></div>' +
-                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">6</span><span class="field-label">최종 판매가 : 자동 (수정불가)</span><div class="field-value opt-final-price">' + Math.round(finalPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
-                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">7</span><span class="field-label">자연판매개수 : 자동 (수정 불가)</span><div class="field-value opt-organic-sales">' + Math.max(0, Math.round(organicSalesQty)) + '</div></div></div>' +
-                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">8</span><span class="field-label">순이익 (입력값 아님)</span><div class="field-value opt-net-profit">' + Math.round(netProfit).toLocaleString('ko-KR') + '원</div></div></div>' +
-                '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">9</span><span class="field-label">ROAS (입력값아님)</span><div class="field-value opt-roas">' + (roas > 0 ? roas.toFixed(2) : '-') + '</div></div></div>' +
+            container.innerHTML = '<div class="option-fields-grid">' +
+                /* 1행: 판매가, 판매가 변동, 최종 판매가 */
+                '<div class="input-field"><div class="field-container"><span class="field-label">판매가</span><div class="field-value" style="color: var(--text-secondary);">' + Math.round(sellingPrice).toLocaleString('ko-KR') + '</div></div></div>' +
+                '<div class="input-field" id="optionPriceFluctuationField"><div class="field-container"><span class="field-label">판매가 변동</span><input type="number" class="field-input opt-price-fluctuation" placeholder="예: +500" value="' + (priceFluctuation !== 0 ? priceFluctuation : '') + '"></div></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-label">최종 판매가</span><div class="field-value opt-final-price">' + Math.round(finalPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
+                /* 풀너비: 판매 개수 (총) - 한 줄: 명칭 좌측, 값 우측 */
+                '<div class="input-field option-field-full" id="optionSalesQtyField"><div class="field-container field-row-single"><span class="field-label">판매 개수 (총)</span><input type="number" class="field-input opt-sales-qty" placeholder="0" value="' + (salesQty > 0 ? salesQty : '') + '" required></div></div>' +
+                /* 2행: 광고비, 광고판매개수, 자연판매개수 */
+                '<div class="input-field" id="optionAdCostField"><div class="field-container"><span class="field-label">광고비</span><input type="number" class="field-input opt-ad-cost" placeholder="0" value="' + (adCost > 0 ? adCost : '') + '" required></div></div>' +
+                '<div class="input-field" id="optionAdSalesField"><div class="field-container"><span class="field-label">광고판매개수</span><input type="number" class="field-input opt-ad-sales" placeholder="0" value="' + (adSalesQty > 0 ? adSalesQty : '') + '" required></div></div>' +
+                '<div class="input-field calculated-field"><div class="field-container"><span class="field-label">자연판매개수</span><div class="field-value opt-organic-sales">' + Math.max(0, Math.round(organicSalesQty)) + '</div></div></div>' +
+                /* 구분선 + 순이익, ROAS - 한 줄: 명칭 좌측, 값 우측 */
+                '<div class="option-field-full option-divider"></div>' +
+                '<div class="input-field calculated-field option-field-full"><div class="field-container field-row-single"><span class="field-label">순이익</span><div class="field-value opt-net-profit">' + Math.round(netProfit).toLocaleString('ko-KR') + '원</div></div></div>' +
+                '<div class="input-field calculated-field option-field-full"><div class="field-container field-row-single"><span class="field-label">ROAS</span><div class="field-value opt-roas">' + (roas > 0 ? roas.toFixed(2) : '-') + '</div></div></div>' +
                 '</div>';
             const priceFluctuationInput = container.querySelector('.opt-price-fluctuation');
             const salesQtyInput = container.querySelector('.opt-sales-qty');
@@ -1205,12 +1270,14 @@
                         // 옵션 기반 입력 모드로 전환
                         currentProductOptions = optData.options;
                         currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: r.productName || '' };
-                        document.getElementById('productInfoSection').style.display = 'block';
-                        document.getElementById('productInfoDisplay').textContent = (currentProductInfo.productNumber || '') + ' / ' + (currentProductInfo.productName || '');
+                        var pageTitleEl = document.getElementById('pageTitle');
+                        if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력 - ' + (currentProductInfo.productName || currentProductInfo.productNumber || '');
                         document.getElementById('productNumberField').style.display = 'none';
                         document.getElementById('optionTabsSection').style.display = 'block';
                         document.getElementById('optionFieldsSection').style.display = 'block';
                         document.getElementById('legacyFields').style.display = 'none';
+                        var dateNum = document.querySelector('[data-field="date"] .field-number');
+                        if (dateNum) dateNum.textContent = '1';
                         if (allRegisteredProducts.length > 1) {
                             document.getElementById('nextProductButton').style.display = 'block';
                             currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
