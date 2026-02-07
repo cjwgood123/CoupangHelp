@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -188,7 +189,8 @@ public class IndexController {
     }
 
     @GetMapping("/margin-tracker/product-register")
-    public String marginTrackerProductRegister() {
+    public String marginTrackerProductRegister(@RequestParam(required = false, defaultValue = "") String mode, Model model) {
+        model.addAttribute("pageTitle", "edit".equalsIgnoreCase(mode) ? "상품 수정" : "상품 등록");
         return "margin-tracker-product-register";
     }
 

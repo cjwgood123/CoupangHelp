@@ -196,10 +196,12 @@
         .product-tabs-carousel {
             overflow: hidden;
             position: relative;
+            touch-action: pan-y;
         }
         .product-tabs-track {
             display: flex;
             transition: transform 0.25s ease;
+            touch-action: pan-y;
         }
         .product-tabs-slide {
             flex: 0 0 100%;
@@ -444,6 +446,27 @@
         /* 상품별 판매 내역 (최근 기록 위) */
         .product-summary-section {
             padding: 0 1.25rem 1.25rem;
+        }
+        .section-title-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.75rem;
+        }
+        .section-title-row .section-title {
+            margin-bottom: 0;
+        }
+        .section-title-amount {
+            font-size: 0.9375rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .section-title-amount.negative {
+            color: #3182F6;
+        }
+        .section-title-amount.positive {
+            color: #E53935;
         }
         .product-summary-section .section-title {
             margin-bottom: 0.75rem;
@@ -1379,7 +1402,10 @@
         </div>
 
         <div class="product-summary-section">
-            <h2 class="section-title" id="productSummaryTitle">매출 내역 (전체기간)</h2>
+            <div class="section-title-row">
+                <h2 class="section-title" id="productSummaryTitle">매출 내역 (전체기간)</h2>
+                <span id="productSummaryTotal" class="section-title-amount" aria-label="최종 매출 금액"></span>
+            </div>
             <div class="product-summary-list" id="productSummaryList">
                 <div class="empty-message">아직 기록이 없습니다</div>
             </div>
@@ -2221,6 +2247,28 @@
                 document.getElementById('productTabsNext').addEventListener('click', function() {
                     if (productTabsCurrentSlide < productTabsTotalSlides - 1) { productTabsCurrentSlide++; updateProductTabsCarousel(); }
                 });
+                (function() {
+                    var track = document.getElementById('productTabsTrack');
+                    if (!track) return;
+                    var touchStartX = 0;
+                    var SWIPE_THRESHOLD = 50;
+                    track.addEventListener('touchstart', function(e) {
+                        if (e.touches.length) touchStartX = e.touches[0].clientX;
+                    }, { passive: true });
+                    track.addEventListener('touchend', function(e) {
+                        if (!e.changedTouches.length) return;
+                        var touchEndX = e.changedTouches[0].clientX;
+                        var delta = touchStartX - touchEndX;
+                        if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+                        if (delta > 0 && productTabsCurrentSlide < productTabsTotalSlides - 1) {
+                            productTabsCurrentSlide++;
+                            updateProductTabsCarousel();
+                        } else if (delta < 0 && productTabsCurrentSlide > 0) {
+                            productTabsCurrentSlide--;
+                            updateProductTabsCarousel();
+                        }
+                    }, { passive: true });
+                })();
                 // 공통 기간 선택 토글
                 document.querySelectorAll('.period-toggle-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
@@ -2339,8 +2387,18 @@
             var filtered = filterRecordsByPeriod(allRecords, profitPeriod);
             var forSelected = getRecordsForSelectedProduct(filtered);
             var totalProfit = 0;
+            var totalSalesAmount = 0;
             forSelected.forEach(function(record) {
                 totalProfit += parseFloat(record.netProfit) || 0;
+                var revenue = parseFloat(record.actualSalesRevenue);
+                if (revenue == null || isNaN(revenue)) {
+                    var qty = parseFloat(record.salesQuantity) || 0;
+                    var price = parseFloat(record.finalSellingPrice) || 0;
+                    revenue = qty * price;
+                }
+                var adCost = parseFloat(record.advertisingCost) || 0;
+                var adAdjusted = record.advertisingCostAdjusted != null ? parseFloat(record.advertisingCostAdjusted) : (adCost * 1.1);
+                totalSalesAmount += (revenue - adAdjusted);
             });
             var profitEl = document.getElementById('totalProfit');
             profitEl.innerHTML = (totalProfit >= 0 ? '+' : '') + Math.round(totalProfit).toLocaleString('ko-KR') + '<span class="unit">원</span>';
@@ -2348,6 +2406,11 @@
             var titleEl = document.getElementById('productSummaryTitle');
             if (titleEl) {
                 titleEl.textContent = '매출 내역 (' + getPeriodLabel(profitPeriod) + ')';
+            }
+            var totalEl = document.getElementById('productSummaryTotal');
+            if (totalEl) {
+                totalEl.textContent = (totalSalesAmount >= 0 ? '+' : '') + Math.round(totalSalesAmount).toLocaleString('ko-KR') + '원';
+                totalEl.className = 'section-title-amount' + (totalSalesAmount >= 0 ? ' positive' : ' negative');
             }
             // 선택된 상품만 매출 내역에 표시 (전체면 전체)
             var recordsForSummary = getRecordsForSelectedProduct(allRecords);
@@ -2399,6 +2462,11 @@
                 var titleEl = document.getElementById('productSummaryTitle');
                 if (titleEl) {
                     titleEl.textContent = '매출 내역 (전체기간)';
+                }
+                var totalEl = document.getElementById('productSummaryTotal');
+                if (totalEl) {
+                    totalEl.textContent = '';
+                    totalEl.className = 'section-title-amount';
                 }
                 return;
             }
