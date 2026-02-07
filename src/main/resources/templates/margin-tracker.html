@@ -1324,7 +1324,7 @@
             <div class="menu-icon" id="desktopSidebarToggle">☰</div>
         </div>
 
-        <!-- 공통 기간 선택 토글 (총 순수익/평균 마진율 위에 배치) -->
+        <!-- 공통 기간 선택 토글 -->
         <div class="period-toggle-section">
             <div class="period-toggle-container">
                 <button type="button" class="period-toggle-btn active" data-period="all">전체기간</button>
@@ -1333,6 +1333,16 @@
                 <button type="button" class="period-toggle-btn" data-period="3">최근 3일</button>
                 <button type="button" class="period-toggle-btn" data-period="1">어제</button>
             </div>
+        </div>
+
+        <!-- 상품 선택 (기간 선택 아래 배치) -->
+        <div class="product-tabs-wrap">
+            <div class="product-tabs-carousel">
+                <button type="button" class="product-tabs-nav prev" id="productTabsPrev" aria-label="이전" style="display: none;">‹</button>
+                <div class="product-tabs-track" id="productTabsTrack"></div>
+                <button type="button" class="product-tabs-nav next" id="productTabsNext" aria-label="다음" style="display: none;">›</button>
+            </div>
+            <div class="product-tabs-dots" id="productTabsDots"></div>
         </div>
 
         <div class="summary-cards">
@@ -1344,15 +1354,6 @@
                 <div class="summary-label">평균 마진율</div>
                 <div class="summary-value grey" id="avgMarginRate">0%</div>
             </div>
-        </div>
-
-        <div class="product-tabs-wrap">
-            <div class="product-tabs-carousel">
-                <button type="button" class="product-tabs-nav prev" id="productTabsPrev" aria-label="이전" style="display: none;">‹</button>
-                <div class="product-tabs-track" id="productTabsTrack"></div>
-                <button type="button" class="product-tabs-nav next" id="productTabsNext" aria-label="다음" style="display: none;">›</button>
-            </div>
-            <div class="product-tabs-dots" id="productTabsDots"></div>
         </div>
 
         <div class="calendar-section" id="calendarSection">
@@ -1553,9 +1554,13 @@
         // Calendar state
         var calendarYear = new Date().getFullYear();
         var calendarMonth = new Date().getMonth();
-        // 단일 상품만 선택 (첫 번째 상품 기본 선택, 탭 클릭 시 해당 상품만 선택)
-        var selectedProductKey = null;
-        var selectedProductLabel = null;
+        // 단일 상품만 선택. '__all__' = 전체 상품 조회
+        var selectedProductKey = '__all__';
+        var selectedProductLabel = '전체';
+        var SELECTED_PRODUCT_ALL = '__all__';
+        var SESSION_KEY_PRODUCT = 'marginTracker_selectedProduct';
+        var SESSION_KEY_TIME = 'marginTracker_selectedProductTime';
+        var SESSION_TTL_MS = 30 * 60 * 1000; // 30분
 
         function getDistinctProducts(records) {
             var map = new Map();
@@ -1587,10 +1592,10 @@
             return record.productNumber || record.productName || '미분류';
         }
 
-        /** 선택된 상품 기준으로 기록 필터 (단일 선택) */
+        /** 선택된 상품 기준으로 기록 필터. 전체 선택 시 필터 없음 */
         function getRecordsForSelectedProduct(records) {
             if (!records || records.length === 0) return [];
-            if (!selectedProductKey) return [];
+            if (!selectedProductKey || selectedProductKey === SELECTED_PRODUCT_ALL) return records;
             return records.filter(function(r) { return getRecordProductKey(r) === selectedProductKey; });
         }
 
@@ -1637,24 +1642,31 @@
                     allProducts.push(p);
                 }
             });
-            // 단일 선택: 목록 중 첫 번째 상품을 기본 선택 (기존 선택이 목록에 없으면 첫 번째로)
-            if (allProducts.length > 0) {
-                var stillInList = selectedProductKey && allProducts.some(function(p) { return p.key === selectedProductKey; });
-                if (!stillInList) {
-                    selectedProductKey = allProducts[0].key;
-                    selectedProductLabel = allProducts[0].label;
+            // 마지막 선택 복원: 세션에 30분 이내 저장값이 있으면 사용, 없으면 전체
+            var savedKey = sessionStorage.getItem(SESSION_KEY_PRODUCT);
+            var savedTime = sessionStorage.getItem(SESSION_KEY_TIME);
+            var useSaved = savedKey !== null && savedTime && (Date.now() - parseInt(savedTime, 10)) < SESSION_TTL_MS;
+            if (useSaved) {
+                if (savedKey === SELECTED_PRODUCT_ALL || savedKey === '') {
+                    selectedProductKey = SELECTED_PRODUCT_ALL;
+                    selectedProductLabel = '전체';
+                } else {
+                    var inList = allProducts.some(function(p) { return p.key === savedKey; });
+                    if (inList) {
+                        selectedProductKey = savedKey;
+                        selectedProductLabel = allProducts.filter(function(p) { return p.key === savedKey; })[0].label;
+                    }
                 }
-            } else {
-                selectedProductKey = null;
-                selectedProductLabel = null;
+            }
+            if (!useSaved || (selectedProductKey !== SELECTED_PRODUCT_ALL && !allProducts.some(function(p) { return p.key === selectedProductKey; }))) {
+                selectedProductKey = SELECTED_PRODUCT_ALL;
+                selectedProductLabel = '전체';
             }
             track.innerHTML = '';
-            var items = [];
-            if (allProducts.length > 0) {
-                allProducts.forEach(function(p) {
-                    items.push({ type: 'product', key: p.key, label: p.label });
-                });
-            }
+            var items = [{ type: 'all', key: SELECTED_PRODUCT_ALL, label: '전체' }];
+            allProducts.forEach(function(p) {
+                items.push({ type: 'product', key: p.key, label: p.label });
+            });
             items.push({ type: 'register' });
             items.push({ type: 'edit' });
             var slides = [];
@@ -1681,6 +1693,29 @@
                         editBtn.setAttribute('data-edit', 'true');
                         editBtn.textContent = '상품 수정';
                         slide.appendChild(editBtn);
+                    } else if (item.type === 'all') {
+                        var allTab = document.createElement('div');
+                        allTab.className = 'product-tab';
+                        allTab.setAttribute('data-product-key', SELECTED_PRODUCT_ALL);
+                        allTab.setAttribute('data-product-label', '전체');
+                        allTab.textContent = '전체';
+                        allTab.title = '전체 상품 조회';
+                        if (selectedProductKey === SELECTED_PRODUCT_ALL) allTab.classList.add('on');
+                        allTab.addEventListener('click', function() {
+                            selectedProductKey = SELECTED_PRODUCT_ALL;
+                            selectedProductLabel = '전체';
+                            sessionStorage.setItem(SESSION_KEY_PRODUCT, SELECTED_PRODUCT_ALL);
+                            sessionStorage.setItem(SESSION_KEY_TIME, String(Date.now()));
+                            document.querySelectorAll('.product-tab[data-product-key]').forEach(function(t) {
+                                t.classList.toggle('on', t.getAttribute('data-product-key') === SELECTED_PRODUCT_ALL);
+                            });
+                            renderCalendar();
+                            updateProfitDisplay();
+                            updateMarginDisplay();
+                            renderProductSummary(allRecords, registeredProducts);
+                            loadRecordsPage(1);
+                        });
+                        slide.appendChild(allTab);
                     } else {
                         var tab = document.createElement('div');
                         tab.className = 'product-tab';
@@ -1696,6 +1731,8 @@
                         tab.addEventListener('click', function() {
                             selectedProductKey = pKey;
                             selectedProductLabel = pLabel;
+                            sessionStorage.setItem(SESSION_KEY_PRODUCT, pKey);
+                            sessionStorage.setItem(SESSION_KEY_TIME, String(Date.now()));
                             document.querySelectorAll('.product-tab[data-product-key]').forEach(function(t) {
                                 t.classList.toggle('on', t.getAttribute('data-product-key') === pKey);
                             });
@@ -1957,50 +1994,53 @@
                         var profitContainer = document.createElement('div');
                         profitContainer.className = 'calendar-day-data';
                         
-                        // 같은 상품별로 그룹화하고 옵션 순서 번호 매기기
-                        var productGroups = {};
-                        dayRecords.forEach(function(record) {
-                            var productKey = getRecordProductKey(record);
-                            if (!productGroups[productKey]) {
-                                productGroups[productKey] = [];
-                            }
-                            productGroups[productKey].push(record);
-                        });
-                        
-                        // 각 상품 그룹별로 표시
-                        Object.keys(productGroups).forEach(function(productKey) {
-                            var records = productGroups[productKey];
-                            var productLabel = (records[0].productName || records[0].productNumber || '미분류');
-                            if (productLabel.length > 6) productLabel = productLabel.slice(0, 5) + '…';
+                        if (selectedProductKey === SELECTED_PRODUCT_ALL) {
+                            // 전체 선택 시: 해당 날짜 매출 합산만 표시
+                            var dayTotal = 0;
+                            dayRecords.forEach(function(r) { dayTotal += parseFloat(r.netProfit) || 0; });
+                            var recordDiv = document.createElement('div');
+                            recordDiv.style.cssText = 'margin-bottom: 0.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;';
+                            recordDiv.innerHTML = '<span class="calendar-day-profit ' + (dayTotal >= 0 ? 'positive' : 'negative') + '" style="font-weight: 600; font-size: 0.65rem;">' +
+                                (dayTotal >= 0 ? '+' : '') + Math.round(dayTotal).toLocaleString('ko-KR') + '</span>';
+                            profitContainer.appendChild(recordDiv);
+                        } else {
+                            // 특정 상품 선택 시: 같은 상품별로 그룹화하여 표시
+                            var productGroups = {};
+                            dayRecords.forEach(function(record) {
+                                var productKey = getRecordProductKey(record);
+                                if (!productGroups[productKey]) {
+                                    productGroups[productKey] = [];
+                                }
+                                productGroups[productKey].push(record);
+                            });
                             
-                            // 모바일 감지: matchMedia를 사용하여 더 정확하게 감지
-                            var isMobile = window.matchMedia('(max-width: 767px)').matches || window.innerWidth <= 767;
-                            
-                            if (records.length === 1 && !records[0].optionId && !records[0].optionAlias) {
-                                // 옵션이 없는 경우
-                                var profit = parseFloat(records[0].netProfit) || 0;
-                                var recordDiv = document.createElement('div');
-                                recordDiv.style.cssText = 'margin-bottom: 0.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;';
-                                // 모바일이든 데스크톱이든 항상 제품명과 금액을 포함하되, CSS로 모바일에서 제품명 숨김
-                                recordDiv.innerHTML = '<span class="product-label-mobile" style="color: var(--text-secondary); font-size: 0.6rem;">' + escapeHtml(productLabel) + '</span> ' +
-                                    '<span class="calendar-day-profit ' + (profit >= 0 ? 'positive' : 'negative') + '" style="font-weight: 600; font-size: 0.65rem;">' +
-                                    (profit >= 0 ? '+' : '') + Math.round(profit).toLocaleString('ko-KR') + '</span>';
-                                profitContainer.appendChild(recordDiv);
-                            } else {
-                                // 옵션이 있는 경우: 각 옵션별로 표시
-                                records.forEach(function(record, idx) {
-                                    var profit = parseFloat(record.netProfit) || 0;
+                            Object.keys(productGroups).forEach(function(productKey) {
+                                var records = productGroups[productKey];
+                                var productLabel = (records[0].productName || records[0].productNumber || '미분류');
+                                if (productLabel.length > 6) productLabel = productLabel.slice(0, 5) + '…';
+                                
+                                if (records.length === 1 && !records[0].optionId && !records[0].optionAlias) {
+                                    var profit = parseFloat(records[0].netProfit) || 0;
                                     var recordDiv = document.createElement('div');
                                     recordDiv.style.cssText = 'margin-bottom: 0.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;';
-                                    // 모바일이든 데스크톱이든 항상 옵션명과 금액을 포함하되, CSS로 모바일에서 옵션명 숨김
-                                    var optionLabel = productLabel + ' (' + (idx + 1) + ')';
-                                    recordDiv.innerHTML = '<span class="product-label-mobile" style="color: var(--text-secondary); font-size: 0.6rem;">' + escapeHtml(optionLabel) + '</span> ' +
+                                    recordDiv.innerHTML = '<span class="product-label-mobile" style="color: var(--text-secondary); font-size: 0.6rem;">' + escapeHtml(productLabel) + '</span> ' +
                                         '<span class="calendar-day-profit ' + (profit >= 0 ? 'positive' : 'negative') + '" style="font-weight: 600; font-size: 0.65rem;">' +
                                         (profit >= 0 ? '+' : '') + Math.round(profit).toLocaleString('ko-KR') + '</span>';
                                     profitContainer.appendChild(recordDiv);
-                                });
-                            }
-                        });
+                                } else {
+                                    records.forEach(function(record, idx) {
+                                        var profit = parseFloat(record.netProfit) || 0;
+                                        var recordDiv = document.createElement('div');
+                                        recordDiv.style.cssText = 'margin-bottom: 0.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center;';
+                                        var optionLabel = productLabel + ' (' + (idx + 1) + ')';
+                                        recordDiv.innerHTML = '<span class="product-label-mobile" style="color: var(--text-secondary); font-size: 0.6rem;">' + escapeHtml(optionLabel) + '</span> ' +
+                                            '<span class="calendar-day-profit ' + (profit >= 0 ? 'positive' : 'negative') + '" style="font-weight: 600; font-size: 0.65rem;">' +
+                                            (profit >= 0 ? '+' : '') + Math.round(profit).toLocaleString('ko-KR') + '</span>';
+                                        profitContainer.appendChild(recordDiv);
+                                    });
+                                }
+                            });
+                        }
                         cell.appendChild(profitContainer);
                     }
                 }
@@ -2011,16 +2051,19 @@
                     cell.setAttribute('data-month', calendarMonth + 1);
                     cell.setAttribute('data-day', dayNum);
                     cell.addEventListener('click', function onDayClick() {
-                        if (!selectedProductKey) return;
                         var y = parseInt(this.getAttribute('data-year'), 10);
                         var m = parseInt(this.getAttribute('data-month'), 10);
                         var d = parseInt(this.getAttribute('data-day'), 10);
-                        var label = selectedProductLabel || '해당 상품';
-                        var msg = m + '/' + d + '일 ' + label + ' 상품 판매 정보를 등록하시겠습니까?';
-                        // 커스텀 확인 다이얼로그 사용 (모바일 브라우저 기본 confirm 대체)
-                        showCustomConfirm(msg, function() {
-                            window.location.href = '/margin-tracker/input?date=' + y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0') + '&product=' + encodeURIComponent(selectedProductKey || '');
-                        });
+                        var dateQ = 'date=' + y + '-' + String(m).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+                        if (selectedProductKey && selectedProductKey !== SELECTED_PRODUCT_ALL) {
+                            var label = selectedProductLabel || '해당 상품';
+                            var msg = m + '/' + d + '일 ' + label + ' 상품 판매 정보를 등록하시겠습니까?';
+                            showCustomConfirm(msg, function() {
+                                window.location.href = '/margin-tracker/input?' + dateQ + '&product=' + encodeURIComponent(selectedProductKey);
+                            });
+                        } else {
+                            window.location.href = '/margin-tracker/input?' + dateQ;
+                        }
                     });
                 }
                 var dayOfWeek = i % 7;
@@ -2306,11 +2349,11 @@
             if (titleEl) {
                 titleEl.textContent = '매출 내역 (' + getPeriodLabel(profitPeriod) + ')';
             }
-            // 선택된 상품만 매출 내역에 표시
+            // 선택된 상품만 매출 내역에 표시 (전체면 전체)
             var recordsForSummary = getRecordsForSelectedProduct(allRecords);
-            var regForSummary = selectedProductKey ? registeredProducts.filter(function(r) {
+            var regForSummary = (!selectedProductKey || selectedProductKey === SELECTED_PRODUCT_ALL) ? (registeredProducts || []) : registeredProducts.filter(function(r) {
                 return (r.productNumber || '') === selectedProductKey;
-            }) : [];
+            });
             renderProductSummary(recordsForSummary, regForSummary);
             renderCalendar();
         }
