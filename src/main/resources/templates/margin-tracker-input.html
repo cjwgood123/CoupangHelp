@@ -588,6 +588,17 @@
 
         let editId = null;
         let currentProductOptions = [];
+        /** 상품 등록 시 수수료 1.1배 적용과 동일하게, 저장된 개당 마진이 수수료 1.0배 기준이면 1.1배 보정하여 사용 */
+        let currentProductCommissionRate = null;
+        function getEffectiveMarginPerUnit(marginPerUnit, finalPrice) {
+            var m = parseFloat(marginPerUnit) || 0;
+            if (finalPrice == null || finalPrice <= 0) return m;
+            if (currentProductCommissionRate == null || currentProductCommissionRate === '' || isNaN(parseFloat(currentProductCommissionRate))) return m;
+            var rate = parseFloat(String(currentProductCommissionRate).replace(/,/g, '')) || 0;
+            if (rate <= 0) return m;
+            var correction = finalPrice * rate * 0.1 / 100;
+            return m - correction;
+        }
         let currentProductInfo = null;
         let currentOptionIndex = 0;
         let optionDataSets = [];
@@ -678,6 +689,7 @@
                 const data = await res.json();
                 if (data.success && data.options && data.options.length > 0) {
                     currentProductOptions = data.options;
+                    currentProductCommissionRate = (data.commissionRate != null && data.commissionRate !== '') ? data.commissionRate : null;
                     // 옵션 데이터 확인 및 디버깅
                     console.log('옵션 데이터 로드:', data.options);
                     data.options.forEach(function(opt, idx) {
@@ -709,6 +721,7 @@
                         }
                     }
                 } else {
+                    currentProductCommissionRate = (data.commissionRate != null && data.commissionRate !== '') ? data.commissionRate : null;
                     // 레거시 모드: 옵션이 없는 경우
                     document.getElementById('productInfoSection').style.display = 'none';
                     document.getElementById('productNumberField').style.display = 'block';
@@ -859,11 +872,10 @@
             const organicSalesQty = Math.max(0, salesQty - adSalesQty);
             const actualRevenue = finalPrice * salesQty;
             // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
-            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
-            // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+            // 수수료 1.1배 보정: 상품 등록 페이지와 동일하게 적용
             let baseMarginPerUnit = 0;
             if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
-                baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+                baseMarginPerUnit = getEffectiveMarginPerUnit(opt.marginPerUnit, finalPrice);
             }
             console.log('renderOptionFields - 옵션 개당 마진:', {
                 optionAlias: opt.optionAlias,
@@ -960,11 +972,10 @@
             const organicSalesQty = Math.max(0, salesQty - adSalesQty);
             const actualRevenue = finalPrice * salesQty;
             // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
-            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
-            // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+            // 수수료 1.1배 보정: 상품 등록 페이지와 동일하게 적용
             let baseMarginPerUnit = 0;
             if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
-                baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+                baseMarginPerUnit = getEffectiveMarginPerUnit(opt.marginPerUnit, finalPrice);
             }
             console.log('updateOptionCalculations - 옵션 개당 마진:', {
                 optionIdx: optionIdx,
@@ -1079,6 +1090,7 @@
                     if (optData.success && optData.options && optData.options.length > 0) {
                         // 옵션 기반 입력 모드로 전환
                         currentProductOptions = optData.options;
+                        currentProductCommissionRate = (optData.commissionRate != null && optData.commissionRate !== '') ? optData.commissionRate : null;
                         currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: r.productName || '' };
                         document.getElementById('productInfoSection').style.display = 'block';
                         document.getElementById('productInfoDisplay').textContent = (currentProductInfo.productNumber || '') + ' / ' + (currentProductInfo.productName || '');
@@ -1147,11 +1159,10 @@
                                 const organicSalesQty = Math.max(0, salesQty - adSalesQty);
                                 const actualRevenue = finalPrice * salesQty;
                                 // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
-                                // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
-                                // 상품 등록 시 저장된 개당 마진 사용 (반드시 DB에서 가져온 값 사용)
+                                // 수수료 1.1배 보정: 상품 등록 페이지와 동일하게 적용
                                 let baseMarginPerUnit = 0;
                                 if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
-                                    baseMarginPerUnit = parseFloat(String(opt.marginPerUnit).replace(/,/g, '')) || 0;
+                                    baseMarginPerUnit = getEffectiveMarginPerUnit(opt.marginPerUnit, finalPrice);
                                 }
                                 const marginFromBase = baseMarginPerUnit * salesQty;  // 개당 마진 * 판매 수량
                                 const marginFromFluctuation = priceFluctuation * salesQty;  // 판매가 변동 * 판매 수량
@@ -1743,8 +1754,9 @@
             updateCalculatedField('actualSalesRevenue', actualSalesRevenue);
 
             // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
-            // = (개당 마진 + 판매가 변동) * 판매 수량 - 광고비
-            const marginFromBase = marginPerUnit * salesQuantity;  // 개당 마진 * 판매 수량
+            // 수수료 1.1배 보정: 상품 등록 페이지와 동일하게 적용
+            const effectiveMarginPerUnit = getEffectiveMarginPerUnit(marginPerUnit, finalSellingPrice);
+            const marginFromBase = effectiveMarginPerUnit * salesQuantity;  // 개당 마진 * 판매 수량
             const marginFromFluctuation = priceFluctuation * salesQuantity;  // 판매가 변동 * 판매 수량
             const totalMargin = marginFromBase + marginFromFluctuation;
             formData.totalMargin = totalMargin !== 0 ? totalMargin : '';

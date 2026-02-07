@@ -298,9 +298,12 @@ public class MarginTrackerController {
         try {
             List<Map<String, Object>> products = marginTrackerProductService.findProductsByUserId(userId.trim());
             Long productSeq = null;
+            String commissionRate = null;
             for (Map<String, Object> p : products) {
                 if (productNumber.equals(p.get("productNumber"))) {
                     productSeq = ((Number) p.get("productSeq")).longValue();
+                    Object cr = p.get("commissionRate");
+                    commissionRate = cr != null ? cr.toString().trim() : null;
                     break;
                 }
             }
@@ -314,6 +317,7 @@ public class MarginTrackerController {
             res.put("success", true);
             res.put("options", options != null ? options : List.of());
             res.put("productSeq", productSeq);
+            res.put("commissionRate", commissionRate != null && !commissionRate.isEmpty() ? commissionRate : null);
             return ResponseEntity.ok(res);
         } catch (Exception e) {
             e.printStackTrace();
