@@ -4,7 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>판매 데이터 입력 - 헬쿠 매출 일지</title>
-    
+    <script>
+        (function(){
+            var q = typeof window !== 'undefined' && window.location && window.location.search || '';
+            if (/[?&]product=/.test(q) || /[?&]id=/.test(q)) {
+                document.documentElement.classList.add('url-product-view');
+            }
+        })();
+    </script>
     <!-- Flatpickr (날짜 선택 라이브러리) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
@@ -449,6 +456,14 @@
                 -webkit-overflow-scrolling: touch;
             }
         }
+        /* URL에 product= 또는 id= 있을 때 로딩 중: 전체 빈 화면 */
+        html.url-product-view .input-header,
+        html.url-product-view .progress-bar,
+        html.url-product-view #inputFields,
+        html.url-product-view .save-button-container {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
@@ -693,7 +708,7 @@
         /** 동일 상품 입력 시 판매가 변동 자동 설정용 - 해당 상품의 최근 입력값 */
         let lastPriceFluctuationForProduct = null;
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             const uid = localStorage.getItem('salesChart_userId');
             if (!uid) {
                 window.location.href = '/margin-tracker';
@@ -704,17 +719,18 @@
             const productParam = params.get('product');
             const dateParam = params.get('date');
             initEventListeners();
-            initDatePicker();
-            loadProductList();
             if (editId) {
+                await loadProductList();
                 loadRecordForEdit(editId);
+            } else if (productParam) {
+                await loadProductList();
+                initDatePicker();
+                await handleProductSelect(productParam, dateParam);
             } else {
+                loadProductList();
+                initDatePicker();
                 updateSaveButtonText();
-                if (productParam) {
-                    handleProductSelect(productParam, dateParam);
-                } else {
-                    setCurrentStep(0);
-                }
+                setCurrentStep(0);
             }
         });
 
@@ -786,6 +802,7 @@
                     currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: '' };
                     var pageTitleEl = document.getElementById('pageTitle');
                     if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력 - ' + (currentProductInfo.productName || currentProductInfo.productNumber || '');
+                    document.documentElement.classList.remove('url-product-view');
                     document.getElementById('productNumberField').style.display = 'none';
                     document.getElementById('optionTabsSection').style.display = 'block';
                     document.getElementById('optionFieldsSection').style.display = 'block';
@@ -810,6 +827,7 @@
                     // 레거시 모드: 옵션이 없는 경우
                     var pageTitleEl = document.getElementById('pageTitle');
                     if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력';
+                    document.documentElement.classList.remove('url-product-view');
                     document.getElementById('productNumberField').style.display = 'block';
                     document.getElementById('optionTabsSection').style.display = 'none';
                     document.getElementById('optionFieldsSection').style.display = 'none';
@@ -1272,6 +1290,7 @@
                         currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: r.productName || '' };
                         var pageTitleEl = document.getElementById('pageTitle');
                         if (pageTitleEl) pageTitleEl.textContent = '판매 데이터 입력 - ' + (currentProductInfo.productName || currentProductInfo.productNumber || '');
+                        document.documentElement.classList.remove('url-product-view');
                         document.getElementById('productNumberField').style.display = 'none';
                         document.getElementById('optionTabsSection').style.display = 'block';
                         document.getElementById('optionFieldsSection').style.display = 'block';
