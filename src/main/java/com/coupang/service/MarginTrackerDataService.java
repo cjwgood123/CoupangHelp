@@ -186,6 +186,13 @@ public class MarginTrackerDataService {
         return n > 0;
     }
 
+    /** 해당 회원·상품번호의 모든 매출 데이터 삭제 (상품 삭제 시 연관 데이터 정리) */
+    public int deleteByUserIdAndProductNumber(String userId, String productNumber) {
+        if (userId == null || productNumber == null || productNumber.isBlank()) return 0;
+        String sql = "DELETE FROM margin_tracker_data WHERE user_id = ? AND product_number = ?";
+        return jdbcTemplate.update(sql, userId, productNumber);
+    }
+
     /** 같은 날짜, 같은 상품의 모든 기록 조회 (수정 시 모든 옵션 표시용) */
     public List<MarginTrackerDataDto> findByUserIdProductAndDate(String userId, String productNumber, String saleDate) {
         String sql = """

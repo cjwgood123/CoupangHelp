@@ -381,7 +381,21 @@
         .order-save-btn:hover { opacity: 0.9; }
         #productOrderList.empty + .order-save-wrap { display: none; }
 
-        .shipping-mode-wrap { display: flex; gap: 1rem; margin-bottom: 0.75rem; }
+        .pr-delete-wrap { margin-top: 1.5rem; text-align: center; }
+        .pr-delete-btn {
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: #C62828;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .pr-delete-btn:hover { background: #B71C1C; }
+        .pr-delete-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .shipping-mode-wrap { display: flex; flex-direction: row; flex-wrap: nowrap; gap: 1rem; margin-bottom: 0.75rem; align-items: center; }
         .shipping-mode-opt { font-size: 0.875rem; cursor: pointer; }
         .shipping-panel { margin-top: 0.5rem; }
         .shipping-rule-row {
@@ -450,7 +464,6 @@
                 font-size: 0.875rem;
             }
             .shipping-mode-wrap {
-                flex-direction: column;
                 gap: 0.5rem;
             }
             .shipping-rule-row {
@@ -531,6 +544,7 @@
             <div class="pr-tabs">
                 <button type="button" class="pr-tab active" data-panel="register">상품 등록/수정</button>
                 <button type="button" class="pr-tab" data-panel="order">상품 노출 순서 변경</button>
+                <button type="button" class="pr-tab" data-panel="delete">상품 삭제</button>
             </div>
             <div class="pr-content pr-panel active" id="panelRegister">
                 <!-- 상품 선택 셀렉트 (수정 모드일 때만 표시) -->
@@ -622,6 +636,21 @@
                     <ul class="order-list" id="productOrderList"></ul>
                     <div class="order-save-wrap">
                         <button type="button" class="order-save-btn" id="orderSaveBtn">순서 저장</button>
+                    </div>
+                </section>
+            </div>
+            <div class="pr-content pr-panel" id="panelDelete">
+                <section class="pr-section">
+                    <h2 class="pr-section-title">상품 삭제</h2>
+                    <p class="pr-section-hint" style="margin-bottom: 1rem;">삭제 시 해당 상품과 연결된 모든 매출 데이터가 함께 삭제됩니다. 복구할 수 없습니다.</p>
+                    <div class="pr-field">
+                        <label>삭제할 상품 선택</label>
+                        <select id="productDeleteSelect" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 1rem;">
+                            <option value="">-- 상품을 선택하세요 --</option>
+                        </select>
+                    </div>
+                    <div class="pr-delete-wrap">
+                        <button type="button" class="pr-delete-btn" id="productDeleteBtn">삭제</button>
                     </div>
                 </section>
             </div>
@@ -1155,9 +1184,12 @@
                     document.querySelectorAll('.pr-tab').forEach(function(t) { t.classList.remove('active'); });
                     document.querySelectorAll('.pr-panel').forEach(function(p) { p.classList.remove('active'); });
                     this.classList.add('active');
-                    var panel = panelId === 'order' ? document.getElementById('panelOrder') : document.getElementById('panelRegister');
+                    var panel = document.getElementById('panelRegister');
+                    if (panelId === 'order') panel = document.getElementById('panelOrder');
+                    else if (panelId === 'delete') panel = document.getElementById('panelDelete');
                     if (panel) panel.classList.add('active');
                     if (panelId === 'order') loadOrderList();
+                    if (panelId === 'delete') loadDeleteProductList();
                 });
             });
 
@@ -1263,6 +1295,64 @@
                     }).catch(function() {
                         orderSaveBtn.disabled = false;
                         alert('저장 중 오류가 발생했습니다.');
+                    });
+                });
+            }
+
+            var productDeleteSelect = document.getElementById('productDeleteSelect');
+            var productDeleteBtn = document.getElementById('productDeleteBtn');
+            async function loadDeleteProductList() {
+                if (!productDeleteSelect) return;
+                var userId = localStorage.getItem('salesChart_userId');
+                productDeleteSelect.innerHTML = '<option value="">-- 상품을 선택하세요 --</option>';
+                if (!userId) return;
+                try {
+                    var res = await fetch('/api/margin-tracker/registered-products?userId=' + encodeURIComponent(userId));
+                    var data = await res.json();
+                    if (data.success && data.products && data.products.length > 0) {
+                        data.products.forEach(function(p) {
+                            var opt = document.createElement('option');
+                            opt.value = p.productNumber || '';
+                            opt.textContent = (p.productName || '') + (p.productNumber ? ' (' + p.productNumber + ')' : '');
+                            productDeleteSelect.appendChild(opt);
+                        });
+                    }
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+            if (productDeleteBtn) {
+                productDeleteBtn.addEventListener('click', function() {
+                    var userId = localStorage.getItem('salesChart_userId');
+                    if (!userId) {
+                        alert('로그인 후 이용할 수 있습니다.');
+                        return;
+                    }
+                    var productNumber = productDeleteSelect && productDeleteSelect.value ? productDeleteSelect.value.trim() : '';
+                    if (!productNumber) {
+                        alert('삭제할 상품을 선택하세요.');
+                        return;
+                    }
+                    var label = productDeleteSelect.options[productDeleteSelect.selectedIndex].textContent;
+                    if (!confirm('「' + label + '」 상품과 이 상품에 연결된 모든 매출 데이터가 삭제됩니다. 복구할 수 없습니다. 삭제하시겠습니까?')) {
+                        return;
+                    }
+                    productDeleteBtn.disabled = true;
+                    fetch('/api/margin-tracker/product', {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ userId: userId, productNumber: productNumber })
+                    }).then(function(r) { return r.json(); }).then(function(res) {
+                        productDeleteBtn.disabled = false;
+                        if (res.success) {
+                            alert(res.message || '삭제되었습니다.');
+                            loadDeleteProductList();
+                        } else {
+                            alert(res.message || '삭제에 실패했습니다.');
+                        }
+                    }).catch(function() {
+                        productDeleteBtn.disabled = false;
+                        alert('삭제 중 오류가 발생했습니다.');
                     });
                 });
             }

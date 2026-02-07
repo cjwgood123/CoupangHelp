@@ -407,6 +407,42 @@ public class MarginTrackerController {
         }
     }
 
+    /** 상품 삭제: 해당 상품의 매출 데이터(margin_tracker_data) 전부 삭제 후 상품(margin_tracker_product) 삭제. 옵션은 FK CASCADE로 자동 삭제. */
+    @DeleteMapping("/product")
+    public ResponseEntity<Map<String, Object>> deleteProduct(@RequestBody Map<String, Object> body) {
+        Map<String, Object> res = new HashMap<>();
+        String userId = getString(body, "userId");
+        if (userId == null || userId.trim().isEmpty()) {
+            res.put("success", false);
+            res.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.badRequest().body(res);
+        }
+        userId = userId.trim();
+        String productNumber = getString(body, "productNumber");
+        if (productNumber == null || productNumber.isEmpty()) {
+            res.put("success", false);
+            res.put("message", "삭제할 상품을 선택하세요.");
+            return ResponseEntity.badRequest().body(res);
+        }
+        if (!userService.findByUserId(userId).isPresent()) {
+            res.put("success", false);
+            res.put("message", "존재하지 않는 회원입니다.");
+            return ResponseEntity.badRequest().body(res);
+        }
+        try {
+            marginTrackerDataService.deleteByUserIdAndProductNumber(userId, productNumber);
+            boolean deleted = marginTrackerProductService.deleteByUserIdAndProductNumber(userId, productNumber);
+            res.put("success", deleted);
+            res.put("message", deleted ? "상품과 관련 매출 데이터가 모두 삭제되었습니다." : "삭제할 상품을 찾을 수 없습니다.");
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.put("success", false);
+            res.put("message", "삭제 중 오류가 발생했습니다.");
+            return ResponseEntity.status(500).body(res);
+        }
+    }
+
     @DeleteMapping("/record/{id}")
     public ResponseEntity<Map<String, Object>> deleteRecord(@PathVariable Long id, @RequestParam String userId) {
         Map<String, Object> res = new HashMap<>();

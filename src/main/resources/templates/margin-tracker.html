@@ -466,7 +466,7 @@
             color: #3182F6;
         }
         .section-title-amount.positive {
-            color: #E53935;
+            color: var(--primary);
         }
         .product-summary-section .section-title {
             margin-bottom: 0.75rem;
@@ -517,8 +517,10 @@
 
         /* Recent Records */
         .recent-section {
-            padding: 0 1.25rem;
+            padding: 0 1.25rem 1.25rem;
             margin-bottom: 1.25rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.25rem;
         }
 
         .section-title {
@@ -1592,8 +1594,7 @@
             var map = new Map();
             records.forEach(function(r) {
                 var key = r.productNumber || r.productName || '미분류';
-                // 이름 먼저, 번호 나중
-                var label = (r.productNumber && r.productName) ? (r.productName + ' / ' + r.productNumber) : (r.productName || r.productNumber || '미분류');
+                var label = r.productName || r.productNumber || '미분류';
                 if (!map.has(key)) map.set(key, label);
             });
             return Array.from(map.entries()).map(function(entry) { return { key: entry[0], label: entry[1] }; });
@@ -1654,7 +1655,7 @@
             if (registered && registered.length > 0) {
                 registered.forEach(function(r) {
                     var key = r.productNumber || '';
-                    var label = (r.productNumber && r.productName) ? (r.productName + ' / ' + r.productNumber) : (r.productName || r.productNumber || '');
+                    var label = r.productName || r.productNumber || '';
                     if (key) {
                         seen.add(key);
                         allProducts.push({ key: key, label: label });
@@ -1749,7 +1750,7 @@
                         var pLabel = item.label;
                         tab.setAttribute('data-product-key', pKey);
                         tab.setAttribute('data-product-label', pLabel);
-                        tab.textContent = pLabel.length > 12 ? pLabel.slice(0, 11) + '…' : pLabel;
+                        tab.textContent = pLabel;
                         tab.title = pLabel;
                         if (selectedProductKey === pKey) {
                             tab.classList.add('on');

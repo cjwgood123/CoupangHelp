@@ -137,6 +137,14 @@ public class MarginTrackerProductService {
         }, productSeq);
     }
 
+    /** 상품 삭제 (해당 회원·상품번호). margin_tracker_product_option은 FK ON DELETE CASCADE로 자동 삭제됨 */
+    public boolean deleteByUserIdAndProductNumber(String userId, String productNumber) {
+        if (userId == null || productNumber == null || productNumber.isBlank()) return false;
+        String sql = "DELETE FROM margin_tracker_product WHERE user_id = ? AND product_number = ?";
+        int n = jdbcTemplate.update(sql, userId, productNumber);
+        return n > 0;
+    }
+
     private static BigDecimal toBigDecimal(Object v) {
         if (v == null) return null;
         if (v instanceof Number) return BigDecimal.valueOf(((Number) v).doubleValue());
