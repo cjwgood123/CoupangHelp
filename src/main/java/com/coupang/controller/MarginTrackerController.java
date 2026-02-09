@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -280,6 +281,46 @@ public class MarginTrackerController {
         } catch (Exception e) {
             e.printStackTrace();
             res.put("success", false);
+            return ResponseEntity.status(500).body(res);
+        }
+    }
+
+    /**
+     * 해당 상품의 옵션별 가장 최근 판매가 변동 조회 (DB 저장값 그대로 반환, PC/모바일 공통)
+     */
+    @GetMapping("/latest-price-fluctuation-by-option")
+    public ResponseEntity<Map<String, Object>> getLatestPriceFluctuationByOption(
+            @RequestParam String userId,
+            @RequestParam String productNumber) {
+        Map<String, Object> res = new HashMap<>();
+        if (userId == null || userId.trim().isEmpty() || productNumber == null || productNumber.trim().isEmpty()) {
+            res.put("success", false);
+            res.put("options", List.of());
+            return ResponseEntity.badRequest().body(res);
+        }
+        try {
+            List<MarginTrackerDataDto> list = marginTrackerDataService.findLatestRecordsByUserIdAndProductNumber(userId.trim(), productNumber.trim());
+            java.util.Set<String> seen = new java.util.LinkedHashSet<>();
+            List<Map<String, Object>> options = new ArrayList<>();
+            for (MarginTrackerDataDto dto : list) {
+                String optionId = dto.getOptionId() != null ? dto.getOptionId() : "";
+                String optionAlias = dto.getOptionAlias() != null ? dto.getOptionAlias() : "";
+                String key = optionId + "|" + optionAlias;
+                if (seen.contains(key)) continue;
+                seen.add(key);
+                Map<String, Object> row = new HashMap<>();
+                row.put("optionId", dto.getOptionId());
+                row.put("optionAlias", dto.getOptionAlias());
+                row.put("priceFluctuation", dto.getPriceFluctuation());
+                options.add(row);
+            }
+            res.put("success", true);
+            res.put("options", options);
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            res.put("success", false);
+            res.put("options", List.of());
             return ResponseEntity.status(500).body(res);
         }
     }

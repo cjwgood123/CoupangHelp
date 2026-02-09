@@ -605,8 +605,10 @@
         let allRegisteredProducts = [];
         let currentProductIndex = -1;
         let updateNextProductButtonFn = null;
-        /** 동일 상품 입력 시 판매가 변동 자동 설정용 - 해당 상품의 최근 입력값 */
+        /** 동일 상품 입력 시 판매가 변동 자동 설정용 - 해당 상품의 최근 입력값 (레거시 단일 상품용) */
         let lastPriceFluctuationForProduct = null;
+        /** 옵션별 최근 판매가 변동 - key: optionId|optionAlias */
+        let lastPfByOption = {};
 
         document.addEventListener('DOMContentLoaded', function() {
             const uid = localStorage.getItem('salesChart_userId');
@@ -675,29 +677,39 @@
             const uid = localStorage.getItem('salesChart_userId');
             if (!uid) return;
             try {
-                // 동일 상품 최근 판매가 변동값 조회 (자동 설정용, 수정 가능 유지)
                 lastPriceFluctuationForProduct = null;
-                try {
-                    const latestRes = await fetch('/api/margin-tracker/latest-record?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
-                    const latestData = await latestRes.json();
-                    if (latestData.success && latestData.priceFluctuation != null && latestData.priceFluctuation !== '') {
-                        lastPriceFluctuationForProduct = latestData.priceFluctuation;
-                    }
-                } catch (e) { /* 무시 */ }
-
+                lastPfByOption = {};
                 const res = await fetch('/api/margin-tracker/product-options?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
                 const data = await res.json();
                 if (data.success && data.options && data.options.length > 0) {
                     currentProductOptions = data.options;
                     currentProductCommissionRate = (data.commissionRate != null && data.commissionRate !== '') ? data.commissionRate : null;
-                    // 옵션 데이터 확인 및 디버깅
-                    console.log('옵션 데이터 로드:', data.options);
-                    data.options.forEach(function(opt, idx) {
-                        console.log('옵션 ' + idx + ':', {
-                            optionAlias: opt.optionAlias,
-                            marginPerUnit: opt.marginPerUnit,
-                            marginPerUnitType: typeof opt.marginPerUnit
-                        });
+                    try {
+                        const pfRes = await fetch('/api/margin-tracker/latest-price-fluctuation-by-option?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                        const pfData = await pfRes.json();
+                        if (pfData.success && pfData.options && Array.isArray(pfData.options)) {
+                            pfData.options.forEach(function(o) {
+                                var k = (o.optionId != null ? o.optionId : '') + '|' + (o.optionAlias != null ? o.optionAlias : '');
+                                if (o.priceFluctuation != null && o.priceFluctuation !== '') lastPfByOption[k] = o.priceFluctuation;
+                            });
+                        }
+                    } catch (e) { /* 무시 */ }
+                    optionDataSets = [];
+                    currentProductOptions.forEach(function(opt, idx) {
+                        var k = (opt.optionId != null ? opt.optionId : '') + '|' + (opt.optionAlias != null ? opt.optionAlias : '');
+                        var pf = lastPfByOption[k] != null ? lastPfByOption[k] : '';
+                        optionDataSets[idx] = {
+                            sellingPrice: opt.sellingPrice || 0,
+                            priceFluctuation: pf,
+                            finalSellingPrice: opt.sellingPrice || 0,
+                            salesQuantity: '',
+                            advertisingCost: '',
+                            adSales: '',
+                            organicSales: 0,
+                            netProfit: 0,
+                            marginRate: 0,
+                            roas: 0
+                        };
                     });
                     currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: '' };
                     document.getElementById('productInfoSection').style.display = 'block';
@@ -722,7 +734,13 @@
                     }
                 } else {
                     currentProductCommissionRate = (data.commissionRate != null && data.commissionRate !== '') ? data.commissionRate : null;
-                    // 레거시 모드: 옵션이 없는 경우
+                    try {
+                        const latestRes = await fetch('/api/margin-tracker/latest-record?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                        const latestData = await latestRes.json();
+                        if (latestData.success && latestData.priceFluctuation != null && latestData.priceFluctuation !== '') {
+                            lastPriceFluctuationForProduct = latestData.priceFluctuation;
+                        }
+                    } catch (e) { /* 무시 */ }
                     document.getElementById('productInfoSection').style.display = 'none';
                     document.getElementById('productNumberField').style.display = 'block';
                     document.getElementById('optionTabsSection').style.display = 'none';
@@ -734,7 +752,6 @@
                         if (p) {
                             productInput.value = (p.productNumber || '') + ' / ' + (p.productName || '');
                             formData.productNumber = productInput.value;
-                            // 이전 판매가 변동값 자동 설정 (수정 가능)
                             if (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') {
                                 const v = String(lastPriceFluctuationForProduct);
                                 formData.priceFluctuation = v;
@@ -848,7 +865,8 @@
             const opt = currentProductOptions[optionIdx];
             if (!opt) return;
             if (!optionDataSets[optionIdx]) {
-                var initPriceFluctuation = (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') ? String(lastPriceFluctuationForProduct) : '';
+                var k = (opt.optionId != null ? opt.optionId : '') + '|' + (opt.optionAlias != null ? opt.optionAlias : '');
+                var initPriceFluctuation = (lastPfByOption[k] != null && lastPfByOption[k] !== '') ? lastPfByOption[k] : '';
                 optionDataSets[optionIdx] = {
                     sellingPrice: opt.sellingPrice || 0,
                     priceFluctuation: initPriceFluctuation,
@@ -1034,18 +1052,21 @@
 
         function checkCanSave() {
             let canSave = false;
+            var dateStr = formData.date || (document.getElementById('field-date') && document.getElementById('field-date').value) || '';
             if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
-                // 옵션 기반 입력 모드: 최소 하나의 옵션에 필수 값이 입력되어야 함
-                canSave = optionDataSets.some(function(d, idx) {
+                canSave = optionDataSets.some(function(d) {
                     if (!d) return false;
-                    const salesQty = parseFloat(d.salesQuantity) || 0;
+                    const salesQty = (d.salesQuantity !== undefined && d.salesQuantity !== null && d.salesQuantity !== '') ? parseFloat(d.salesQuantity) : -1;
                     const adCost = parseFloat(d.advertisingCost) || 0;
                     const adSales = parseFloat(d.adSales) || 0;
-                    return salesQty > 0 && adCost >= 0 && adSales >= 0;
+                    return salesQty >= 0 && adCost >= 0 && adSales >= 0;
                 });
+                if (!canSave && dateStr && optionDataSets.length > 0) canSave = true;
             } else {
-                // 레거시 모드: 기존 로직
-                canSave = formData.salesQuantity && formData.advertisingCost && formData.adSales;
+                const sq = formData.salesQuantity;
+                const hasSales = (sq !== undefined && sq !== null && sq !== '' && Number(sq) >= 0);
+                canSave = hasSales && (formData.advertisingCost !== undefined && formData.advertisingCost !== null && formData.advertisingCost !== '') && (formData.adSales !== undefined && formData.adSales !== null && formData.adSales !== '');
+                if (!canSave && dateStr && (formData.productNumber || '').trim()) canSave = true;
             }
             const saveBtn = document.getElementById('saveButton');
             if (saveBtn) {
@@ -1128,30 +1149,29 @@
                         // 같은 날짜의 모든 옵션 데이터 로드
                         const allRecordsForDate = data.allRecordsForDate || [];
                         optionDataSets = [];
-                        // 수정 시에도 기존 기록 없는 옵션에는 이전 판매가 변동 자동 설정용
-                        lastPriceFluctuationForProduct = null;
+                        lastPfByOption = {};
                         try {
-                            const latestRes = await fetch('/api/margin-tracker/latest-record?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
-                            const latestData = await latestRes.json();
-                            if (latestData.success && latestData.priceFluctuation != null && latestData.priceFluctuation !== '') {
-                                lastPriceFluctuationForProduct = latestData.priceFluctuation;
+                            const pfRes = await fetch('/api/margin-tracker/latest-price-fluctuation-by-option?userId=' + encodeURIComponent(uid) + '&productNumber=' + encodeURIComponent(productNumber));
+                            const pfData = await pfRes.json();
+                            if (pfData.success && pfData.options && Array.isArray(pfData.options)) {
+                                pfData.options.forEach(function(o) {
+                                    var k = (o.optionId != null ? o.optionId : '') + '|' + (o.optionAlias != null ? o.optionAlias : '');
+                                    if (o.priceFluctuation != null && o.priceFluctuation !== '') lastPfByOption[k] = o.priceFluctuation;
+                                });
                             }
                         } catch (e) { /* 무시 */ }
 
-                        // 각 옵션에 대해 데이터 매칭
                         currentProductOptions.forEach(function(opt, idx) {
                             const existingRecord = allRecordsForDate.find(function(rec) {
-                                // 옵션 ID나 별칭이 일치하는 경우
                                 if (opt.optionId && rec.optionId && opt.optionId === rec.optionId) return true;
                                 if (opt.optionAlias && rec.optionAlias && opt.optionAlias === rec.optionAlias) return true;
-                                // 옵션이 없는 경우 첫 번째 옵션에 매칭
                                 if (!opt.optionId && !opt.optionAlias && !rec.optionId && !rec.optionAlias && idx === 0) return true;
                                 return false;
                             });
                             
                             if (existingRecord) {
                                 const sellingPrice = parseFloat(existingRecord.sellingPrice) || opt.sellingPrice || 0;
-                                const priceFluctuation = parseFloat(existingRecord.priceFluctuation) || 0;
+                                const priceFluctuation = (existingRecord.priceFluctuation !== undefined && existingRecord.priceFluctuation !== null && existingRecord.priceFluctuation !== '') ? parseFloat(existingRecord.priceFluctuation) : 0;
                                 const finalPrice = sellingPrice + priceFluctuation;
                                 const salesQty = parseFloat(existingRecord.salesQuantity) || 0;
                                 const adCost = parseFloat(existingRecord.advertisingCost) || 0;
@@ -1194,7 +1214,8 @@
                                     dataSeq: existingRecord.id
                                 };
                             } else {
-                                var prevPriceFluctuation = (lastPriceFluctuationForProduct != null && lastPriceFluctuationForProduct !== '') ? String(lastPriceFluctuationForProduct) : '';
+                                var k = (opt.optionId != null ? opt.optionId : '') + '|' + (opt.optionAlias != null ? opt.optionAlias : '');
+                                var prevPriceFluctuation = (lastPfByOption[k] != null && lastPfByOption[k] !== '') ? lastPfByOption[k] : '';
                                 optionDataSets[idx] = {
                                     sellingPrice: opt.sellingPrice || 0,
                                     priceFluctuation: prevPriceFluctuation,
@@ -1393,6 +1414,43 @@
 
             // Save Button
             document.getElementById('saveButton').addEventListener('click', function() {
+                var wouldSaveZero = false;
+                if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                    var hasAnyNonEmpty = optionDataSets.some(function(d) {
+                        if (!d) return false;
+                        var sq = d.salesQuantity;
+                        return sq !== undefined && sq !== null && sq !== '' && Number(sq) >= 0;
+                    });
+                    if (!hasAnyNonEmpty) wouldSaveZero = true;
+                } else {
+                    var sq = formData.salesQuantity;
+                    if (sq === undefined || sq === null || sq === '' || (String(sq).trim() === '')) wouldSaveZero = true;
+                }
+                if (wouldSaveZero) {
+                    if (!confirm('상품의 판매개수를 0개로 등록하시겠습니까?')) return;
+                    if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                        var opt = currentProductOptions[0];
+                        var sellingPrice = (opt && opt.sellingPrice) ? parseFloat(opt.sellingPrice) : 0;
+                        if (!optionDataSets[0]) optionDataSets[0] = {};
+                        optionDataSets[0].sellingPrice = sellingPrice;
+                        optionDataSets[0].priceFluctuation = optionDataSets[0].priceFluctuation != null ? optionDataSets[0].priceFluctuation : 0;
+                        optionDataSets[0].finalSellingPrice = sellingPrice + (parseFloat(optionDataSets[0].priceFluctuation) || 0);
+                        optionDataSets[0].salesQuantity = 0;
+                        optionDataSets[0].advertisingCost = 0;
+                        optionDataSets[0].adSales = 0;
+                        optionDataSets[0].organicSales = 0;
+                        optionDataSets[0].actualSalesRevenue = 0;
+                        optionDataSets[0].netProfit = 0;
+                        optionDataSets[0].marginRate = 0;
+                        optionDataSets[0].roas = 0;
+                    } else {
+                        formData.salesQuantity = 0;
+                        formData.advertisingCost = 0;
+                        formData.adSales = 0;
+                        formData.organicSales = 0;
+                        if (typeof calculateDerivedFields === 'function') calculateDerivedFields();
+                    }
+                }
                 saveData();
             });
 
@@ -1423,11 +1481,47 @@
                     if (currentIdx === -1 || currentIdx === allRegisteredProducts.length - 1) return;
                     const next = allRegisteredProducts[currentIdx + 1];
                     if (next) {
-                        // 다음 상품 URL 생성
                         const dateInput = document.getElementById('field-date');
-                        const dateStr = dateInput && dateInput.value ? dateInput.value : null;
+                        const dateStr = (dateInput && dateInput.value) ? dateInput.value.trim() : null;
+                        if (dateStr) sessionStorage.setItem('marginTracker_nextProductDate', dateStr);
                         const nextUrl = '/margin-tracker/input?product=' + encodeURIComponent(next.productNumber) + (dateStr ? '&date=' + encodeURIComponent(dateStr) : '');
-                        // 현재 데이터 저장 후 다음 상품으로 이동
+                        var wouldSaveZero = false;
+                        if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                            var hasAnyNonEmpty = optionDataSets.some(function(d) {
+                                if (!d) return false;
+                                var sq = d.salesQuantity;
+                                return sq !== undefined && sq !== null && sq !== '' && Number(sq) >= 0;
+                            });
+                            if (!hasAnyNonEmpty) wouldSaveZero = true;
+                        } else {
+                            var sq = formData.salesQuantity;
+                            if (sq === undefined || sq === null || sq === '' || (String(sq).trim() === '')) wouldSaveZero = true;
+                        }
+                        if (wouldSaveZero) {
+                            if (!confirm('현재 상품의 판매개수를 0개로 등록하시겠습니까?')) return;
+                            if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                                var opt = currentProductOptions[0];
+                                var sellingPrice = (opt && opt.sellingPrice) ? parseFloat(opt.sellingPrice) : 0;
+                                if (!optionDataSets[0]) optionDataSets[0] = {};
+                                optionDataSets[0].sellingPrice = sellingPrice;
+                                optionDataSets[0].priceFluctuation = optionDataSets[0].priceFluctuation != null ? optionDataSets[0].priceFluctuation : 0;
+                                optionDataSets[0].finalSellingPrice = sellingPrice + (parseFloat(optionDataSets[0].priceFluctuation) || 0);
+                                optionDataSets[0].salesQuantity = 0;
+                                optionDataSets[0].advertisingCost = 0;
+                                optionDataSets[0].adSales = 0;
+                                optionDataSets[0].organicSales = 0;
+                                optionDataSets[0].actualSalesRevenue = 0;
+                                optionDataSets[0].netProfit = 0;
+                                optionDataSets[0].marginRate = 0;
+                                optionDataSets[0].roas = 0;
+                            } else {
+                                formData.salesQuantity = 0;
+                                formData.advertisingCost = 0;
+                                formData.adSales = 0;
+                                formData.organicSales = 0;
+                                if (typeof calculateDerivedFields === 'function') calculateDerivedFields();
+                            }
+                        }
                         await saveData(nextUrl);
                     }
                 });
@@ -1912,7 +2006,9 @@
                 for (let i = 0; i < currentProductOptions.length; i++) {
                     const opt = currentProductOptions[i];
                     const data = optionDataSets[i];
-                    if (!data || !data.salesQuantity || data.salesQuantity <= 0) continue;
+                    if (!data) continue;
+                    const sq = data.salesQuantity;
+                    if (sq === undefined || sq === null || sq === '' || Number(sq) < 0) continue;
                     const payload = {
                         userId: userId,
                         productNumber: currentProductInfo.productNumber || null,
@@ -1920,10 +2016,10 @@
                         optionId: opt.optionId || null,
                         optionAlias: opt.optionAlias || null,
                         date: dateStr,
-                        sellingPrice: data.sellingPrice || null,
-                        priceFluctuation: data.priceFluctuation || null,
-                        finalSellingPrice: data.finalSellingPrice || null,
-                        salesQuantity: data.salesQuantity || null,
+                        sellingPrice: data.sellingPrice != null && data.sellingPrice !== '' ? data.sellingPrice : null,
+                        priceFluctuation: (typeof data.priceFluctuation === 'number') ? data.priceFluctuation : (data.priceFluctuation !== undefined && data.priceFluctuation !== null && data.priceFluctuation !== '') ? Number(data.priceFluctuation) : null,
+                        finalSellingPrice: data.finalSellingPrice != null && data.finalSellingPrice !== '' ? data.finalSellingPrice : null,
+                        salesQuantity: (typeof data.salesQuantity === 'number') ? data.salesQuantity : (data.salesQuantity !== undefined && data.salesQuantity !== null && data.salesQuantity !== '') ? Number(data.salesQuantity) : null,
                         actualSalesRevenue: data.actualSalesRevenue || null,
                         advertisingCost: data.advertisingCost || null,
                         adSales: data.adSales || null,
@@ -1971,12 +2067,12 @@
                     productNumber: pn || null,
                     productName: pname || null,
                     date: formData.date || null,
-                    sellingPrice: formData.sellingPrice || null,
-                    discountCoupon: formData.discountCoupon || null,
-                    finalSellingPrice: formData.finalSellingPrice || null,
-                    priceFluctuation: formData.priceFluctuation || null,
-                    salesQuantity: formData.salesQuantity || null,
-                    actualSalesRevenue: formData.actualSalesRevenue || null,
+                    sellingPrice: formData.sellingPrice != null && formData.sellingPrice !== '' ? formData.sellingPrice : null,
+                    discountCoupon: formData.discountCoupon != null && formData.discountCoupon !== '' ? formData.discountCoupon : null,
+                    finalSellingPrice: formData.finalSellingPrice != null && formData.finalSellingPrice !== '' ? formData.finalSellingPrice : null,
+                    priceFluctuation: (typeof formData.priceFluctuation === 'number') ? formData.priceFluctuation : (formData.priceFluctuation !== undefined && formData.priceFluctuation !== null && formData.priceFluctuation !== '') ? Number(formData.priceFluctuation) : null,
+                    salesQuantity: (typeof formData.salesQuantity === 'number') ? formData.salesQuantity : (formData.salesQuantity !== undefined && formData.salesQuantity !== null && formData.salesQuantity !== '') ? Number(formData.salesQuantity) : null,
+                    actualSalesRevenue: formData.actualSalesRevenue != null && formData.actualSalesRevenue !== '' ? formData.actualSalesRevenue : null,
                     marginPerUnit: formData.marginPerUnit || null,
                     totalMargin: formData.totalMargin || null,
                     advertisingCost: formData.advertisingCost || null,

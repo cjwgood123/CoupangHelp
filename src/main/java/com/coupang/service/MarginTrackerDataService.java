@@ -226,6 +226,24 @@ public class MarginTrackerDataService {
         return list.isEmpty() ? java.util.Optional.empty() : java.util.Optional.of(list.get(0));
     }
 
+    /** 해당 상품의 옵션별 가장 최근 판매가 변동 조회 (reg_date 기준, 옵션마다 최신 1건) */
+    public List<MarginTrackerDataDto> findLatestRecordsByUserIdAndProductNumber(String userId, String productNumber) {
+        if (userId == null || productNumber == null || productNumber.isBlank()) {
+            return List.of();
+        }
+        String sql = """
+            SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
+                   final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
+                   margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+            FROM margin_tracker_data
+            WHERE user_id = ? AND product_number = ?
+            ORDER BY reg_date DESC
+            LIMIT 500
+            """;
+        return jdbcTemplate.query(sql, ROW_MAPPER, userId, productNumber);
+    }
+
     /** 상품번호/상품명 목록 (기존 입력 데이터에서 추출) */
     public List<Map<String, String>> findDistinctProductsByUserId(String userId) {
         String sql = """
