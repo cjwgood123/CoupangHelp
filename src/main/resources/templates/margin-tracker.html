@@ -533,6 +533,27 @@
         .product-summary-section .empty-message {
             padding: 1rem 0;
         }
+        .product-summary-list-collapsed .product-summary-item:nth-child(n+6) {
+            display: none;
+        }
+        .product-summary-expand-wrap {
+            text-align: center;
+            margin-top: 0.75rem;
+        }
+        .product-summary-expand-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--primary);
+            background: transparent;
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .product-summary-expand-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
 
         /* Recent Records */
         .recent-section {
@@ -733,6 +754,264 @@
             .custom-confirm-btn {
                 width: 100%;
             }
+        }
+
+        /* 일별 매출 분석 모달 (전체 상품 탭 + 날짜 클릭) */
+        .daily-analysis-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            z-index: 10000;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .daily-analysis-overlay.show {
+            display: block;
+        }
+        .daily-analysis-header {
+            position: sticky;
+            top: 0;
+            background: var(--card);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border);
+            z-index: 1;
+            box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+        }
+        .daily-analysis-back {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: transparent;
+            color: var(--text-primary);
+            cursor: pointer;
+            border-radius: var(--radius-sm);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .daily-analysis-back:hover {
+            background: var(--background);
+        }
+        .daily-analysis-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .daily-analysis-body {
+            padding: 1.25rem;
+            padding-bottom: 2rem;
+        }
+        .daily-analysis-empty {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .daily-analysis-empty .empty-date {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .daily-analysis-empty .btn-back-wrap {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .daily-analysis-empty .btn-back {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .daily-analysis-empty .btn-back:hover {
+            opacity: 0.9;
+        }
+        .daily-analysis-body .btn-back-wrap {
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .daily-analysis-body .btn-back {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .daily-analysis-body .btn-back:hover {
+            opacity: 0.9;
+        }
+        .daily-analysis-kpis {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .daily-kpi-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+        }
+        .daily-kpi-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.35rem;
+        }
+        .daily-kpi-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .daily-kpi-compare {
+            font-size: 0.7rem;
+            margin-top: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .daily-kpi-compare.up { color: #E53935; }
+        .daily-kpi-compare.down { color: #3182F6; }
+        .daily-analysis-section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.75rem;
+        }
+        .daily-analysis-proportion {
+            margin-bottom: 1.5rem;
+        }
+        /* 순이익 비중: 가로 100% 스택바 높이 24px */
+        .daily-stack-bar-wrap {
+            display: flex;
+            width: 100%;
+            height: 24px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            background: var(--border);
+        }
+        .daily-stack-bar-segment {
+            height: 100%;
+            min-width: 2px;
+        }
+        .daily-proportion-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .daily-proportion-rank {
+            flex: 0 0 1.5em;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .daily-proportion-label {
+            flex: 0 0 4em;
+            font-size: 0.8125rem;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .daily-proportion-bar-wrap {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .daily-proportion-bar {
+            height: 100%;
+            border-radius: 4px;
+            min-width: 2px;
+        }
+        .daily-proportion-pct {
+            flex: 0 0 auto;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            text-align: right;
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+        .daily-analysis-table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            background: var(--card);
+        }
+        .daily-analysis-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8125rem;
+        }
+        .daily-analysis-table th,
+        .daily-analysis-table td {
+            padding: 0.6rem 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .daily-analysis-table th {
+            background: var(--background);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+        .daily-analysis-table th:first-child,
+        .daily-analysis-table td:first-child { padding-left: 0.75rem; }
+        .daily-analysis-table th:last-child,
+        .daily-analysis-table td:last-child { padding-right: 0.75rem; }
+        .daily-analysis-table tr:last-child td { border-bottom: none; }
+        .daily-analysis-table .cell-profit { color: var(--text-primary); font-weight: 600; }
+        .daily-analysis-table .cell-compare { font-size: 0.7rem; }
+        .daily-analysis-table .cell-compare.up { color: #E53935; }
+        .daily-analysis-table .cell-compare.down { color: #3182F6; }
+        .daily-analysis-table-wrap.daily-analysis-table-collapsed tbody tr:nth-child(n+6) {
+            display: none;
+        }
+        .daily-analysis-expand-wrap {
+            text-align: center;
+            margin-top: 0.75rem;
+        }
+        .daily-analysis-expand-btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            color: var(--primary);
+            background: transparent;
+            border: 1px solid var(--primary);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .daily-analysis-expand-btn:hover {
+            background: var(--primary);
+            color: #fff;
+        }
+        @media (max-width: 767px) {
+            .daily-analysis-kpis { grid-template-columns: repeat(3, 1fr); gap: 0.5rem; }
+            .daily-kpi-card { padding: 0.6rem; }
+            .daily-kpi-value { font-size: 0.9rem; }
+            .daily-kpi-compare { font-size: 0.6rem; }
+            .daily-proportion-label { flex: 0 0 30%; }
         }
 
         /* Login Section */
@@ -1362,6 +1641,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- 일별 매출 분석 모달 (전체 상품 탭에서 날짜 클릭 시) -->
+        <div class="daily-analysis-overlay" id="dailyAnalysisOverlay">
+            <div class="daily-analysis-header">
+                <button type="button" class="daily-analysis-back" id="dailyAnalysisBack" aria-label="닫기">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <h1 class="daily-analysis-title" id="dailyAnalysisTitle">매출 분석</h1>
+            </div>
+            <div class="daily-analysis-body" id="dailyAnalysisBody">
+                <!-- 빈 상태 또는 분석 내용이 여기 채워짐 -->
+            </div>
+        </div>
         
         <!-- 데스크톱 헤더 -->
         <div class="header" id="desktopHeader">
@@ -1649,6 +1941,36 @@
             return records.filter(function(r) { return getRecordProductKey(r) === selectedProductKey; });
         }
 
+        /** 특정 날짜(yyyy-MM-dd)의 기록만 반환 */
+        function getRecordsForDateKey(records, dateKey) {
+            if (!records || records.length === 0 || !dateKey) return [];
+            return records.filter(function(r) { return getRecordDateKey(r) === dateKey; });
+        }
+
+        /** 전날 날짜 키 반환 (yyyy-MM-dd) */
+        function getPrevDateKey(dateKey) {
+            if (!dateKey || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return '';
+            var parts = dateKey.split('-').map(Number);
+            var d = new Date(parts[0], parts[1] - 1, parts[2]);
+            d.setDate(d.getDate() - 1);
+            var y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+            return y + '-' + String(m).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+        }
+
+        /** 선택일 기준 직전 7일 날짜 키 배열 (선택일 미포함, 7개) */
+        function getLast7DaysDateKeys(dateKey) {
+            if (!dateKey || !/^\d{4}-\d{2}-\d{2}$/.test(dateKey)) return [];
+            var parts = dateKey.split('-').map(Number);
+            var out = [];
+            for (var i = 1; i <= 7; i++) {
+                var d = new Date(parts[0], parts[1] - 1, parts[2]);
+                d.setDate(d.getDate() - i);
+                var y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+                out.push(y + '-' + String(m).padStart(2, '0') + '-' + String(day).padStart(2, '0'));
+            }
+            return out;
+        }
+
         function getProfitForDate(productKey, dateKey) {
             if (!productKey || !dateKey || !allRecords.length) return null;
             var sum = 0;
@@ -1838,6 +2160,10 @@
         function renderProductSummary(records, registered) {
             var container = document.getElementById('productSummaryList');
             if (!container) return;
+            var section = container.closest('.product-summary-section');
+            var oldExpand = section ? section.querySelector('.product-summary-expand-wrap') : null;
+            if (oldExpand) oldExpand.remove();
+            container.classList.remove('product-summary-list-collapsed');
             var byProductOption = {};
             var totalProfit = 0;
             
@@ -1986,6 +2312,194 @@
                 row.appendChild(pctEl);
                 container.appendChild(row);
             });
+            if (list.length > 5) {
+                container.classList.add('product-summary-list-collapsed');
+                var expandWrap = document.createElement('div');
+                expandWrap.className = 'product-summary-expand-wrap';
+                var expandBtn = document.createElement('button');
+                expandBtn.type = 'button';
+                expandBtn.className = 'product-summary-expand-btn';
+                expandBtn.textContent = '펼치기';
+                expandBtn.addEventListener('click', function() {
+                    container.classList.toggle('product-summary-list-collapsed');
+                    expandBtn.textContent = container.classList.contains('product-summary-list-collapsed') ? '펼치기' : '접기';
+                });
+                expandWrap.appendChild(expandBtn);
+                container.parentNode.appendChild(expandWrap);
+            }
+        }
+
+        /** 해당 날짜의 매출(실매출) 합계 - 레코드 단위 합산 */
+        function getDaySalesSum(records) {
+            var sum = 0;
+            (records || []).forEach(function(r) {
+                var rev = parseFloat(r.actualSalesRevenue);
+                if (rev == null || isNaN(rev)) {
+                    var qty = parseFloat(r.salesQuantity) || 0;
+                    var price = parseFloat(r.finalSellingPrice) || 0;
+                    rev = qty * price;
+                }
+                sum += rev;
+            });
+            return sum;
+        }
+
+        /** 일별 매출 분석 모달 열기 (전체 상품 탭에서만 사용) */
+        function openDailyAnalysisModal(y, m, d) {
+            var dateKey = y + '-' + String(m).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+            var dayRecords = getRecordsForDateKey(allRecords, dateKey);
+            var displayDate = y + '.' + String(m).padStart(2, '0') + '.' + String(d).padStart(2, '0');
+            var titleEl = document.getElementById('dailyAnalysisTitle');
+            var bodyEl = document.getElementById('dailyAnalysisBody');
+            var overlay = document.getElementById('dailyAnalysisOverlay');
+            if (!titleEl || !bodyEl || !overlay) return;
+            titleEl.textContent = displayDate + ' 매출 분석';
+
+            if (dayRecords.length === 0) {
+                bodyEl.innerHTML = '<div class="daily-analysis-empty">' +
+                    '<div class="empty-date">' + displayDate + ' 매출 분석</div>' +
+                    '<p>매출일지에서 상품을 선택한 후 매출을 등록해 주세요.</p>' +
+                    '<div class="btn-back-wrap"><button type="button" class="btn-back" id="dailyAnalysisEmptyBack">돌아가기</button></div>' +
+                    '</div>';
+                overlay.classList.add('show');
+                return;
+            }
+
+            // 해당 일자 합계
+            var dayNet = 0, daySales = 0, dayAd = 0;
+            dayRecords.forEach(function(r) {
+                dayNet += parseFloat(r.netProfit) || 0;
+                daySales += getDaySalesSum([r]);
+                dayAd += parseFloat(r.advertisingCost) || 0;
+            });
+
+            // 전날 데이터
+            var prevKey = getPrevDateKey(dateKey);
+            var prevRecords = getRecordsForDateKey(allRecords, prevKey);
+            var prevNet = 0, prevSales = 0, prevAd = 0;
+            prevRecords.forEach(function(r) {
+                prevNet += parseFloat(r.netProfit) || 0;
+                prevSales += getDaySalesSum([r]);
+                prevAd += parseFloat(r.advertisingCost) || 0;
+            });
+
+            function compareText(val, prevVal) {
+                if (prevVal === 0 && val === 0) return '';
+                var diff = val - prevVal;
+                var arrow = diff >= 0 ? '↑' : '↓';
+                var cls = diff >= 0 ? 'up' : 'down';
+                var pctStr = (prevVal !== 0) ? ' ' + Math.abs((diff / Math.abs(prevVal)) * 100).toFixed(1) + '%' + arrow : '';
+                return '<span class="daily-kpi-compare ' + cls + '">전날 대비 ' + (diff >= 0 ? '+' : '') + Math.round(diff).toLocaleString('ko-KR') + '원' + pctStr + '</span>';
+            }
+            var netCompare = compareText(dayNet, prevNet);
+            var salesCompare = compareText(daySales, prevSales);
+            var adCompare = compareText(dayAd, prevAd);
+
+            var kpiHtml = '<div class="daily-analysis-kpis">' +
+                '<div class="daily-kpi-card"><div class="daily-kpi-label">순이익</div><div class="daily-kpi-value">' + (dayNet >= 0 ? '' : '') + Math.round(dayNet).toLocaleString('ko-KR') + '</div>' + netCompare + '</div>' +
+                '<div class="daily-kpi-card"><div class="daily-kpi-label">매출</div><div class="daily-kpi-value">' + Math.round(daySales).toLocaleString('ko-KR') + '</div>' + salesCompare + '</div>' +
+                '<div class="daily-kpi-card"><div class="daily-kpi-label">광고비</div><div class="daily-kpi-value">' + Math.round(dayAd).toLocaleString('ko-KR') + '</div>' + adCompare + '</div>' +
+                '</div>';
+
+            // 2. 순이익 비중 분석: 상품별(옵션 합산), 100% 스택바 24px + 리스트(순위, 제품명 5자, 프로그레스바, 비중%·순이익금액)
+            var productNet = {};
+            dayRecords.forEach(function(r) {
+                var key = getRecordProductKey(r);
+                var net = parseFloat(r.netProfit) || 0;
+                if (!productNet[key]) productNet[key] = { label: r.productName || r.productNumber || '미분류', net: 0 };
+                productNet[key].net += net;
+            });
+            var totalNetForPct = dayNet;
+            var profitShareItems = Object.keys(productNet).map(function(k) { return { key: k, label: productNet[k].label, net: productNet[k].net }; });
+            profitShareItems.sort(function(a, b) { return b.net - a.net; });
+            var barColors = ['#E53935', '#3182F6', '#2E7D32', '#F06292', '#7986CB'];
+            var stackBarHtml = '<div class="daily-stack-bar-wrap">';
+            profitShareItems.forEach(function(item, idx) {
+                var pct = totalNetForPct !== 0 ? (item.net / totalNetForPct * 100) : 0;
+                var color = barColors[idx % barColors.length];
+                stackBarHtml += '<div class="daily-stack-bar-segment" style="width:' + pct + '%;background:' + color + '" title="' + escapeHtml(item.label) + ' ' + pct.toFixed(0) + '%"></div>';
+            });
+            stackBarHtml += '</div>';
+            var proportionHtml = '<div class="daily-analysis-section-title">순이익 비중 분석</div>' + stackBarHtml + '<div class="daily-analysis-proportion">';
+            profitShareItems.forEach(function(item, idx) {
+                var pct = totalNetForPct !== 0 ? (item.net / totalNetForPct * 100) : 0;
+                var color = barColors[idx % barColors.length];
+                var name5 = item.label.length > 5 ? item.label.slice(0, 5) + '…' : item.label;
+                proportionHtml += '<div class="daily-proportion-item">' +
+                    '<span class="daily-proportion-rank">' + (idx + 1) + '</span>' +
+                    '<span class="daily-proportion-label" title="' + escapeHtml(item.label) + '">' + escapeHtml(name5) + '</span>' +
+                    '<div class="daily-proportion-bar-wrap"><div class="daily-proportion-bar" style="width:' + Math.min(100, pct) + '%;background:' + color + '"></div></div>' +
+                    '<span class="daily-proportion-pct">' + pct.toFixed(0) + '% ' + Math.round(item.net).toLocaleString('ko-KR') + '원</span></div>';
+            });
+            proportionHtml += '</div>';
+
+            // 3. 상품별 매출/순이익/광고비 분석: 상품 단위 1줄, 각 금액 아래 전날 대비 증감, 최대 5개만 표시
+            var productDay = {};
+            dayRecords.forEach(function(r) {
+                var key = getRecordProductKey(r);
+                var rev = parseFloat(r.actualSalesRevenue);
+                if (rev == null || isNaN(rev)) rev = (parseFloat(r.salesQuantity) || 0) * (parseFloat(r.finalSellingPrice) || 0);
+                if (!productDay[key]) productDay[key] = { label: r.productName || r.productNumber || '미분류', net: 0, sales: 0, ad: 0 };
+                productDay[key].net += parseFloat(r.netProfit) || 0;
+                productDay[key].sales += rev;
+                productDay[key].ad += parseFloat(r.advertisingCost) || 0;
+            });
+            var productPrev = {};
+            prevRecords.forEach(function(r) {
+                var key = getRecordProductKey(r);
+                var rev = parseFloat(r.actualSalesRevenue);
+                if (rev == null || isNaN(rev)) rev = (parseFloat(r.salesQuantity) || 0) * (parseFloat(r.finalSellingPrice) || 0);
+                if (!productPrev[key]) productPrev[key] = { net: 0, sales: 0, ad: 0 };
+                productPrev[key].net += parseFloat(r.netProfit) || 0;
+                productPrev[key].sales += rev;
+                productPrev[key].ad += parseFloat(r.advertisingCost) || 0;
+            });
+            var productKeys = Object.keys(productDay);
+            var tableRows = productKeys.map(function(k) {
+                var p = productDay[k];
+                var prev = productPrev[k] || { net: 0, sales: 0, ad: 0 };
+                return { key: k, label: p.label, net: p.net, sales: p.sales, ad: p.ad, prevNet: prev.net, prevSales: prev.sales, prevAd: prev.ad };
+            });
+            tableRows.sort(function(a, b) { return b.net - a.net; });
+
+            function cellWithCompare(val, prevVal) {
+                var diff = val - prevVal;
+                var arrow = diff >= 0 ? '↑' : '↓';
+                var cls = diff >= 0 ? 'up' : 'down';
+                var pctStr = (prevVal !== 0) ? ' ' + Math.abs((diff / Math.abs(prevVal)) * 100).toFixed(1) + '%' + arrow : '';
+                var compareLine = (prevVal !== 0 || val !== 0) ? '<div class="cell-compare ' + cls + '">전날 대비 ' + (diff >= 0 ? '+' : '') + Math.round(diff).toLocaleString('ko-KR') + '원' + pctStr + '</div>' : '';
+                return '<div class="cell-profit">' + Math.round(val).toLocaleString('ko-KR') + '</div>' + compareLine;
+            }
+            var tableWrapClass = 'daily-analysis-table-wrap' + (tableRows.length > 5 ? ' daily-analysis-table-collapsed' : '');
+            var tableHtml = '<div class="daily-analysis-section-title">상품별 매출/순이익/광고비 분석</div><div class="' + tableWrapClass + '" id="dailyAnalysisTableWrap"><table class="daily-analysis-table"><thead><tr><th>상품명</th><th>매출</th><th>순이익</th><th>광고비</th></tr></thead><tbody>';
+            tableRows.forEach(function(row) {
+                var nameShort = row.label.length > 10 ? row.label.slice(0, 9) + '…' : row.label;
+                tableHtml += '<tr><td title="' + escapeHtml(row.label) + '">' + escapeHtml(nameShort) + '</td>' +
+                    '<td>' + cellWithCompare(row.sales, row.prevSales) + '</td>' +
+                    '<td>' + cellWithCompare(row.net, row.prevNet) + '</td>' +
+                    '<td>' + cellWithCompare(row.ad, row.prevAd) + '</td></tr>';
+            });
+            tableHtml += '</tbody></table></div>';
+            if (tableRows.length > 5) {
+                tableHtml += '<div class="daily-analysis-expand-wrap"><button type="button" class="daily-analysis-expand-btn" id="dailyAnalysisExpandBtn">펼치기</button></div>';
+            }
+            tableHtml += '<div class="btn-back-wrap"><button type="button" class="btn-back" id="dailyAnalysisDataBack">돌아가기</button></div>';
+
+            bodyEl.innerHTML = kpiHtml + proportionHtml + tableHtml;
+            var expandBtn = document.getElementById('dailyAnalysisExpandBtn');
+            var tableWrap = document.getElementById('dailyAnalysisTableWrap');
+            if (expandBtn && tableWrap) {
+                expandBtn.addEventListener('click', function() {
+                    tableWrap.classList.toggle('daily-analysis-table-collapsed');
+                    expandBtn.textContent = tableWrap.classList.contains('daily-analysis-table-collapsed') ? '펼치기' : '접기';
+                });
+            }
+            overlay.classList.add('show');
+        }
+
+        function closeDailyAnalysisModal() {
+            var overlay = document.getElementById('dailyAnalysisOverlay');
+            if (overlay) overlay.classList.remove('show');
         }
 
         function renderCalendar() {
@@ -2112,7 +2626,12 @@
                                 window.location.href = '/margin-tracker/input?' + dateQ + '&product=' + encodeURIComponent(selectedProductKey);
                             });
                         } else {
-                            window.location.href = '/margin-tracker/input?' + dateQ;
+                            // 전체 상품 탭 + 전체 기간 선택 시에만: 해당 날짜 매출 분석 모달 (데이터 없으면 등록 유도, 있으면 분석)
+                            if (profitPeriod === 'all') {
+                                openDailyAnalysisModal(y, m, d);
+                            } else {
+                                window.location.href = '/margin-tracker/input?' + dateQ;
+                            }
                         }
                     });
                 }
@@ -2265,6 +2784,12 @@
                 renderCalendar();
                 document.getElementById('calendarPrev').addEventListener('click', calendarPrevMonth);
                 document.getElementById('calendarNext').addEventListener('click', calendarNextMonth);
+                var dailyAnalysisBack = document.getElementById('dailyAnalysisBack');
+                var dailyAnalysisOverlay = document.getElementById('dailyAnalysisOverlay');
+                if (dailyAnalysisBack) dailyAnalysisBack.addEventListener('click', closeDailyAnalysisModal);
+                document.addEventListener('click', function(e) {
+                    if (e.target && (e.target.id === 'dailyAnalysisEmptyBack' || e.target.id === 'dailyAnalysisDataBack')) closeDailyAnalysisModal();
+                });
                 document.getElementById('productTabsPrev').addEventListener('click', function() {
                     if (productTabsCurrentSlide > 0) { productTabsCurrentSlide--; updateProductTabsCarousel(); }
                 });
