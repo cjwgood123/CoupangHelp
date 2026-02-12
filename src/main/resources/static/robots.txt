@@ -2,11 +2,13 @@
 User-agent: Mediapartners-Google
 Allow: /
 
-# 일반 구글 봇은 데이터 페이지 제한
+# 일반 구글 봇: 메인·매출일지·보드 노출 허용, 과다 데이터 페이지만 제한
 User-agent: Googlebot
 Allow: /
-Disallow: /2025-11/all/
-Disallow: /mobile/2025-11/all/
+Allow: /margin-tracker
+Allow: /board/
+Disallow: /2025-11/
+Disallow: /mobile/2025-11/
 Disallow: /star/
 Disallow: /mobile/star/
 Disallow: /satisfied/
@@ -16,8 +18,10 @@ Disallow: /mobile/shortterm
 
 User-agent: Bingbot
 Allow: /
-Disallow: /2025-11/all/
-Disallow: /mobile/2025-11/all/
+Allow: /margin-tracker
+Allow: /board/
+Disallow: /2025-11/
+Disallow: /mobile/2025-11/
 Disallow: /star/
 Disallow: /mobile/star/
 Disallow: /satisfied/
@@ -31,11 +35,13 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
-# 네이버 봇 설정
+# 네이버 봇 설정 (매출일지·보드 노출 허용)
 User-agent: Yeti
 Allow: /
-Disallow: /2025-11/all/
-Disallow: /mobile/2025-11/all/
+Allow: /margin-tracker
+Allow: /board/
+Disallow: /2025-11/
+Disallow: /mobile/2025-11/
 Disallow: /star/
 Disallow: /mobile/star/
 Disallow: /satisfied/
@@ -45,8 +51,10 @@ Disallow: /mobile/shortterm
 
 User-agent: *
 Allow: /
-Disallow: /2025-11/all/
-Disallow: /mobile/2025-11/all/
+Allow: /margin-tracker
+Allow: /board/
+Disallow: /2025-11/
+Disallow: /mobile/2025-11/
 Disallow: /star/
 Disallow: /mobile/star/
 Disallow: /satisfied/

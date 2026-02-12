@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title th:text="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
-    <meta name="description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta name="description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.')">
     <meta name="keywords" content="쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 취미, 취미부업, 집에서 부업, 온라인 부업, 재택 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략, 무료, 무료 데이터, 무료 분석, 무료 트래픽, 무료 도구, 무료 플랫폼, 무료 쿠팡 데이터, 무료 스마트스토어 데이터, 무료 쿠팡 분석, 무료 판매 도구, 쿠팡 무료, 스마트스토어 무료, 스마트스토어 데이터, 스마트스토어 분석, 스마트스토어 부업, 스마트스토어 판매, 스마트스토어 도구, 스마트스토어 무료 데이터, 부업 추천, 부업 사이트, 부업 정보, 부업 가이드, 누구나 할 수 있는, 초보자도 가능한, 성공 사례, 실전 가이드, 완전 정복, 비법 공개">
     <meta name="robots" content="noindex, follow">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <meta name="naver-site-verification" content="8927dad485c905eefd8d2896126637d32ee7fc93" />
-    <link rel="canonical" th:href="@{'/2025-11/all/' + ${count}}">
+    <link rel="canonical" th:href="@{/mobile/board/{count}(count=${count}, yymm=${yymm})}">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" th:content="@{'https://helpcoupang.com/mobile/2025-11/all/' + ${count}}">
+    <meta property="og:url" th:content="@{'https://helpcoupang.com/mobile/board/' + ${count} + '?yymm=' + ${yymm}}">
     <meta property="og:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품'">
-    <meta property="og:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta property="og:description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.')">
     <meta property="og:site_name" content="쿠팡 데이터 분석">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" th:content="@{'https://helpcoupang.com/mobile/2025-11/all/' + ${count}}">
+    <meta property="twitter:url" th:content="@{'https://helpcoupang.com/mobile/board/' + ${count} + '?yymm=' + ${yymm}}">
     <meta property="twitter:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month}">
-    <meta property="twitter:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건.|">
+    <meta property="twitter:description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.')">
     
     <!-- Structured Data (JSON-LD) -->
-    <th:block th:with="pageName=${count} + '명 이상 구매 상품 - ' + ${month}, pageDesc=${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건의 상품 정보 제공.', pageUrl=@{'https://helpcoupang.com/mobile/2025-11/all/' + ${count}}">
+    <th:block th:with="pageName=${count} + '명 이상 구매 상품 - ' + ${month}, pageDesc=${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.'), pageUrl=@{'https://helpcoupang.com/mobile/board/' + ${count} + '?yymm=' + ${yymm}}, safeTotal=${totalCount != null and totalCount >= 0 ? totalCount : 0}">
     <script type="application/ld+json" th:inline="text">
     {
       "@context": "https://schema.org",
@@ -35,7 +35,7 @@
       "url": [[${pageUrl}]],
       "mainEntity": {
         "@type": "ItemList",
-        "numberOfItems": [[${totalCount}]],
+        "numberOfItems": [[${safeTotal}]],
         "itemListElement": []
       }
     }
@@ -384,6 +384,10 @@
         }
 
         /* Empty State */
+        .block-page-hidden {
+            display: none !important;
+        }
+
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -393,8 +397,10 @@
     </style>
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
-     crossorigin="anonymous"></script>
+    <script>
+    (function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938';s.crossOrigin='anonymous';document.head.appendChild(s);}
+    if(document.readyState==='complete')load();else window.addEventListener('load',load);})();
+    </script>
 </head>
 <body>
     <!-- Mobile Header -->
@@ -428,7 +434,7 @@
     <nav class="mobile-menu" id="mobileMenu">
         <!-- 매출 일지 (제일 위로) -->
         <div class="nav-section">
-            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 매출 일지</a>
+            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 헬쿠 매출 일지</a>
         </div>
         <!-- 소개할게요 -->
         <div class="nav-section">
@@ -443,24 +449,24 @@
                 </svg>
             </button>
             <div class="nav-items show" id="nov2025">
-                <a href="/mobile/2025-11/all/100" class="nav-item" th:classappend="${count == 100} ? 'active' : ''">⚡ 100명 이상 구매</a>
-                <a href="/mobile/2025-11/all/200" class="nav-item" th:classappend="${count == 200} ? 'active' : ''">⚡ 200명 이상 구매</a>
-                <a href="/mobile/2025-11/all/300" class="nav-item" th:classappend="${count == 300} ? 'active' : ''">⚡ 300명 이상 구매</a>
-                <a href="/mobile/2025-11/all/400" class="nav-item" th:classappend="${count == 400} ? 'active' : ''">⚡ 400명 이상 구매</a>
-                <a href="/mobile/2025-11/all/500" class="nav-item" th:classappend="${count == 500} ? 'active' : ''">⚡ 500명 이상 구매</a>
-                <a href="/mobile/2025-11/all/600" class="nav-item" th:classappend="${count == 600} ? 'active' : ''">⚡ 600명 이상 구매</a>
-                <a href="/mobile/2025-11/all/700" class="nav-item" th:classappend="${count == 700} ? 'active' : ''">⚡ 700명 이상 구매</a>
-                <a href="/mobile/2025-11/all/800" class="nav-item" th:classappend="${count == 800} ? 'active' : ''">⚡ 800명 이상 구매</a>
-                <a href="/mobile/2025-11/all/900" class="nav-item" th:classappend="${count == 900} ? 'active' : ''">⚡ 900명 이상 구매</a>
-                <a href="/mobile/2025-11/all/1000" class="nav-item" th:classappend="${count == 1000} ? 'active' : ''">⚡ 1000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/2000" class="nav-item" th:classappend="${count == 2000} ? 'active' : ''">⚡ 2000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/3000" class="nav-item" th:classappend="${count == 3000} ? 'active' : ''">⚡ 3000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/4000" class="nav-item" th:classappend="${count == 4000} ? 'active' : ''">⚡ 4000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/5000" class="nav-item" th:classappend="${count == 5000} ? 'active' : ''">⚡ 5000명 이상 구매</a>
+                <a th:href="@{/mobile/board/100(yymm=${yymm})}" class="nav-item" th:classappend="${count == 100} ? 'active' : ''">⚡ 100명 이상 구매</a>
+                <a th:href="@{/mobile/board/200(yymm=${yymm})}" class="nav-item" th:classappend="${count == 200} ? 'active' : ''">⚡ 200명 이상 구매</a>
+                <a th:href="@{/mobile/board/300(yymm=${yymm})}" class="nav-item" th:classappend="${count == 300} ? 'active' : ''">⚡ 300명 이상 구매</a>
+                <a th:href="@{/mobile/board/400(yymm=${yymm})}" class="nav-item" th:classappend="${count == 400} ? 'active' : ''">⚡ 400명 이상 구매</a>
+                <a th:href="@{/mobile/board/500(yymm=${yymm})}" class="nav-item" th:classappend="${count == 500} ? 'active' : ''">⚡ 500명 이상 구매</a>
+                <a th:href="@{/mobile/board/600(yymm=${yymm})}" class="nav-item" th:classappend="${count == 600} ? 'active' : ''">⚡ 600명 이상 구매</a>
+                <a th:href="@{/mobile/board/700(yymm=${yymm})}" class="nav-item" th:classappend="${count == 700} ? 'active' : ''">⚡ 700명 이상 구매</a>
+                <a th:href="@{/mobile/board/800(yymm=${yymm})}" class="nav-item" th:classappend="${count == 800} ? 'active' : ''">⚡ 800명 이상 구매</a>
+                <a th:href="@{/mobile/board/900(yymm=${yymm})}" class="nav-item" th:classappend="${count == 900} ? 'active' : ''">⚡ 900명 이상 구매</a>
+                <a th:href="@{/mobile/board/1000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 1000} ? 'active' : ''">⚡ 1000명 이상 구매</a>
+                <a th:href="@{/mobile/board/2000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 2000} ? 'active' : ''">⚡ 2000명 이상 구매</a>
+                <a th:href="@{/mobile/board/3000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 3000} ? 'active' : ''">⚡ 3000명 이상 구매</a>
+                <a th:href="@{/mobile/board/4000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 4000} ? 'active' : ''">⚡ 4000명 이상 구매</a>
+                <a th:href="@{/mobile/board/5000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 5000} ? 'active' : ''">⚡ 5000명 이상 구매</a>
             </div>
         </div>
-        <!-- 만족했어요 -->
-        <div class="nav-section">
+        <!-- 만족했어요 (일단 비활성화) -->
+        <div class="nav-section" th:if="false">
             <button class="nav-toggle" onclick="toggleNav('satisfied')">
                 <span>만족했어요</span>
                 <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
@@ -521,9 +527,32 @@
 
     <!-- Main Content -->
     <main class="content-wrapper">
-        <div class="page-header">
+        <div class="page-header" id="board-list-top">
             <h1 th:text="|${count}명 이상 구매 상품|">상품 리스트</h1>
-            <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
+            <p><span th:text="${month}"></span> - <span th:if="${totalCount >= 0}" th:text="|총 ${totalCount}건|">총 N건</span><span th:if="${totalCount < 0}" th:text="|현재 블록 ${products.size()}건|">현재 블록</span></p>
+        </div>
+
+        <!-- 연도/월 필터 -->
+        <div class="yymm-filter" style="margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;">
+            <span style="font-size: 0.875rem; color: var(--muted-foreground);">연도</span>
+            <a th:if="${firstYymm2025 != null}" th:href="@{/mobile/board/{count}(count=${count}, yymm=${firstYymm2025}, block=1, page=1)}" 
+               style="padding: 0.4rem 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-size: 0.8125rem; text-decoration: none; color: var(--foreground);" 
+               th:styleappend="${#strings.startsWith(yymm, '2025')} ? 'background: var(--primary); color: var(--primary-foreground); border-color: var(--primary);' : ''">2025</a>
+            <a th:if="${firstYymm2026 != null}" th:href="@{/mobile/board/{count}(count=${count}, yymm=${firstYymm2026}, block=1, page=1)}" 
+               style="padding: 0.4rem 0.75rem; border-radius: var(--radius); border: 1px solid var(--border); font-size: 0.8125rem; text-decoration: none; color: var(--foreground);" 
+               th:styleappend="${#strings.startsWith(yymm, '2026')} ? 'background: var(--primary); color: var(--primary-foreground); border-color: var(--primary);' : ''">2026</a>
+            <span th:if="${#strings.startsWith(yymm, '2025')}" style="font-size: 0.875rem; color: var(--muted-foreground); margin-left: 0.5rem;">월</span>
+            <a th:each="yy : ${availableYymm2025}" th:if="${#strings.startsWith(yymm, '2025')}" 
+               th:href="@{/mobile/board/{count}(count=${count}, yymm=${yy}, block=1, page=1)}" 
+               style="padding: 0.35rem 0.6rem; border-radius: var(--radius); border: 1px solid var(--border); font-size: 0.75rem; text-decoration: none; color: var(--foreground);" 
+               th:styleappend="${yymm == yy} ? 'background: var(--secondary); color: var(--secondary-foreground);' : ''" 
+               th:text="${T(java.lang.Integer).parseInt(#strings.substring(yy, 4, 6)) + '월'}">11월</a>
+            <span th:if="${#strings.startsWith(yymm, '2026')}" style="font-size: 0.875rem; color: var(--muted-foreground); margin-left: 0.5rem;">월</span>
+            <a th:each="yy : ${availableYymm2026}" th:if="${#strings.startsWith(yymm, '2026')}" 
+               th:href="@{/mobile/board/{count}(count=${count}, yymm=${yy}, block=1, page=1)}" 
+               style="padding: 0.35rem 0.6rem; border-radius: var(--radius); border: 1px solid var(--border); font-size: 0.75rem; text-decoration: none; color: var(--foreground);" 
+               th:styleappend="${yymm == yy} ? 'background: var(--secondary); color: var(--secondary-foreground);' : ''" 
+               th:text="${T(java.lang.Integer).parseInt(#strings.substring(yy, 4, 6)) + '월'}">1월</a>
         </div>
 
         <!-- 디스플레이 광고 (상품 리스트 전) -->
@@ -532,9 +561,9 @@
         <!-- Product List -->
         <div class="product-list" th:if="${!products.isEmpty()}">
             <th:block th:each="product, iterStat : ${products}">
-                <div class="product-card">
+                <div class="product-card" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                     <div class="product-row">
-                        <div class="product-number" th:text="${product.rowNum}">1</div>
+                        <div class="product-number" th:text="${blockMode ? ((currentBlock - 1) * 200 + iterStat.index + 1) : product.rowNum}">1</div>
                         <div class="product-info">
                             <a th:href="${product.url}" 
                                th:text="${product.title}" 
@@ -560,7 +589,7 @@
                     </div>
                 </div>
                 <!-- 10번째 항목마다 광고 배치 -->
-                <div th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" style="margin: 1.5rem 0;">
+                <div th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" style="margin: 1.5rem 0;" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                     <div th:replace="~{fragments/ads :: infeed-ad}"></div>
                 </div>
             </th:block>
@@ -570,33 +599,21 @@
             데이터가 없습니다.
         </div>
 
-        <!-- Pagination -->
-        <div class="pagination" th:if="${totalPages > 1}">
-            <!-- 이전 그룹 -->
-            <a th:if="${startPage > 1}" 
-               th:href="@{/mobile/2025-11/all/{count}(count=${count}, page=${startPage - 1})}"
-               class="pagination-nav">이전</a>
-            <span th:if="${startPage == 1}" class="disabled pagination-nav">이전</span>
-
-            <!-- 현재 그룹의 페이지 번호들 (최대 5개) -->
-            <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
-                <a th:if="${pageNum != currentPage}"
-                   th:href="@{/mobile/2025-11/all/{count}(count=${count}, page=${pageNum})}"
-                   th:text="${pageNum}">1</a>
-                <span th:if="${pageNum == currentPage}" 
-                      class="current"
-                      th:text="${pageNum}">1</span>
+        <!-- Pagination (10페이지 단위 블록) -->
+        <div class="pagination" th:if="${blockMode and totalPagesInBlock > 1}">
+            <a th:if="${currentBlock > 1}" th:href="@{/mobile/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock - 1}, page=1)}" class="pagination-nav">이전 10페이지</a>
+            <span th:each="pageNum : ${#numbers.sequence(1, totalPagesInBlock)}">
+                <!-- 1페이지: 서버 링크로 항상 돌아갈 수 있게 -->
+                <a th:if="${pageNum == 1 and currentPage != 1}" th:href="@{/mobile/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock}, page=1)}" class="pagination-num">1</a>
+                <a th:if="${pageNum != currentPage and pageNum != 1}" href="#" th:attr="data-page=${pageNum}" class="block-page-link" th:text="${(currentBlock - 1) * 10 + pageNum}">2</a>
+                <span th:if="${pageNum == currentPage}" class="current" th:text="${(currentBlock - 1) * 10 + pageNum}">1</span>
             </span>
-
-            <!-- 다음 그룹 -->
-            <a th:if="${endPage < totalPages}" 
-               th:href="@{/mobile/2025-11/all/{count}(count=${count}, page=${endPage + 1})}"
-               class="pagination-nav">다음</a>
-            <span th:if="${endPage == totalPages}" class="disabled pagination-nav">다음</span>
+            <a th:if="${hasNextBlock}" th:href="@{/mobile/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock + 1}, page=1)}" class="pagination-nav">다음 10페이지</a>
+            <span th:if="${!hasNextBlock}" class="disabled pagination-nav">다음 10페이지</span>
         </div>
 
-        <div class="pagination-info" th:if="${totalCount > 0}">
-            <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
+        <div class="pagination-info" th:if="${blockMode and !products.isEmpty()}">
+            <span th:text="|${(currentBlock - 1) * 10 + currentPage} (이 블록: ${currentPage}/${totalPagesInBlock}) · ${products.size()}건|">1 (이 블록 1/10) · 200건</span>
         </div>
 
         <!-- 멀티플렉스 광고 (페이지 하단) -->
@@ -632,6 +649,35 @@
     function showPasswordModal() {
         window.location.href = '/mobile/shortterm';
     }
+
+    (function() {
+        var links = document.querySelectorAll('a.block-page-link');
+        if (links.length === 0) return;
+        links.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var page = parseInt(this.getAttribute('data-page'), 10);
+                document.querySelectorAll('[data-block-page]').forEach(function(el) {
+                    el.classList.toggle('block-page-hidden', parseInt(el.getAttribute('data-block-page'), 10) !== page);
+                });
+                document.querySelectorAll('.pagination .current').forEach(function(el) { el.classList.remove('current'); });
+                this.classList.add('current');
+                var listTop = document.getElementById('board-list-top');
+                if (listTop) listTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        document.querySelectorAll('.pagination a[href][class*="pagination"]').forEach(function(a) {
+            if (a.href && a.href.indexOf('#') === -1) a.href = a.href + '#board-list-top';
+        });
+    })();
+</script>
+<script>
+    (function() {
+        if (window.location.hash === '#board-list-top') {
+            var el = document.getElementById('board-list-top');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    })();
 </script>
 </body>
 </html>

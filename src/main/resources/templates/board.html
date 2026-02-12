@@ -4,28 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title th:text="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품 분석'">상품 리스트</title>
-    <meta name="description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta name="description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건의 상품 정보 제공.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 쿠팡셀러를 위한 부업 정보, 쿠팡 판매 데이터 분석.')">
     <meta name="keywords" content="쿠팡 헬프, 쿠팡, 쿠팡셀러, 쿠팡 셀러, 쿠팡 셀러 현실, 쿠팡 현실, 쿠팡 수익, 쿠팡 판매, 스마트스토어, 스마트 스토어, 부업, 취미, 취미부업, 집에서 부업, 온라인 부업, 재택 부업, 쿠팡 부업, 쿠팡배달, 대리구매, 쿠팡 판매자, 쿠팡 인기상품, 쿠팡 데이터, 쿠팡 분석, 쿠팡 트렌드, 쿠팡 상품 분석, 쿠팡 마켓 분석, 쿠팡 판매 전략, 무료, 무료 데이터, 무료 분석, 무료 트래픽, 무료 도구, 무료 플랫폼, 무료 쿠팡 데이터, 무료 스마트스토어 데이터, 무료 쿠팡 분석, 무료 판매 도구, 쿠팡 무료, 스마트스토어 무료, 스마트스토어 데이터, 스마트스토어 분석, 스마트스토어 부업, 스마트스토어 판매, 스마트스토어 도구, 스마트스토어 무료 데이터, 부업 추천, 부업 사이트, 부업 정보, 부업 가이드, 누구나 할 수 있는, 초보자도 가능한, 성공 사례, 실전 가이드, 완전 정복, 비법 공개">
-    <meta name="robots" th:content="${currentPage == 1 ? 'index, follow' : 'noindex, follow'}">
+    <meta name="robots" th:content="${(currentBlock != null and currentBlock == 1 and currentPage == 1) or (currentBlock == null and currentPage == 1) ? 'index, follow' : 'noindex, follow'}">
     <meta name="google-adsense-account" content="ca-pub-4521820475012938">
     <meta name="naver-site-verification" content="8927dad485c905eefd8d2896126637d32ee7fc93" />
-    <link rel="canonical" th:href="@{'/2025-11/all/' + ${count}}">
+    <link rel="canonical" th:href="@{/board/{count}(count=${count}, yymm=${yymm})}">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
-    <meta property="og:url" th:content="@{'https://helpcoupang.com/2025-11/all/' + ${count}}">
+    <meta property="og:url" th:content="@{'https://helpcoupang.com/board/' + ${count} + '?yymm=' + ${yymm}}">
     <meta property="og:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month} + ' | 쿠팡셀러 인기상품'">
-    <meta property="og:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건의 상품 정보 제공.|">
+    <meta property="og:description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.')">
     <meta property="og:site_name" content="쿠팡 데이터 분석">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" th:content="@{'https://helpcoupang.com/2025-11/all/' + ${count}}">
+    <meta property="twitter:url" th:content="@{'https://helpcoupang.com/board/' + ${count} + '?yymm=' + ${yymm}}">
     <meta property="twitter:title" th:content="${count} + '명 이상 구매 상품 - ' + ${month}">
-    <meta property="twitter:description" th:content="|${month} ${count}명 이상 구매한 쿠팡 인기 상품 리스트. 총 ${totalCount}건.|">
+    <meta property="twitter:description" th:content="${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.')">
     
     <!-- Structured Data (JSON-LD) -->
-    <th:block th:with="pageName=${count} + '명 이상 구매 상품 - ' + ${month}, pageDesc=${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건의 상품 정보 제공.', pageUrl=@{'https://helpcoupang.com/2025-11/all/' + ${count}}">
+    <th:block th:with="pageName=${count} + '명 이상 구매 상품 - ' + ${month}, pageDesc=${totalCount != null and totalCount >= 0} ? (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트. 총 ' + ${totalCount} + '건.') : (${month} + ' ' + ${count} + '명 이상 구매한 쿠팡 인기 상품 리스트.'), pageUrl=@{'https://helpcoupang.com/board/' + ${count} + '?yymm=' + ${yymm}}, safeTotal=${totalCount != null and totalCount >= 0 ? totalCount : 0}">
     <script type="application/ld+json" th:inline="text">
     {
       "@context": "https://schema.org",
@@ -35,7 +35,7 @@
       "url": [[${pageUrl}]],
       "mainEntity": {
         "@type": "ItemList",
-        "numberOfItems": [[${totalCount}]],
+        "numberOfItems": [[${safeTotal}]],
         "itemListElement": []
       }
     }
@@ -299,6 +299,56 @@
             color: var(--foreground);
         }
 
+        /* 연도/월 필터 */
+        .yymm-filter {
+            margin-bottom: 1.5rem;
+        }
+        .year-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+        .year-tab {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        .year-tab:hover {
+            background: var(--muted);
+        }
+        .year-tab.active {
+            background: var(--primary);
+            color: var(--primary-foreground);
+            border-color: var(--primary);
+        }
+        .month-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .month-tab {
+            padding: 0.4rem 0.75rem;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--foreground);
+            text-decoration: none;
+            font-size: 0.8125rem;
+        }
+        .month-tab:hover {
+            background: var(--muted);
+        }
+        .month-tab.active {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            border-color: var(--primary);
+        }
+
         /* Table */
         .table-wrapper {
             background-color: var(--card);
@@ -401,6 +451,10 @@
             opacity: 0.5;
         }
 
+        tr.block-page-hidden {
+            display: none !important;
+        }
+
         .pagination-info {
             text-align: center;
             margin-top: 1rem;
@@ -455,9 +509,11 @@
         }
     </style>
 
-    <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
-     crossorigin="anonymous"></script>
+    <!-- Google AdSense: 로드 완료 후 주입 (gen_204 등 지연이 탭 로딩/로딩바에 영향 없도록) -->
+    <script>
+    (function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938';s.crossOrigin='anonymous';document.head.appendChild(s);}
+    if(document.readyState==='complete')load();else window.addEventListener('load',load);})();
+    </script>
 </head>
 <body>
 <div class="container">
@@ -479,6 +535,10 @@
             </a>
 
             <nav class="nav">
+                <!-- 헬쿠 매출 일지 -->
+                <div class="nav-section">
+                    <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 헬쿠 매출 일지</a>
+                </div>
                 <!-- 구매했어요 -->
                 <div class="nav-section">
                     <button class="nav-toggle active" onclick="toggleNav('nov2025')">
@@ -488,24 +548,24 @@
                         </svg>
                     </button>
                     <div class="nav-items show" id="nov2025">
-                        <a href="/2025-11/all/100" class="nav-item" th:classappend="${count == 100} ? 'active' : ''">⚡ 100명 이상 구매</a>
-                        <a href="/2025-11/all/200" class="nav-item" th:classappend="${count == 200} ? 'active' : ''">⚡ 200명 이상 구매</a>
-                        <a href="/2025-11/all/300" class="nav-item" th:classappend="${count == 300} ? 'active' : ''">⚡ 300명 이상 구매</a>
-                        <a href="/2025-11/all/400" class="nav-item" th:classappend="${count == 400} ? 'active' : ''">⚡ 400명 이상 구매</a>
-                        <a href="/2025-11/all/500" class="nav-item" th:classappend="${count == 500} ? 'active' : ''">⚡ 500명 이상 구매</a>
-                        <a href="/2025-11/all/600" class="nav-item" th:classappend="${count == 600} ? 'active' : ''">⚡ 600명 이상 구매</a>
-                        <a href="/2025-11/all/700" class="nav-item" th:classappend="${count == 700} ? 'active' : ''">⚡ 700명 이상 구매</a>
-                        <a href="/2025-11/all/800" class="nav-item" th:classappend="${count == 800} ? 'active' : ''">⚡ 800명 이상 구매</a>
-                        <a href="/2025-11/all/900" class="nav-item" th:classappend="${count == 900} ? 'active' : ''">⚡ 900명 이상 구매</a>
-                        <a href="/2025-11/all/1000" class="nav-item" th:classappend="${count == 1000} ? 'active' : ''">⚡ 1000명 이상 구매</a>
-                        <a href="/2025-11/all/2000" class="nav-item" th:classappend="${count == 2000} ? 'active' : ''">⚡ 2000명 이상 구매</a>
-                        <a href="/2025-11/all/3000" class="nav-item" th:classappend="${count == 3000} ? 'active' : ''">⚡ 3000명 이상 구매</a>
-                        <a href="/2025-11/all/4000" class="nav-item" th:classappend="${count == 4000} ? 'active' : ''">⚡ 4000명 이상 구매</a>
-                        <a href="/2025-11/all/5000" class="nav-item" th:classappend="${count == 5000} ? 'active' : ''">⚡ 5000명 이상 구매</a>
+                        <a th:href="@{/board/100(yymm=${yymm})}" class="nav-item" th:classappend="${count == 100} ? 'active' : ''">⚡ 100명 이상 구매</a>
+                        <a th:href="@{/board/200(yymm=${yymm})}" class="nav-item" th:classappend="${count == 200} ? 'active' : ''">⚡ 200명 이상 구매</a>
+                        <a th:href="@{/board/300(yymm=${yymm})}" class="nav-item" th:classappend="${count == 300} ? 'active' : ''">⚡ 300명 이상 구매</a>
+                        <a th:href="@{/board/400(yymm=${yymm})}" class="nav-item" th:classappend="${count == 400} ? 'active' : ''">⚡ 400명 이상 구매</a>
+                        <a th:href="@{/board/500(yymm=${yymm})}" class="nav-item" th:classappend="${count == 500} ? 'active' : ''">⚡ 500명 이상 구매</a>
+                        <a th:href="@{/board/600(yymm=${yymm})}" class="nav-item" th:classappend="${count == 600} ? 'active' : ''">⚡ 600명 이상 구매</a>
+                        <a th:href="@{/board/700(yymm=${yymm})}" class="nav-item" th:classappend="${count == 700} ? 'active' : ''">⚡ 700명 이상 구매</a>
+                        <a th:href="@{/board/800(yymm=${yymm})}" class="nav-item" th:classappend="${count == 800} ? 'active' : ''">⚡ 800명 이상 구매</a>
+                        <a th:href="@{/board/900(yymm=${yymm})}" class="nav-item" th:classappend="${count == 900} ? 'active' : ''">⚡ 900명 이상 구매</a>
+                        <a th:href="@{/board/1000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 1000} ? 'active' : ''">⚡ 1000명 이상 구매</a>
+                        <a th:href="@{/board/2000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 2000} ? 'active' : ''">⚡ 2000명 이상 구매</a>
+                        <a th:href="@{/board/3000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 3000} ? 'active' : ''">⚡ 3000명 이상 구매</a>
+                        <a th:href="@{/board/4000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 4000} ? 'active' : ''">⚡ 4000명 이상 구매</a>
+                        <a th:href="@{/board/5000(yymm=${yymm})}" class="nav-item" th:classappend="${count == 5000} ? 'active' : ''">⚡ 5000명 이상 구매</a>
                     </div>
                 </div>
-                <!-- 만족했어요 -->
-                <div class="nav-section">
+                <!-- 만족했어요 (일단 비활성화) -->
+                <div class="nav-section" th:if="false">
                     <button class="nav-toggle" onclick="toggleNav('satisfied')">
                         <span>만족했어요</span>
                         <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
@@ -533,48 +593,31 @@
                 <div class="nav-section">
                     <a href="/shortterm" class="nav-item" style="padding: 0.75rem; font-weight: 600;">⚡ 단기간 인기 상품</a>
                 </div>
-                <!-- 쿠팡 판매 가이드 -->
+                <!-- 헬쿠 셀러 팁 -->
                 <div class="nav-section">
-                    <a href="/seller-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📚 쿠팡 판매 A to Z</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/coupang-entry-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚪 쿠팡 입점 가이드</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/product-finding-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🔍 잘 팔리는 상품 찾는 법</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/1688-sourcing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏭 1688 중국 공장 소싱</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/rocket-gross-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🚀 로켓그로스 초보 소싱</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/item-winner-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">🏆 아이템위너 전략</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/beginner-seller-strategy" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📖 초보 셀러 전략</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/product-registration-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📝 상품 등록 가이드</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/margin-template-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">💰 마진표 템플릿</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/product-detail-writing-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">✍️ 상세페이지 작성법</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/item-winner-safety-checklist" class="nav-item" style="padding: 0.75rem; font-weight: 600;">✅ 아이템위너 체크리스트</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/blog-structure-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 블로그 구조 설계</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/dropshipping-guide" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📦 위탁판매 가이드</a>
-                </div>
-                <div class="nav-section">
-                    <a href="/sales-chart" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📊 판매실적추이 그래프</a>
+                    <button class="nav-toggle" onclick="toggleNav('helku-seller-tips')">
+                        <span style="font-weight: 600;">💡 헬쿠 셀러 팁</span>
+                        <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                        </svg>
+                    </button>
+                    <div class="nav-items" id="helku-seller-tips">
+                        <a href="/seller-guide" class="nav-item">📚 쿠팡 판매 A to Z</a>
+                        <a href="/coupang-entry-guide" class="nav-item">🚪 쿠팡 입점 가이드</a>
+                        <a href="/product-finding-guide" class="nav-item">🔍 잘 팔리는 상품 찾는 법</a>
+                        <a href="/1688-sourcing-guide" class="nav-item">🏭 1688 중국 공장 소싱</a>
+                        <a href="/rocket-gross-guide" class="nav-item">🚀 로켓그로스 초보 소싱</a>
+                        <a href="/wing-express-guide" class="nav-item">🚀 윙 익스프레스 기본 개념</a>
+                        <a href="/item-winner-guide" class="nav-item">🏆 아이템위너 전략</a>
+                        <a href="/beginner-seller-strategy" class="nav-item">📖 초보 셀러 전략</a>
+                        <a href="/product-registration-guide" class="nav-item">📝 상품 등록 가이드</a>
+                        <a href="/margin-template-guide" class="nav-item">💰 마진표 템플릿</a>
+                        <a href="/product-detail-writing-guide" class="nav-item">✍️ 상세페이지 작성법</a>
+                        <a href="/item-winner-safety-checklist" class="nav-item">✅ 아이템위너 체크리스트</a>
+                        <a href="/blog-structure-guide" class="nav-item">📊 블로그 구조 설계</a>
+                        <a href="/dropshipping-guide" class="nav-item">📦 위탁판매 가이드</a>
+                        <a href="/sales-chart" class="nav-item">📊 판매실적추이 그래프</a>
+                    </div>
                 </div>
             </nav>
         </div>
@@ -592,11 +635,11 @@
 
             <div class="page-header">
                 <h1 th:text="|${count}명 이상 구매 상품|">상품 리스트</h1>
-                <p><span th:text="${month}"></span> - 총 <span th:text="${totalCount}"></span>건</p>
+                <p><span th:text="${month}"></span> - <span th:if="${totalCount >= 0}" th:text="|총 ${totalCount}건|">총 N건</span><span th:if="${totalCount < 0}" th:text="|현재 블록 ${products.size()}건 (10페이지 단위 로드)|">현재 블록</span></p>
             </div>
 
-            <!-- FAQ 섹션 추가 -->
-            <div th:if="${currentPage == 1}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1rem;">
+            <!-- FAQ 섹션 추가 (블록 모드에서도 첫 페이지에만) -->
+            <div th:if="${currentPage == 1 and (currentBlock == null or currentBlock == 1)}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 1rem;">
                 <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--foreground); margin-bottom: 1rem;">이 페이지에 대한 자주 묻는 질문</h3>
                 <div style="margin-bottom: 1rem;">
                     <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 이 분석은 어떤 데이터를 기준으로 만드는가?</p>
@@ -627,7 +670,9 @@
 
             <!-- 검색 영역 -->
             <div class="search-wrapper">
-                <form method="get" th:action="@{/2025-11/all/{count}(count=${count})}" class="search-form">
+                <form method="get" th:action="@{/board/{count}(count=${count})}" class="search-form">
+                    <input type="hidden" name="yymm" th:value="${yymm}">
+                    <input type="hidden" name="block" value="1">
                     <input type="hidden" name="page" value="1">
                     <div class="search-input-group">
                         <input type="text" 
@@ -637,13 +682,41 @@
                                class="search-input">
                         <button type="submit" class="search-button">검색</button>
                         <a th:if="${search != null and !#strings.isEmpty(search)}" 
-                           th:href="@{/2025-11/all/{count}(count=${count})}" 
+                           th:href="@{/board/{count}(count=${count}, yymm=${yymm})}" 
                            class="search-clear">초기화</a>
                     </div>
                 </form>
             </div>
 
-            <div class="table-wrapper">
+            <!-- 연도/월 필터 (DB에 있는 yymm만 탭으로 표시) -->
+            <div class="yymm-filter">
+                <div class="year-tabs">
+                    <a th:if="${firstYymm2025 != null}" 
+                       th:href="@{/board/{count}(count=${count}, yymm=${firstYymm2025}, block=1, page=1)}" 
+                       class="year-tab" 
+                       th:classappend="${#strings.startsWith(yymm, '2025')} ? 'active' : ''">2025</a>
+                    <a th:if="${firstYymm2026 != null}" 
+                       th:href="@{/board/{count}(count=${count}, yymm=${firstYymm2026}, block=1, page=1)}" 
+                       class="year-tab" 
+                       th:classappend="${#strings.startsWith(yymm, '2026')} ? 'active' : ''">2026</a>
+                </div>
+                <div class="month-tabs" th:if="${#strings.startsWith(yymm, '2025')} and ${!availableYymm2025.isEmpty()}">
+                    <a th:each="yy : ${availableYymm2025}" 
+                       th:href="@{/board/{count}(count=${count}, yymm=${yy}, block=1, page=1)}" 
+                       class="month-tab" 
+                       th:classappend="${yymm == yy} ? 'active' : ''" 
+                       th:text="${T(java.lang.Integer).parseInt(#strings.substring(yy, 4, 6)) + '월'}">11월</a>
+                </div>
+                <div class="month-tabs" th:if="${#strings.startsWith(yymm, '2026')} and ${!availableYymm2026.isEmpty()}">
+                    <a th:each="yy : ${availableYymm2026}" 
+                       th:href="@{/board/{count}(count=${count}, yymm=${yy}, block=1, page=1)}" 
+                       class="month-tab" 
+                       th:classappend="${yymm == yy} ? 'active' : ''" 
+                       th:text="${T(java.lang.Integer).parseInt(#strings.substring(yy, 4, 6)) + '월'}">1월</a>
+                </div>
+            </div>
+
+            <div class="table-wrapper" id="board-list-top">
                 <table>
                     <thead>
                         <tr>
@@ -662,8 +735,8 @@
                             </td>
                         </tr>
                         <th:block th:each="product, iterStat : ${products}">
-                            <tr>
-                                <td th:text="${product.rowNum}">1</td>
+                            <tr th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
+                                <td th:text="${blockMode ? ((currentBlock - 1) * 200 + iterStat.index + 1) : product.rowNum}">1</td>
                                 <td>
                                     <a th:href="${product.url}" 
                                        th:text="${product.title}" 
@@ -694,7 +767,7 @@
                                 </td>
                             </tr>
                             <!-- 10번째 항목마다 광고 배치 -->
-                            <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}">
+                            <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                                 <td colspan="6" style="padding: 1.5rem; text-align: center;">
                                     <div th:replace="~{fragments/ads :: infeed-ad}"></div>
                                 </td>
@@ -704,31 +777,21 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination" th:if="${totalPages > 1}">
-                <!-- 이전 그룹 -->
-                <a th:if="${startPage > 1}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${startPage - 1}, search=${search})}">이전</a>
-                <span th:if="${startPage == 1}" class="disabled">이전</span>
-
-                <!-- 현재 그룹의 페이지 번호들 (최대 10개) -->
-                <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${pageNum != currentPage}"
-                       th:href="@{/2025-11/all/{count}(count=${count}, page=${pageNum}, search=${search})}"
-                       th:text="${pageNum}">1</a>
-                    <span th:if="${pageNum == currentPage}" 
-                          class="current"
-                          th:text="${pageNum}">1</span>
+            <!-- Pagination (블록 모드: 10페이지 단위, 블록 내 페이지는 JS로 전환) -->
+            <div class="pagination" th:if="${blockMode and totalPagesInBlock > 1}">
+                <a th:if="${currentBlock > 1}" th:href="@{/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock - 1}, page=1, search=${search})}" class="pagination-nav">이전 10페이지</a>
+                <span th:each="pageNum : ${#numbers.sequence(1, totalPagesInBlock)}">
+                    <!-- 1페이지: 서버 링크로 항상 돌아갈 수 있게 (block 내 1페이지) -->
+                    <a th:if="${pageNum == 1 and currentPage != 1}" th:href="@{/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock}, page=1, search=${search})}" class="pagination-num">1</a>
+                    <a th:if="${pageNum != currentPage and pageNum != 1}" href="#" th:attr="data-page=${pageNum}" class="block-page-link" th:text="${(currentBlock - 1) * 10 + pageNum}">2</a>
+                    <span th:if="${pageNum == currentPage}" class="current" th:text="${(currentBlock - 1) * 10 + pageNum}">1</span>
                 </span>
-
-                <!-- 다음 그룹 -->
-                <a th:if="${endPage < totalPages}" 
-                   th:href="@{/2025-11/all/{count}(count=${count}, page=${endPage + 1}, search=${search})}">다음</a>
-                <span th:if="${endPage == totalPages}" class="disabled">다음</span>
+                <a th:if="${hasNextBlock}" th:href="@{/board/{count}(count=${count}, yymm=${yymm}, block=${currentBlock + 1}, page=1, search=${search})}" class="pagination-nav">다음 10페이지</a>
+                <span th:if="${!hasNextBlock}" class="disabled">다음 10페이지</span>
             </div>
 
-            <div class="pagination-info" th:if="${totalCount > 0}">
-                <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
+            <div class="pagination-info" th:if="${blockMode and !products.isEmpty()}">
+                <span th:text="|${(currentBlock - 1) * 10 + currentPage} (이 블록: ${currentPage} / ${totalPagesInBlock}) · ${products.size()}건|">1 / 10 (이 블록) · 200건</span>
             </div>
 
             <!-- 멀티플렉스 광고 (페이지 하단) -->
@@ -749,6 +812,43 @@
     function showPasswordModal() {
         window.location.href = '/shortterm';
     }
+
+    (function() {
+        var blockPageLinks = document.querySelectorAll('a.block-page-link');
+        if (blockPageLinks.length === 0) return;
+        blockPageLinks.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var page = parseInt(this.getAttribute('data-page'), 10);
+                var rows = document.querySelectorAll('tbody tr[data-block-page]');
+                rows.forEach(function(tr) {
+                    tr.classList.toggle('block-page-hidden', parseInt(tr.getAttribute('data-block-page'), 10) !== page);
+                });
+                document.querySelectorAll('.pagination .current').forEach(function(s) { s.classList.remove('current'); });
+                document.querySelectorAll('.pagination a.block-page-link').forEach(function(link) {
+                    link.classList.toggle('current', parseInt(link.getAttribute('data-page'), 10) === page);
+                });
+                var curSpan = document.querySelector('.pagination span.current');
+                if (curSpan) curSpan.classList.remove('current');
+                this.classList.add('current');
+                var listTop = document.getElementById('board-list-top');
+                if (listTop) listTop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+        // 서버 링크(1페이지, 이전/다음 10페이지) 클릭 시 목록 상단으로 스크롤되도록 hash 추가
+        document.querySelectorAll('.pagination a[href][class*="pagination"]').forEach(function(a) {
+            if (a.href && a.href.indexOf('#') === -1) a.href = a.href + '#board-list-top';
+        });
+    })();
+</script>
+<script>
+    // 페이지 로드 시 hash로 목록 상단 포커스 (서버 링크로 진입한 경우)
+    (function() {
+        if (window.location.hash === '#board-list-top') {
+            var el = document.getElementById('board-list-top');
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    })();
 </script>
 <!-- 판매실적추이 그래프 모달 -->
 

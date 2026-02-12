@@ -463,6 +463,10 @@
         }
 
         /* Empty State */
+        .block-page-hidden {
+            display: none !important;
+        }
+
         .empty-state {
             text-align: center;
             padding: 3rem 1rem;
@@ -472,8 +476,10 @@
     </style>
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
-     crossorigin="anonymous"></script>
+    <script>
+    (function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938';s.crossOrigin='anonymous';document.head.appendChild(s);}
+    if(document.readyState==='complete')load();else window.addEventListener('load',load);})();
+    </script>
 </head>
 <body>
     <!-- Mobile Header -->
@@ -513,23 +519,24 @@
                 </svg>
             </button>
             <div class="nav-items show" id="nov2025">
-                <a href="/mobile/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
-                <a href="/mobile/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
-                <a href="/mobile/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
-                <a href="/mobile/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
-                <a href="/mobile/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
-                <a href="/mobile/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
-                <a href="/mobile/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
-                <a href="/mobile/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
-                <a href="/mobile/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
-                <a href="/mobile/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                <a href="/mobile/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                <a href="/mobile/board/100" class="nav-item">⚡ 100명 이상 구매</a>
+                <a href="/mobile/board/200" class="nav-item">⚡ 200명 이상 구매</a>
+                <a href="/mobile/board/300" class="nav-item">⚡ 300명 이상 구매</a>
+                <a href="/mobile/board/400" class="nav-item">⚡ 400명 이상 구매</a>
+                <a href="/mobile/board/500" class="nav-item">⚡ 500명 이상 구매</a>
+                <a href="/mobile/board/600" class="nav-item">⚡ 600명 이상 구매</a>
+                <a href="/mobile/board/700" class="nav-item">⚡ 700명 이상 구매</a>
+                <a href="/mobile/board/800" class="nav-item">⚡ 800명 이상 구매</a>
+                <a href="/mobile/board/900" class="nav-item">⚡ 900명 이상 구매</a>
+                <a href="/mobile/board/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                <a href="/mobile/board/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                <a href="/mobile/board/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                <a href="/mobile/board/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                <a href="/mobile/board/5000" class="nav-item">⚡ 5000명 이상 구매</a>
             </div>
         </div>
-        <div class="nav-section">
+        <!-- 만족했어요 (일단 비활성화) -->
+        <div class="nav-section" th:if="false">
             <button class="nav-toggle active" onclick="toggleNav('satisfied')">
                 <span>만족했어요</span>
                 <svg fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24">
@@ -593,7 +600,7 @@
         <div>
             <div class="page-header">
                 <h1>단기간 인기 상품</h1>
-                <p th:text="|총 ${totalCount}건|">-</p>
+                <p><span th:if="${totalCount != null and totalCount >= 0}" th:text="|총 ${totalCount}건|">총 N건</span><span th:if="${totalCount == null or totalCount < 0}" th:text="|현재 블록 ${products.size()}건|">현재 블록</span></p>
             </div>
 
             <!-- 디스플레이 광고 (상품 리스트 전) -->
@@ -602,9 +609,9 @@
             <!-- Product List -->
             <div class="product-list" th:if="${!products.isEmpty()}">
                 <th:block th:each="product, iterStat : ${products}">
-                    <div class="product-card">
+                    <div class="product-card" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                         <div class="product-row">
-                            <div class="product-number" th:text="${product.rowNum}">1</div>
+                            <div class="product-number" th:text="${blockMode ? ((currentBlock - 1) * 200 + iterStat.index + 1) : product.rowNum}">1</div>
                             <div class="product-info">
                                 <a th:href="${product.url}" 
                                    th:text="${product.title}" 
@@ -645,7 +652,7 @@
                         </div>
                     </div>
                     <!-- 10번째 항목마다 광고 배치 -->
-                    <div th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" style="margin: 1.5rem 0;">
+                    <div th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" style="margin: 1.5rem 0;" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                         <div th:replace="~{fragments/ads :: infeed-ad}"></div>
                     </div>
                 </th:block>
@@ -655,30 +662,19 @@
                 데이터가 없습니다.
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination" th:if="${totalPages > 1}">
-                <a th:if="${startPage > 1}" 
-                   th:href="@{/mobile/shortterm(page=${startPage - 1})}"
-                   class="pagination-nav">이전</a>
-                <span th:if="${startPage == 1}" class="disabled pagination-nav">이전</span>
-
-                <span th:each="p : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${p != currentPage}"
-                       th:href="@{/mobile/shortterm(page=${p})}"
-                       th:text="${p}">1</a>
-                    <span th:if="${p == currentPage}" 
-                          class="current"
-                          th:text="${p}">1</span>
+            <!-- Pagination (10페이지 단위 블록) -->
+            <div class="pagination" th:if="${blockMode and totalPagesInBlock > 1}">
+                <a th:if="${currentBlock > 1}" th:href="@{/mobile/shortterm(block=${currentBlock - 1}, page=1)}" class="pagination-nav">이전 10페이지</a>
+                <span th:each="pageNum : ${#numbers.sequence(1, totalPagesInBlock)}">
+                    <a th:if="${pageNum != currentPage}" href="#" th:attr="data-page=${pageNum}" class="block-page-link" th:text="${(currentBlock - 1) * 10 + pageNum}">1</a>
+                    <span th:if="${pageNum == currentPage}" class="current" th:text="${(currentBlock - 1) * 10 + pageNum}">1</span>
                 </span>
-
-                <a th:if="${endPage < totalPages}" 
-                   th:href="@{/mobile/shortterm(page=${endPage + 1})}"
-                   class="pagination-nav">다음</a>
-                <span th:if="${endPage == totalPages}" class="disabled pagination-nav">다음</span>
+                <a th:if="${hasNextBlock}" th:href="@{/mobile/shortterm(block=${currentBlock + 1}, page=1)}" class="pagination-nav">다음 10페이지</a>
+                <span th:if="${!hasNextBlock}" class="disabled pagination-nav">다음 10페이지</span>
             </div>
 
-            <div class="pagination-info" th:if="${totalCount > 0}">
-                <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
+            <div class="pagination-info" th:if="${blockMode and !products.isEmpty()}">
+                <span th:text="|${(currentBlock - 1) * 10 + currentPage} (이 블록: ${currentPage}/${totalPagesInBlock}) · ${products.size()}건|">1 (이 블록 1/10) · 200건</span>
             </div>
 
             <!-- 멀티플렉스 광고 (페이지 하단) -->
@@ -712,6 +708,22 @@
             menu.classList.remove('show');
         }
     });
+
+    (function() {
+        var links = document.querySelectorAll('a.block-page-link');
+        if (links.length === 0) return;
+        links.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var page = parseInt(this.getAttribute('data-page'), 10);
+                document.querySelectorAll('[data-block-page]').forEach(function(el) {
+                    el.classList.toggle('block-page-hidden', parseInt(el.getAttribute('data-block-page'), 10) !== page);
+                });
+                document.querySelectorAll('.pagination .current').forEach(function(el) { el.classList.remove('current'); });
+                this.classList.add('current');
+            });
+        });
+    })();
 </script>
 </body>
 </html>

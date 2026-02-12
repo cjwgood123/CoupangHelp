@@ -356,6 +356,10 @@
             opacity: 0.5;
         }
 
+        tr.block-page-hidden {
+            display: none !important;
+        }
+
         .pagination-info {
             text-align: center;
             margin-top: 1rem;
@@ -403,8 +407,10 @@
     </style>
 
     <!-- Google AdSense -->
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938"
-     crossorigin="anonymous"></script>
+    <script>
+    (function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4521820475012938';s.crossOrigin='anonymous';document.head.appendChild(s);}
+    if(document.readyState==='complete')load();else window.addEventListener('load',load);})();
+    </script>
 </head>
 <body>
 <div class="container">
@@ -441,12 +447,12 @@
 
             <div class="page-header">
                 <h1 th:text="${selectedStar != null ? (selectedStar + '명 이상 만족 상품') : '만족했어요 - 전체 상품'}">만족 상품</h1>
-                <p th:if="${selectedStar != null}" th:text="|만족했어요 - 총 ${totalCount}건|">-</p>
-                <p th:if="${selectedStar == null}" th:text="|전체 상품 - 총 ${totalCount}건|">-</p>
+                <p th:if="${totalCount >= 0}"><span th:if="${selectedStar != null}">만족했어요 - </span><span th:if="${selectedStar == null}">전체 상품 - </span>총 <span th:text="${totalCount}"></span>건</p>
+                <p th:if="${totalCount < 0}"><span th:text="|현재 블록 ${products.size()}건 (10페이지 단위 로드)|">현재 블록</span></p>
             </div>
 
-            <!-- 정보성 설명 추가 -->
-            <div th:if="${currentPage == 1}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+            <!-- 정보성 설명 추가 (블록 1, 페이지 1에서만) -->
+            <div th:if="${currentPage == 1 and (currentBlock == null or currentBlock == 1)}" style="background-color: var(--secondary); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
                 <h2 style="font-size: 1.25rem; font-weight: bold; color: var(--foreground); margin-bottom: 0.75rem;">쿠팡 만족도 높은 상품 분석 정보</h2>
                 <p style="color: var(--foreground); line-height: 1.8; margin-bottom: 0.75rem;">
                     이 페이지의 상품 랭킹은 최근 쿠팡 내 판매 흐름과 소비자 반응을 기준으로 정리된 참고용 정보입니다. 
@@ -470,8 +476,8 @@
                 </p>
             </div>
 
-            <!-- FAQ 섹션 추가 -->
-            <div th:if="${currentPage == 1}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
+            <!-- FAQ 섹션 추가 (블록 1, 페이지 1에서만) -->
+            <div th:if="${currentPage == 1 and (currentBlock == null or currentBlock == 1)}" style="background-color: var(--card); border: 1px solid var(--border); padding: 1.5rem; border-radius: var(--radius); margin-bottom: 2rem;">
                 <h3 style="font-size: 1.125rem; font-weight: bold; color: var(--foreground); margin-bottom: 1rem;">이 페이지에 대한 자주 묻는 질문</h3>
                 <div style="margin-bottom: 1rem;">
                     <p style="font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">Q. 이 분석은 어떤 데이터를 기준으로 만드는가?</p>
@@ -520,8 +526,8 @@
                             </td>
                         </tr>
                         <th:block th:each="product, iterStat : ${products}">
-                            <tr>
-                                <td th:text="${product.rowNum}">1</td>
+                            <tr th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
+                                <td th:text="${blockMode ? ((currentBlock - 1) * 200 + iterStat.index + 1) : product.rowNum}">1</td>
                                 <td>
                                     <a th:href="${product.url}" 
                                        th:text="${product.title}" 
@@ -549,7 +555,7 @@
                                 </td>
                             </tr>
                             <!-- 10번째 항목마다 광고 배치 -->
-                            <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}">
+                            <tr th:if="${(iterStat.index + 1) % 10 == 0 and iterStat.index < products.size() - 1}" th:attr="data-block-page=${blockMode ? (iterStat.index / 20 + 1) : 1}" th:classappend="${blockMode and (iterStat.index / 20 + 1) != currentPage} ? 'block-page-hidden' : ''">
                                 <td colspan="6" style="padding: 1.5rem; text-align: center;">
                                     <div th:replace="~{fragments/ads :: infeed-ad}"></div>
                                 </td>
@@ -559,31 +565,19 @@
                 </table>
             </div>
 
-            <!-- Pagination -->
-            <div class="pagination" th:if="${totalPages > 1}">
-                <!-- 이전 그룹 -->
-                <a th:if="${startPage > 1}" 
-                   th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + (startPage - 1) : '/star/all?page=' + (startPage - 1)}}">이전</a>
-                <span th:if="${startPage == 1}" class="disabled">이전</span>
-
-                <!-- 현재 그룹의 페이지 번호들 (최대 10개) -->
-                <span th:each="pageNum : ${#numbers.sequence(startPage, endPage)}">
-                    <a th:if="${pageNum != currentPage}"
-                       th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + pageNum : '/star/all?page=' + pageNum}}"
-                         th:text="${pageNum}">1</a>
-                    <span th:if="${pageNum == currentPage}" 
-                          class="current"
-                          th:text="${pageNum}">1</span>
+            <!-- Pagination (10페이지 단위 블록) -->
+            <div class="pagination" th:if="${blockMode and totalPagesInBlock > 1}">
+                <a th:if="${currentBlock > 1}" th:href="${selectedStar != null ? '/star/' + selectedStar + '?block=' + (currentBlock - 1) + '&page=1' : '/star/all?block=' + (currentBlock - 1) + '&page=1'}" class="pagination-nav">이전 10페이지</a>
+                <span th:each="pageNum : ${#numbers.sequence(1, totalPagesInBlock)}">
+                    <a th:if="${pageNum != currentPage}" href="#" th:attr="data-page=${pageNum}" class="block-page-link" th:text="${(currentBlock - 1) * 10 + pageNum}">1</a>
+                    <span th:if="${pageNum == currentPage}" class="current" th:text="${(currentBlock - 1) * 10 + pageNum}">1</span>
                 </span>
-
-                <!-- 다음 그룹 -->
-                <a th:if="${endPage < totalPages}" 
-                   th:href="@{${selectedStar != null ? '/star/' + selectedStar + '?page=' + (endPage + 1) : '/star/all?page=' + (endPage + 1)}}">다음</a>
-                <span th:if="${endPage == totalPages}" class="disabled">다음</span>
+                <a th:if="${hasNextBlock}" th:href="${selectedStar != null ? '/star/' + selectedStar + '?block=' + (currentBlock + 1) + '&page=1' : '/star/all?block=' + (currentBlock + 1) + '&page=1'}" class="pagination-nav">다음 10페이지</a>
+                <span th:if="${!hasNextBlock}" class="disabled">다음 10페이지</span>
             </div>
 
-            <div class="pagination-info" th:if="${totalCount > 0}">
-                <span th:text="|${currentPage} / ${totalPages} 페이지 (총 ${totalCount}건)|">1 / 1 페이지 (총 0건)</span>
+            <div class="pagination-info" th:if="${blockMode and !products.isEmpty()}">
+                <span th:text="|${(currentBlock - 1) * 10 + currentPage} (이 블록: ${currentPage}/${totalPagesInBlock}) · ${products.size()}건|">1 (이 블록 1/10) · 200건</span>
             </div>
 
             <!-- 멀티플렉스 광고 (페이지 하단) -->
@@ -604,6 +598,22 @@
     function showPasswordModal() {
         window.location.href = '/shortterm';
     }
+
+    (function() {
+        var blockPageLinks = document.querySelectorAll('a.block-page-link');
+        if (blockPageLinks.length === 0) return;
+        blockPageLinks.forEach(function(a) {
+            a.addEventListener('click', function(e) {
+                e.preventDefault();
+                var page = parseInt(this.getAttribute('data-page'), 10);
+                document.querySelectorAll('tbody tr[data-block-page]').forEach(function(tr) {
+                    tr.classList.toggle('block-page-hidden', parseInt(tr.getAttribute('data-block-page'), 10) !== page);
+                });
+                document.querySelectorAll('.pagination .current').forEach(function(s) { s.classList.remove('current'); });
+                this.classList.add('current');
+            });
+        });
+    })();
 </script>
 </body>
 </html>

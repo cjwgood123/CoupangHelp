@@ -5,13 +5,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Service
 public class BoardService {
 
     private final JdbcTemplate jdbcTemplate;
+
+    /** 조회 대상 월: 2025-11, 2025-12, 2026년 전체 */
+    private static final String[] BOARD_MONTHS = {
+        "2025-11", "2025-12",
+        "2026-01", "2026-02", "2026-03", "2026-04", "2026-05", "2026-06",
+        "2026-07", "2026-08", "2026-09", "2026-10", "2026-11", "2026-12"
+    };
 
     public BoardService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -20,182 +30,121 @@ public class BoardService {
     /**
      * 특정 월과 구매수에 해당하는 모든 테이블을 조회하여 데이터를 반환
      * 예: 2025-11월, 100명 이상 구매 → coupang_products_100_20251117, coupang_products_100_20251118 등
-     * 11월과 12월 데이터 모두 포함
+     * 2025-11, 2025-12, 2026년 전체 포함
+     * 캐시 2분: 첫 진입·다음 10페이지 반복 조회 시 DB 생략
      */
+    /** yymm(연월)별 테이블 상한 */
+    private static final int BOARD_TABLES_LIMIT = 90;
+
+    /**
+     * 구매했어요: month = yymm "202602" → 해당 연월 테이블만 조회 (최신→과거 순, 테이블 경계 페이징)
+     */
+    @org.springframework.cache.annotation.Cacheable(value = "boardProducts", key = "#month + '-' + #count + '-' + #offset + '-' + #limit + '-' + (#searchKeyword != null ? #searchKeyword : '')")
     public List<ProductListDto> getProducts(String month, int count, int offset, int limit, String searchKeyword) {
-        // 11월, 12월, 1월 데이터 모두 포함
-        String[] months = {"2025-11", "2025-12", "2026-01"};
-        List<String> tableNames = new ArrayList<>();
-        
-        for (String m : months) {
-            List<String> monthTables = findExistingTables(m, count);
-            tableNames.addAll(monthTables);
-        }
-        
-        if (tableNames.isEmpty()) {
+        String yymm = month != null && month.length() >= 6 ? month.replace("-", "").substring(0, 6) : null;
+        List<String> tables = findOrderedTables(count, yymm);
+        if (tables.isEmpty()) {
             return new ArrayList<>();
         }
-
-        // 제외 카테고리 목록 조회
         List<String> excludedCategories = getExcludedCategories();
         String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
-
-        // 검색 조건 생성
-        String searchClause = "";
-        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-            String escapedKeyword = searchKeyword.trim().replace("'", "''").replace("%", "\\%").replace("_", "\\_");
-            searchClause = " AND (title LIKE '%" + escapedKeyword + "%' OR category LIKE '%" + escapedKeyword + "%')";
+        String searchClause = buildSearchClause(searchKeyword);
+        int cumulative = 0;
+        for (int i = 0; i < tables.size(); i++) {
+            String tableName = tables.get(i);
+            int tableCount = getTableCount(tableName, categoryExclusionClause, searchClause);
+            if (offset < cumulative + tableCount) {
+                int localOffset = offset - cumulative;
+                List<ProductListDto> chunk = getProductsFromSingleTable(tableName, localOffset, limit,
+                    categoryExclusionClause, searchClause, offset + 1);
+                int nextRowNum = offset + 1 + chunk.size();
+                for (int j = i + 1; j < tables.size() && chunk.size() < limit; j++) {
+                    int need = limit - chunk.size();
+                    List<ProductListDto> fromNext = getProductsFromSingleTable(tables.get(j), 0, need,
+                        categoryExclusionClause, searchClause, nextRowNum);
+                    chunk.addAll(fromNext);
+                    nextRowNum += fromNext.size();
+                }
+                return chunk;
+            }
+            cumulative += tableCount;
         }
-
-        // UNION ALL 쿼리 생성
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT seq, title, productID, regidate, url, category, review FROM ").append(tableNames.get(i));
-            String whereClause = "";
-            if (!categoryExclusionClause.isEmpty()) {
-                whereClause = " WHERE 1=1" + categoryExclusionClause;
-            }
-            if (!searchClause.isEmpty()) {
-                whereClause += (whereClause.isEmpty() ? " WHERE 1=1" : "") + searchClause;
-            }
-            if (!whereClause.isEmpty()) {
-                unionSql.append(whereClause);
-            }
-        }
-
-        // 최신 productID만 선택하고, 이전 review와 비교하여 증가량 계산
-        String sql = """
-            WITH all_data AS (
-                """ + unionSql.toString() + """
-            ),
-            latest_data AS (
-                SELECT *,
-                       ROW_NUMBER() OVER (PARTITION BY productID ORDER BY regidate DESC, seq DESC) as rn
-                FROM all_data
-            ),
-            previous_review AS (
-                SELECT 
-                    l.productID,
-                    l.regidate as current_regidate,
-                    (
-                        SELECT review 
-                        FROM all_data 
-                        WHERE productID = l.productID 
-                          AND regidate < l.regidate
-                          AND review IS NOT NULL 
-                          AND review != ''
-                        ORDER BY regidate DESC 
-                        LIMIT 1
-                    ) as prev_review
-                FROM latest_data l
-                WHERE l.rn = 1
-            )
-            SELECT 
-                l.seq,
-                l.title,
-                l.productID,
-                l.regidate,
-                l.url,
-                l.category,
-                l.review,
-                CASE 
-                    WHEN l.review IS NOT NULL AND l.review != '' 
-                         AND p.prev_review IS NOT NULL AND p.prev_review != ''
-                         AND CAST(l.review AS UNSIGNED) > CAST(p.prev_review AS UNSIGNED)
-                    THEN CAST(l.review AS UNSIGNED) - CAST(p.prev_review AS UNSIGNED)
-                    ELSE NULL
-                END as review_increase
-            FROM latest_data l
-            LEFT JOIN previous_review p ON l.productID = p.productID AND l.regidate = p.current_regidate
-            WHERE l.rn = 1
-            ORDER BY l.regidate DESC, l.seq ASC
-            LIMIT ? OFFSET ?
-            """;
-
-        // 조회일자 기준으로 순번을 매기기 위해 offset을 고려
-        final int startRowNum = offset + 1; // offset이 0이면 1번부터 시작
-        
-        return jdbcTemplate.query(sql, 
-            (rs, index) -> {
-                Long seq = rs.getLong("seq");
-                int rowNum = startRowNum + index; // offset을 고려한 순번
-                String title = rs.getString("title");
-                String productID = rs.getString("productID");
-                LocalDate regidate = rs.getDate("regidate") != null 
-                    ? rs.getDate("regidate").toLocalDate() 
-                    : null;
-                String url = rs.getString("url");
-                String category = rs.getString("category");
-                String review = rs.getString("review");
-                Integer reviewIncrease = rs.getObject("review_increase") != null 
-                    ? rs.getInt("review_increase") 
-                    : null;
-                return new ProductListDto(seq, rowNum, title, productID, regidate, url, category, review, reviewIncrease);
-            },
-            limit, offset);
+        return new ArrayList<>();
     }
 
     /**
-     * 전체 개수 조회 (중복 제거된 productID 개수)
-     * 11월과 12월 데이터 모두 포함
+     * 전체 개수: 해당 yymm 테이블들만 합산
      */
     public int getTotalCount(String month, int count, String searchKeyword) {
-        // 11월, 12월, 1월 데이터 모두 포함
-        String[] months = {"2025-11", "2025-12", "2026-01"};
-        List<String> tableNames = new ArrayList<>();
-        
-        for (String m : months) {
-            List<String> monthTables = findExistingTables(m, count);
-            tableNames.addAll(monthTables);
+        String yymm = month != null && month.length() >= 6 ? month.replace("-", "").substring(0, 6) : null;
+        List<String> tables = findOrderedTables(count, yymm);
+        if (tables.isEmpty()) return 0;
+        String categoryExclusionClause = buildCategoryExclusionClause(getExcludedCategories());
+        String searchClause = buildSearchClause(searchKeyword);
+        int total = 0;
+        for (String tableName : tables) {
+            total += getTableCount(tableName, categoryExclusionClause, searchClause);
         }
-        
-        if (tableNames.isEmpty()) {
-            return 0;
-        }
+        return total;
+    }
 
-        // 제외 카테고리 목록 조회
-        List<String> excludedCategories = getExcludedCategories();
-        String categoryExclusionClause = buildCategoryExclusionClause(excludedCategories);
-
-        // 검색 조건 생성
-        String searchClause = "";
-        if (searchKeyword != null && !searchKeyword.trim().isEmpty()) {
-            String escapedKeyword = searchKeyword.trim().replace("'", "''").replace("%", "\\%").replace("_", "\\_");
-            searchClause = " AND (title LIKE '%" + escapedKeyword + "%' OR category LIKE '%" + escapedKeyword + "%')";
-        }
-
-        // UNION ALL 쿼리 생성 (검색을 위해 title, category도 함께 SELECT)
-        StringBuilder unionSql = new StringBuilder();
-        for (int i = 0; i < tableNames.size(); i++) {
-            if (i > 0) {
-                unionSql.append(" UNION ALL ");
-            }
-            unionSql.append("SELECT productID, title, category FROM ").append(tableNames.get(i));
-            String whereClause = "";
-            if (!categoryExclusionClause.isEmpty()) {
-                whereClause = " WHERE 1=1" + categoryExclusionClause;
-            }
-            if (!searchClause.isEmpty()) {
-                whereClause += (whereClause.isEmpty() ? " WHERE 1=1" : "") + searchClause;
-            }
-            if (!whereClause.isEmpty()) {
-                unionSql.append(whereClause);
-            }
-        }
-
-        // 중복 제거된 productID 개수
+    /**
+     * DB에 실제 존재하는 연도별 월 목록 (테이블명에서 추출). 2025 → [11,12], 2026 → [1,2,...]
+     */
+    public List<Integer> getAvailableMonthsForYear(int year) {
         String sql = """
-            SELECT COUNT(DISTINCT productID) 
-            FROM (
-                """ + unionSql.toString() + """
-            ) as combined
+            SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME LIKE 'coupang_products_%'
+              AND TABLE_NAME NOT LIKE '%_latest'
+              AND TABLE_NAME REGEXP '^coupang_products_[0-9]+_[0-9]{8}$'
+              AND TABLE_NAME NOT LIKE 'coupang_products_star'
             """;
+        List<String> names = jdbcTemplate.queryForList(sql, String.class);
+        Set<Integer> months = new TreeSet<>();
+        for (String name : names) {
+            if (name == null || name.length() < 8) continue;
+            String suffix = name.substring(name.length() - 8);
+            if (!suffix.matches("\\d{8}")) continue;
+            String yymm = suffix.substring(0, 6);
+            if (!yymm.startsWith(String.valueOf(year))) continue;
+            int m = Integer.parseInt(yymm.substring(4, 6));
+            months.add(m);
+        }
+        return new ArrayList<>(months);
+    }
 
-        Integer result = jdbcTemplate.queryForObject(sql, Integer.class);
-        return result != null ? result : 0;
+    /**
+     * DB에 실제 있는 yymm 중 가장 마지막(최신) 값. 예: 3월까지 있으면 "202603"
+     * 기본 진입 시 이 값을 쓰면 "가진 데이터의 마지막 달"이 활성화됨.
+     */
+    public String getLatestYymm() {
+        String sql = """
+            SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = DATABASE()
+              AND TABLE_NAME LIKE 'coupang_products_%'
+              AND TABLE_NAME NOT LIKE '%_latest'
+              AND TABLE_NAME REGEXP '^coupang_products_[0-9]+_[0-9]{8}$'
+              AND TABLE_NAME NOT LIKE 'coupang_products_star'
+            """;
+        List<String> names = jdbcTemplate.queryForList(sql, String.class);
+        String maxYymm = null;
+        for (String name : names) {
+            if (name == null || name.length() < 8) continue;
+            String suffix = name.substring(name.length() - 8);
+            if (!suffix.matches("\\d{8}")) continue;
+            String yymm = suffix.substring(0, 6);
+            if (maxYymm == null || yymm.compareTo(maxYymm) > 0) maxYymm = yymm;
+        }
+        return maxYymm;
+    }
+
+    /**
+     * DB에 yymm이 없을 때만 사용. 현재 연월 (한국 시간).
+     */
+    public static String currentYymm() {
+        return YearMonth.now(java.time.ZoneId.of("Asia/Seoul"))
+            .format(java.time.format.DateTimeFormatter.ofPattern("yyyyMM"));
     }
 
     /**
@@ -249,6 +198,69 @@ public class BoardService {
             """;
         
         return jdbcTemplate.queryForList(sql, String.class, tablePattern);
+    }
+
+    /**
+     * 해당 인원수·연월(yymm) 테이블 목록. yymm null이면 현재 연월. 최신 날짜 순, _latest 제외.
+     */
+    private List<String> findOrderedTables(int count, String yymm) {
+        String prefix = (yymm != null && !yymm.isEmpty())
+            ? "coupang_products_" + count + "_" + yymm + "%"
+            : "coupang_products_" + count + "_" + currentYymm() + "%";
+        String sql = """
+            SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME LIKE ? AND TABLE_NAME NOT LIKE '%_latest'
+            ORDER BY TABLE_NAME DESC LIMIT ?
+            """;
+        return jdbcTemplate.queryForList(sql, String.class, prefix, BOARD_TABLES_LIMIT);
+    }
+
+    private int getTableCount(String tableName, String categoryExclusionClause, String searchClause) {
+        String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE 1=1 " + categoryExclusionClause + searchClause;
+        Integer n = jdbcTemplate.queryForObject(sql, Integer.class);
+        return n != null ? n : 0;
+    }
+
+    private String buildSearchClause(String searchKeyword) {
+        if (searchKeyword == null || searchKeyword.trim().isEmpty()) return "";
+        String escapedKeyword = searchKeyword.trim().replace("'", "''").replace("%", "\\%").replace("_", "\\_");
+        return " AND (title LIKE '%" + escapedKeyword + "%' OR category LIKE '%" + escapedKeyword + "%')";
+    }
+
+    /**
+     * 단일 테이블 조회 (review_increase NULL). startRowNum으로 전역 순번 부여.
+     */
+    private List<ProductListDto> getProductsFromSingleTable(String tableName, int offset, int limit,
+            String categoryExclusionClause, String searchClause, int startRowNum) {
+        String sql = "SELECT seq, title, productID, regidate, url, category, review " +
+            "FROM " + tableName + " WHERE 1=1 " + categoryExclusionClause + searchClause +
+            " ORDER BY regidate DESC, seq ASC LIMIT ? OFFSET ?";
+        final int baseRowNum = startRowNum;
+        return jdbcTemplate.query(sql,
+            (rs, index) -> new ProductListDto(
+                rs.getLong("seq"),
+                baseRowNum + index,
+                rs.getString("title"),
+                rs.getString("productID"),
+                rs.getDate("regidate") != null ? rs.getDate("regidate").toLocalDate() : null,
+                rs.getString("url"),
+                rs.getString("category"),
+                rs.getString("review"),
+                null),
+            limit, offset);
+    }
+
+    /**
+     * BOARD_MONTHS 기준 테이블 LIKE 조건 (예: TABLE_NAME LIKE 'coupang_products_%_202511%' OR ...)
+     */
+    private String buildTableMonthLikeClause() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < BOARD_MONTHS.length; i++) {
+            if (i > 0) sb.append(" OR ");
+            String prefix = BOARD_MONTHS[i].replace("-", "");
+            sb.append("TABLE_NAME LIKE 'coupang_products_%_").append(prefix).append("%'");
+        }
+        return sb.toString();
     }
 
     /**
@@ -309,7 +321,9 @@ public class BoardService {
 
     /**
      * coupang_products_star 테이블에서 star 값으로 필터링된 상품 조회 (로켓 상품 제외)
+     * 캐시 2분: 첫 진입·다음 10페이지 반복 조회 시 DB 생략
      */
+    @org.springframework.cache.annotation.Cacheable(value = "starProducts", key = "(#star != null ? #star : 'all') + '-' + #offset + '-' + #limit")
     public List<ProductListDto> getStarProducts(Integer star, int offset, int limit) {
         // 제외 카테고리 목록 조회
         List<String> excludedCategories = getExcludedCategories();
@@ -641,14 +655,11 @@ public class BoardService {
      */
     @org.springframework.cache.annotation.Cacheable(value = "shortTermPopular", unless = "#result == null")
     public int getShortTermPopularCount() {
-        // 11월, 12월, 1월 데이터 모두 포함
-        String[] months = {"2025-11", "2025-12", "2026-01"};
         int[] counts = {100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000};
         
-        // 각 구매자 수 구간의 모든 테이블에서 상품 목록 조회
         java.util.Set<String> popularProducts = new java.util.HashSet<>();
         
-        for (String month : months) {
+        for (String month : BOARD_MONTHS) {
             for (int i = 0; i < counts.length - 1; i++) {
                 int lowerCount = counts[i];
                 int higherCount = counts[i + 1];
@@ -748,15 +759,15 @@ public class BoardService {
     /**
      * 단기간 인기 상품 목록 조회 (상승폭 포함) - 최적화된 한 방 SQL
      * 모든 coupang_products_ 테이블을 UNION ALL로 합쳐서 CTE로 처리
+     * 캐시 2분: 첫 진입·다음 10페이지 반복 조회 시 DB 생략
      */
+    @org.springframework.cache.annotation.Cacheable(value = "shortTermProducts", key = "#offset + '-' + #limit")
     public List<ProductListDto> getShortTermPopularProducts(int offset, int limit) {
-        // 11월, 12월, 1월 데이터 모두 포함 (202511, 202512, 202601)
-        
-        // 1) 해당 월의 모든 coupang_products_* 테이블 조회
+        // 1) BOARD_MONTHS(2025-11~2026-12) 해당 모든 coupang_products_* 테이블 조회
         String findTablesSql = "SELECT TABLE_NAME " +
             "FROM INFORMATION_SCHEMA.TABLES " +
             "WHERE TABLE_SCHEMA = DATABASE() " +
-            "AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%' OR TABLE_NAME LIKE 'coupang_products_%_202601%') " +
+            "AND (" + buildTableMonthLikeClause() + ") " +
             "ORDER BY TABLE_NAME";
         
         List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
@@ -930,16 +941,9 @@ public class BoardService {
      * 단기간 인기 상품 총 개수 조회 - 최적화된 한 방 SQL
      */
     public int getShortTermPopularTotalCount() {
-        // 11월, 12월, 1월 데이터 모두 포함 (202511, 202512, 202601)
-        
-        // 모든 coupang_products_ 테이블 찾기
-        String findTablesSql = """
-            SELECT TABLE_NAME 
-            FROM INFORMATION_SCHEMA.TABLES 
-            WHERE TABLE_SCHEMA = DATABASE() 
-            AND (TABLE_NAME LIKE 'coupang_products_%_202511%' OR TABLE_NAME LIKE 'coupang_products_%_202512%' OR TABLE_NAME LIKE 'coupang_products_%_202601%')
-            ORDER BY TABLE_NAME
-            """;
+        // BOARD_MONTHS(2025-11~2026-12) 해당 모든 coupang_products_ 테이블 찾기
+        String findTablesSql = "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES " +
+            "WHERE TABLE_SCHEMA = DATABASE() AND (" + buildTableMonthLikeClause() + ") ORDER BY TABLE_NAME";
         
         List<String> allTableNames = jdbcTemplate.queryForList(findTablesSql, String.class);
         

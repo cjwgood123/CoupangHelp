@@ -5,7 +5,7 @@
     <nav class="nav" th:fragment="nav">
         <!-- 매출 일지 (제일 위로) -->
         <div class="nav-section">
-            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 매출 일지</a>
+            <a href="/margin-tracker" class="nav-item" style="padding: 0.75rem; font-weight: 600;">📒 헬쿠 매출 일지</a>
         </div>
         <!-- 소개할게요 -->
         <div class="nav-section">
@@ -20,24 +20,24 @@
                 </svg>
             </button>
             <div class="nav-items" id="nov2025">
-                <a href="/2025-11/all/100" class="nav-item">⚡ 100명 이상 구매</a>
-                <a href="/2025-11/all/200" class="nav-item">⚡ 200명 이상 구매</a>
-                <a href="/2025-11/all/300" class="nav-item">⚡ 300명 이상 구매</a>
-                <a href="/2025-11/all/400" class="nav-item">⚡ 400명 이상 구매</a>
-                <a href="/2025-11/all/500" class="nav-item">⚡ 500명 이상 구매</a>
-                <a href="/2025-11/all/600" class="nav-item">⚡ 600명 이상 구매</a>
-                <a href="/2025-11/all/700" class="nav-item">⚡ 700명 이상 구매</a>
-                <a href="/2025-11/all/800" class="nav-item">⚡ 800명 이상 구매</a>
-                <a href="/2025-11/all/900" class="nav-item">⚡ 900명 이상 구매</a>
-                <a href="/2025-11/all/1000" class="nav-item">⚡ 1000명 이상 구매</a>
-                <a href="/2025-11/all/2000" class="nav-item">⚡ 2000명 이상 구매</a>
-                <a href="/2025-11/all/3000" class="nav-item">⚡ 3000명 이상 구매</a>
-                <a href="/2025-11/all/4000" class="nav-item">⚡ 4000명 이상 구매</a>
-                <a href="/2025-11/all/5000" class="nav-item">⚡ 5000명 이상 구매</a>
+                <a href="/board/100" class="nav-item">⚡ 100명 이상 구매</a>
+                <a href="/board/200" class="nav-item">⚡ 200명 이상 구매</a>
+                <a href="/board/300" class="nav-item">⚡ 300명 이상 구매</a>
+                <a href="/board/400" class="nav-item">⚡ 400명 이상 구매</a>
+                <a href="/board/500" class="nav-item">⚡ 500명 이상 구매</a>
+                <a href="/board/600" class="nav-item">⚡ 600명 이상 구매</a>
+                <a href="/board/700" class="nav-item">⚡ 700명 이상 구매</a>
+                <a href="/board/800" class="nav-item">⚡ 800명 이상 구매</a>
+                <a href="/board/900" class="nav-item">⚡ 900명 이상 구매</a>
+                <a href="/board/1000" class="nav-item">⚡ 1000명 이상 구매</a>
+                <a href="/board/2000" class="nav-item">⚡ 2000명 이상 구매</a>
+                <a href="/board/3000" class="nav-item">⚡ 3000명 이상 구매</a>
+                <a href="/board/4000" class="nav-item">⚡ 4000명 이상 구매</a>
+                <a href="/board/5000" class="nav-item">⚡ 5000명 이상 구매</a>
             </div>
         </div>
-        <!-- 만족했어요 -->
-        <div class="nav-section">
+        <!-- 만족했어요 (일단 비활성화) -->
+        <div class="nav-section" th:if="false">
             <button type="button" class="nav-toggle" onclick="toggleNav('satisfied')">
                 <span>만족했어요</span>
                 <svg class="nav-chevron" fill="none" stroke-width="2" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16">
