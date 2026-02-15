@@ -756,25 +756,25 @@
             }
         }
 
-        /* 일별 매출 분석 모달 (전체 상품 탭 + 날짜 클릭) */
+        /* 일별 매출 분석 모달 (전체 상품 탭 + 날짜 클릭) - 드래그 없이 100% 화면에 노출 */
         .daily-analysis-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            max-height: 100dvh;
             background-color: var(--background);
             z-index: 10000;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            flex-direction: column;
+            overflow: hidden;
         }
         .daily-analysis-overlay.show {
-            display: block;
+            display: flex;
         }
         .daily-analysis-header {
-            position: sticky;
-            top: 0;
+            flex: 0 0 auto;
             background: var(--card);
             padding: 1rem 1.25rem;
             display: flex;
@@ -806,8 +806,13 @@
             color: var(--text-primary);
         }
         .daily-analysis-body {
+            flex: 1 1 auto;
+            min-height: 0;
             padding: 1.25rem;
             padding-bottom: 2rem;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
         .daily-analysis-empty {
             text-align: center;
@@ -871,6 +876,8 @@
             padding: 1rem;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
             border: 1px solid var(--border);
+            min-width: 0;
+            overflow: visible;
         }
         .daily-kpi-label {
             font-size: 0.75rem;
@@ -885,9 +892,8 @@
         .daily-kpi-compare {
             font-size: 0.7rem;
             margin-top: 0.35rem;
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
+            white-space: nowrap;
+            overflow: visible;
         }
         .daily-kpi-compare.up { color: #E53935; }
         .daily-kpi-compare.down { color: #3182F6; }
@@ -955,7 +961,7 @@
             margin-left: 0.5rem;
         }
         .daily-analysis-table-wrap {
-            overflow-x: auto;
+            overflow-x: hidden;
             border: 1px solid var(--border);
             border-radius: var(--radius-sm);
             background: var(--card);
@@ -964,10 +970,11 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.8125rem;
+            table-layout: fixed;
         }
         .daily-analysis-table th,
         .daily-analysis-table td {
-            padding: 0.6rem 0.5rem;
+            padding: 0.5rem 0.35rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
         }
@@ -977,10 +984,26 @@
             color: var(--text-secondary);
         }
         .daily-analysis-table th:first-child,
-        .daily-analysis-table td:first-child { padding-left: 0.75rem; }
+        .daily-analysis-table td:first-child {
+            padding-left: 0.5rem;
+            width: 26%;
+            word-break: keep-all;
+        }
+        .daily-analysis-table th:nth-child(2),
+        .daily-analysis-table td:nth-child(2) { width: 25%; }
+        .daily-analysis-table th:nth-child(3),
+        .daily-analysis-table td:nth-child(3) { width: 25%; }
         .daily-analysis-table th:last-child,
-        .daily-analysis-table td:last-child { padding-right: 0.75rem; }
+        .daily-analysis-table td:last-child {
+            padding-right: 0.5rem;
+            width: 24%;
+        }
         .daily-analysis-table tr:last-child td { border-bottom: none; }
+        /* 광고비 컬럼: 24% 너비 안에서 표시 (가로 스크롤 없음) */
+        .daily-analysis-table th:nth-child(4),
+        .daily-analysis-table td:nth-child(4) {
+            word-break: keep-all;
+        }
         .daily-analysis-table .cell-profit { color: var(--text-primary); font-weight: 600; }
         .daily-analysis-table .cell-compare { font-size: 0.7rem; }
         .daily-analysis-table .cell-compare.up { color: #E53935; }
@@ -1012,6 +1035,14 @@
             .daily-kpi-value { font-size: 0.9rem; }
             .daily-kpi-compare { font-size: 0.6rem; }
             .daily-proportion-label { flex: 0 0 30%; }
+        }
+        /* PC: 그래프·본문 너비 제한 (모바일보다 조금 더 크게, 가독성) */
+        @media (min-width: 768px) {
+            .daily-analysis-body {
+                max-width: 520px;
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
 
         /* Login Section */

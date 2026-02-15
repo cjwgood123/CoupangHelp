@@ -16,6 +16,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ko.js"></script>
+    <!-- Pretendard 폰트 (토스 느낌) -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     
     <style>
         * {
@@ -465,9 +467,93 @@
             opacity: 0;
             pointer-events: none;
         }
+
+        /* 커스텀 숫자 키패드 (모바일: . 아래 +, 백스페이스 아래 -) */
+        .numeric-keypad-overlay {
+            display: none;
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--card);
+            border-top: 1px solid var(--border);
+            padding: 0.5rem;
+            padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+            z-index: 1000;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+        }
+        .numeric-keypad-overlay.show {
+            display: block;
+        }
+        .numeric-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+        .numeric-keypad button {
+            height: 48px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--background);
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        .numeric-keypad button:active {
+            background: var(--border);
+        }
+        .numeric-keypad button.keypad-backspace {
+            font-size: 1.25rem;
+        }
+        /* 닫기와 다음 버튼: 각각 1.5 너비로 한 줄에 배치 */
+        .keypad-action-row {
+            grid-column: 1 / -1;
+            display: flex;
+            gap: 0.5rem;
+        }
+        .keypad-action-row button {
+            flex: 1.5;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .numeric-keypad button.keypad-done {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
+    <!-- 커스텀 숫자 키패드: . 아래 +, 백스페이스 아래 - -->
+    <div class="numeric-keypad-overlay" id="numericKeypadOverlay">
+        <div class="numeric-keypad" id="numericKeypad">
+            <button type="button" class="keypad-num" data-key="1">1</button>
+            <button type="button" class="keypad-num" data-key="2">2</button>
+            <button type="button" class="keypad-num" data-key="3">3</button>
+            <button type="button" class="keypad-num" data-key="4">4</button>
+            <button type="button" class="keypad-num" data-key="5">5</button>
+            <button type="button" class="keypad-num" data-key="6">6</button>
+            <button type="button" class="keypad-num" data-key="7">7</button>
+            <button type="button" class="keypad-num" data-key="8">8</button>
+            <button type="button" class="keypad-num" data-key="9">9</button>
+            <button type="button" class="keypad-num" data-key="-">-</button>
+            <button type="button" class="keypad-num" data-key="0">0</button>
+            <button type="button" class="keypad-backspace" id="keypadBackspace" aria-label="지우기">⌫</button>
+            <div class="keypad-action-row">
+                <button type="button" class="keypad-close" data-key="close">닫기</button>
+                <button type="button" class="keypad-done" id="keypadDone">다음</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Input Screen -->
     <div class="input-screen">
         <div class="input-header">
@@ -515,7 +601,7 @@
                     <div class="field-container">
                         <span class="field-number">3</span>
                         <span class="field-label">판매가</span>
-                        <input type="number" class="field-input" id="field-sellingPrice" placeholder="0">
+                        <input type="text" class="field-input" id="field-sellingPrice" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -524,7 +610,7 @@
                     <div class="field-container">
                         <span class="field-number">4</span>
                         <span class="field-label">할인쿠폰</span>
-                        <input type="number" class="field-input" id="field-discountCoupon" placeholder="0">
+                        <input type="text" class="field-input" id="field-discountCoupon" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -534,7 +620,7 @@
                         <span class="field-number">5</span>
                         <span class="field-label">최종 판매가</span>
                         <div class="field-value" id="value-finalSellingPrice">-</div>
-                        <input type="number" class="field-input" id="field-finalSellingPrice" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-finalSellingPrice" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -543,7 +629,7 @@
                     <div class="field-container">
                         <span class="field-number">6</span>
                         <span class="field-label">가격 변동</span>
-                        <input type="number" class="field-input" id="field-priceFluctuation" placeholder="0">
+                        <input type="text" class="field-input" id="field-priceFluctuation" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -552,7 +638,7 @@
                     <div class="field-container field-row-single">
                         <span class="field-number">7</span>
                         <span class="field-label">판매수량</span>
-                        <input type="number" class="field-input" id="field-salesQuantity" placeholder="0">
+                        <input type="text" class="field-input" id="field-salesQuantity" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -562,7 +648,7 @@
                         <span class="field-number">8</span>
                         <span class="field-label">실제 판매 매출</span>
                         <div class="field-value" id="value-actualSalesRevenue">-</div>
-                        <input type="number" class="field-input" id="field-actualSalesRevenue" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-actualSalesRevenue" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -571,7 +657,7 @@
                     <div class="field-container">
                         <span class="field-number">9</span>
                         <span class="field-label">개당 마진</span>
-                        <input type="number" class="field-input" id="field-marginPerUnit" placeholder="0">
+                        <input type="text" class="field-input" id="field-marginPerUnit" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -581,7 +667,7 @@
                         <span class="field-number">10</span>
                         <span class="field-label">총 마진</span>
                         <div class="field-value" id="value-totalMargin">-</div>
-                        <input type="number" class="field-input" id="field-totalMargin" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-totalMargin" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -590,7 +676,7 @@
                     <div class="field-container">
                         <span class="field-number">11</span>
                         <span class="field-label">광고비</span>
-                        <input type="number" class="field-input" id="field-advertisingCost" placeholder="0">
+                        <input type="text" class="field-input" id="field-advertisingCost" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -601,7 +687,7 @@
                         <span class="field-number">12</span>
                         <span class="field-label">순수익</span>
                         <div class="field-value" id="value-netProfit">-</div>
-                        <input type="number" class="field-input" id="field-netProfit" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-netProfit" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -611,7 +697,7 @@
                         <span class="field-number">13</span>
                         <span class="field-label">마진율 (%)</span>
                         <div class="field-value" id="value-marginRate">-</div>
-                        <input type="number" class="field-input" id="field-marginRate" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-marginRate" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -620,7 +706,7 @@
                     <div class="field-container">
                         <span class="field-number">14</span>
                         <span class="field-label">광고판매</span>
-                        <input type="number" class="field-input" id="field-adSales" placeholder="0">
+                        <input type="text" class="field-input" id="field-adSales" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -629,7 +715,7 @@
                     <div class="field-container">
                         <span class="field-number">15</span>
                         <span class="field-label">자연판매</span>
-                        <input type="number" class="field-input" id="field-organicSales" placeholder="0">
+                        <input type="text" class="field-input" id="field-organicSales" placeholder="0" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -639,7 +725,7 @@
                         <span class="field-number">16</span>
                         <span class="field-label">자연판매비율 (%)</span>
                         <div class="field-value" id="value-organicSalesRatio">-</div>
-                        <input type="number" class="field-input" id="field-organicSalesRatio" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-organicSalesRatio" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
 
@@ -649,7 +735,7 @@
                         <span class="field-number">17</span>
                         <span class="field-label">ROAS</span>
                         <div class="field-value" id="value-roas">-</div>
-                        <input type="number" class="field-input" id="field-roas" placeholder="0" style="display: none;">
+                        <input type="text" class="field-input" id="field-roas" placeholder="0" style="display: none;" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off">
                     </div>
                 </div>
             </div>
@@ -733,6 +819,7 @@
             const productParam = params.get('product');
             const dateParam = params.get('date');
             initEventListeners();
+            initNumericKeypad();
             if (editId) {
                 await loadProductList();
                 loadRecordForEdit(editId);
@@ -1066,13 +1153,13 @@
             container.innerHTML = '<div class="option-fields-grid">' +
                 /* 1행: 판매가, 판매가 변동, 최종 판매가 */
                 '<div class="input-field"><div class="field-container"><span class="field-label">판매가</span><div class="field-value" style="color: var(--text-secondary);">' + Math.round(sellingPrice).toLocaleString('ko-KR') + '</div></div></div>' +
-                '<div class="input-field" id="optionPriceFluctuationField"><div class="field-container"><span class="field-label">판매가 변동</span><input type="number" class="field-input opt-price-fluctuation" placeholder="예: +500" value="' + (priceFluctuation !== 0 ? priceFluctuation : '') + '"></div></div>' +
+                '<div class="input-field" id="optionPriceFluctuationField"><div class="field-container"><span class="field-label">판매가 변동</span><input type="text" class="field-input opt-price-fluctuation" placeholder="예: +500" value="' + (priceFluctuation !== 0 ? priceFluctuation : '') + '" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off"></div></div>' +
                 '<div class="input-field calculated-field"><div class="field-container"><span class="field-label">최종 판매가</span><div class="field-value opt-final-price">' + Math.round(finalPrice).toLocaleString('ko-KR') + '원</div></div></div>' +
                 /* 풀너비: 판매 개수 (총) - 한 줄: 명칭 좌측, 값 우측 */
-                '<div class="input-field option-field-full" id="optionSalesQtyField"><div class="field-container field-row-single"><span class="field-label">판매 개수 (총)</span><input type="number" class="field-input opt-sales-qty" placeholder="0" value="' + (salesQty > 0 ? salesQty : '') + '" required></div></div>' +
+                '<div class="input-field option-field-full" id="optionSalesQtyField"><div class="field-container field-row-single"><span class="field-label">판매 개수 (총)</span><input type="text" class="field-input opt-sales-qty" placeholder="0" value="' + (salesQty > 0 ? salesQty : '') + '" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off" required></div></div>' +
                 /* 2행: 광고비, 광고판매개수, 자연판매개수 */
-                '<div class="input-field" id="optionAdCostField"><div class="field-container"><span class="field-label">광고비</span><input type="number" class="field-input opt-ad-cost" placeholder="0" value="' + (adCost > 0 ? adCost : '') + '" required></div></div>' +
-                '<div class="input-field" id="optionAdSalesField"><div class="field-container"><span class="field-label">광고판매개수</span><input type="number" class="field-input opt-ad-sales" placeholder="0" value="' + (adSalesQty > 0 ? adSalesQty : '') + '" required></div></div>' +
+                '<div class="input-field" id="optionAdCostField"><div class="field-container"><span class="field-label">광고비</span><input type="text" class="field-input opt-ad-cost" placeholder="0" value="' + (adCost > 0 ? adCost : '') + '" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off" required></div></div>' +
+                '<div class="input-field" id="optionAdSalesField"><div class="field-container"><span class="field-label">광고판매개수</span><input type="text" class="field-input opt-ad-sales" placeholder="0" value="' + (adSalesQty > 0 ? adSalesQty : '') + '" inputmode="decimal" pattern="[0-9+\-.]*" autocomplete="off" required></div></div>' +
                 '<div class="input-field calculated-field"><div class="field-container"><span class="field-label">자연판매개수</span><div class="field-value opt-organic-sales">' + Math.max(0, Math.round(organicSalesQty)) + '</div></div></div>' +
                 /* 구분선 + 순이익, ROAS - 한 줄: 명칭 좌측, 값 우측 */
                 '<div class="option-field-full option-divider"></div>' +
@@ -1791,6 +1878,132 @@
                 });
             }
             bindDateFieldOpen();
+        }
+
+        /** 커스텀 숫자 키패드: . 아래 +, 백스페이스 아래 -. inputmode="decimal" 인 입력 포커스 시 표시 */
+        function initNumericKeypad() {
+            var overlay = document.getElementById('numericKeypadOverlay');
+            var keypad = document.getElementById('numericKeypad');
+            var keypadDone = document.getElementById('keypadDone');
+            var keypadBackspace = document.getElementById('keypadBackspace');
+            var activeInput = null;
+
+            function closeKeypad() {
+                if (activeInput) {
+                    activeInput.readOnly = false;
+                    activeInput = null;
+                }
+                overlay.classList.remove('show');
+            }
+
+            /** 현재 보이는 숫자 입력란을 포커스 순서대로 반환 (레거시 또는 옵션) */
+            function getNumericInputsInOrder() {
+                var list = [];
+                var legacy = document.getElementById('legacyFields');
+                var optionSection = document.getElementById('optionFieldsSection');
+                if (legacy && legacy.offsetParent !== null) {
+                    var ids = ['field-sellingPrice', 'field-discountCoupon', 'field-priceFluctuation', 'field-salesQuantity', 'field-advertisingCost', 'field-adSales', 'field-organicSales'];
+                    ids.forEach(function(id) {
+                        var el = document.getElementById(id);
+                        if (el && el.offsetParent !== null) list.push(el);
+                    });
+                } else if (optionSection && optionSection.offsetParent !== null) {
+                    var opts = optionSection.querySelectorAll('.opt-price-fluctuation, .opt-sales-qty, .opt-ad-cost, .opt-ad-sales');
+                    for (var i = 0; i < opts.length; i++) list.push(opts[i]);
+                }
+                return list;
+            }
+
+            function isNumericInput(el) {
+                return el && el.tagName === 'INPUT' && (el.getAttribute('inputmode') === 'decimal' || el.getAttribute('inputmode') === 'numeric');
+            }
+
+            document.addEventListener('touchstart', function(e) {
+                if (!isNumericInput(e.target)) return;
+                e.preventDefault();
+                activeInput = e.target;
+                activeInput.readOnly = true;
+                overlay.classList.add('show');
+                var fieldEl = activeInput.closest('.input-field');
+                if (fieldEl) fieldEl.classList.add('active');
+            }, { passive: false });
+
+            document.addEventListener('focusin', function(e) {
+                if (!isNumericInput(e.target)) return;
+                e.target.blur();
+                activeInput = e.target;
+                activeInput.readOnly = true;
+                overlay.classList.add('show');
+                var fieldEl = activeInput.closest('.input-field');
+                if (fieldEl) fieldEl.classList.add('active');
+            });
+
+            var keypadClose = keypad.querySelector('.keypad-close');
+            if (keypadClose) {
+                keypadClose.addEventListener('click', function() {
+                    closeKeypad();
+                });
+            }
+
+            keypadDone.addEventListener('click', function() {
+                var list = getNumericInputsInOrder();
+                var idx = activeInput ? list.indexOf(activeInput) : -1;
+                if (idx === -1) {
+                    closeKeypad();
+                    return;
+                }
+                if (idx < list.length - 1) {
+                    var prev = activeInput;
+                    var next = list[idx + 1];
+                    prev.readOnly = false;
+                    activeInput = next;
+                    activeInput.readOnly = true;
+                    overlay.classList.add('show');
+                    var prevField = prev.closest('.input-field');
+                    var nextField = activeInput.closest('.input-field');
+                    if (prevField) prevField.classList.remove('active');
+                    if (nextField) nextField.classList.add('active');
+                    setTimeout(function() {
+                        activeInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 50);
+                } else {
+                    closeKeypad();
+                    var saveBtn = document.getElementById('saveButton');
+                    if (saveBtn && !saveBtn.disabled) saveBtn.click();
+                }
+            });
+
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) closeKeypad();
+            });
+
+            keypad.querySelectorAll('.keypad-num').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    if (!activeInput) return;
+                    var key = this.getAttribute('data-key');
+                    var start = activeInput.selectionStart || 0;
+                    var end = activeInput.selectionEnd || 0;
+                    var val = activeInput.value || '';
+                    activeInput.value = val.slice(0, start) + key + val.slice(end);
+                    activeInput.selectionStart = activeInput.selectionEnd = start + key.length;
+                    activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                });
+            });
+
+            keypadBackspace.addEventListener('click', function() {
+                if (!activeInput) return;
+                var start = activeInput.selectionStart || 0;
+                var end = activeInput.selectionEnd || 0;
+                var val = activeInput.value || '';
+                if (end > start) {
+                    activeInput.value = val.slice(0, start) + val.slice(end);
+                    activeInput.selectionStart = activeInput.selectionEnd = start;
+                } else if (start > 0) {
+                    activeInput.value = val.slice(0, start - 1) + val.slice(start);
+                    activeInput.selectionStart = activeInput.selectionEnd = start - 1;
+                }
+                activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+            });
         }
 
         // 다음 입력 필드로 이동하는 함수
