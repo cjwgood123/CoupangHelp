@@ -547,6 +547,7 @@
         <!-- Save Button -->
         <div class="save-button-container">
             <button id="saveButton" class="save-button">등록</button>
+            <button id="deleteButton" class="save-button" style="background: #EA4335; color: #fff; display: none;">삭제</button>
             <button id="nextProductButton" class="save-button save-button-next" style="background: var(--border); color: var(--text-primary); display: none;">다음상품</button>
             <button id="backToTrackerButton" class="save-button save-button-back" style="background: var(--background); color: var(--text-primary); border: 1px solid var(--border);">돌아가기</button>
         </div>
@@ -720,8 +721,13 @@
                     document.getElementById('optionFieldsSection').style.display = 'block';
                     document.getElementById('legacyFields').style.display = 'none';
                     currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
-                    if (updateNextProductButtonFn) {
+                    // 수정 모드가 아닐 때만 다음상품 버튼 업데이트
+                    const isEditModeForHandleProduct = editId !== null;
+                    if (!isEditModeForHandleProduct && updateNextProductButtonFn) {
                         updateNextProductButtonFn();
+                    } else {
+                        const nextProductBtn = document.getElementById('nextProductButton');
+                        if (nextProductBtn) nextProductBtn.style.display = 'none';
                     }
                     renderOptionTabs();
                     renderOptionFields(0);
@@ -1109,13 +1115,18 @@
         
         function updateSaveButtonText() {
             const saveBtn = document.getElementById('saveButton');
+            const deleteBtn = document.getElementById('deleteButton');
+            const nextProductBtn = document.getElementById('nextProductButton');
             if (!saveBtn) return;
             // 수정 모드 감지: editId가 있거나 optionDataSets에 dataSeq가 있는 경우
             const isEditMode = editId !== null || (optionDataSets.length > 0 && optionDataSets.some(d => d && d.dataSeq));
             if (isEditMode) {
                 saveBtn.textContent = '수정';
+                if (deleteBtn) deleteBtn.style.display = 'block';
+                if (nextProductBtn) nextProductBtn.style.display = 'none';
             } else {
                 saveBtn.textContent = '등록';
+                if (deleteBtn) deleteBtn.style.display = 'none';
             }
         }
 
@@ -1150,29 +1161,42 @@
                         document.getElementById('optionTabsSection').style.display = 'block';
                         document.getElementById('optionFieldsSection').style.display = 'block';
                         document.getElementById('legacyFields').style.display = 'none';
-                        if (allRegisteredProducts.length > 1) {
+                        // 수정 모드일 때는 다음상품 버튼 숨김
+                        const isEditMode = editId !== null;
+                        if (!isEditMode && allRegisteredProducts.length > 1) {
                             document.getElementById('nextProductButton').style.display = 'block';
                             currentProductIndex = allRegisteredProducts.findIndex(p => p.productNumber === productNumber);
+                        } else {
+                            document.getElementById('nextProductButton').style.display = 'none';
                         }
                         
-                        // 날짜 설정
+                        // 날짜 설정 (수정 모드: readonly)
                         if (saleDate) {
                             formData.date = saleDate;
                             const dateInput = document.getElementById('field-date');
+                            const dateLabel = document.querySelector('[data-field="date"] .field-label');
                             if (dateInput) {
                                 dateInput.value = saleDate;
+                                dateInput.readOnly = true;
+                                // flatpickr 인스턴스 완전히 제거
                                 if (dateInput._flatpickr) {
-                                    const dateMatch = saleDate.match(/(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일/);
-                                    if (dateMatch) {
-                                        const y = parseInt(dateMatch[1], 10);
-                                        const m = parseInt(dateMatch[2], 10) - 1;
-                                        const d = parseInt(dateMatch[3], 10);
-                                        const dateObj = new Date(y, m, d);
-                                        dateInput._flatpickr.setDate(dateObj, false);
-                                    } else if (/^\d{4}-\d{2}-\d{2}/.test(saleDate)) {
-                                        const dateObj = new Date(saleDate);
-                                        dateInput._flatpickr.setDate(dateObj, false);
-                                    }
+                                    try {
+                                        dateInput._flatpickr.destroy();
+                                    } catch (e) {}
+                                    dateInput._flatpickr = null;
+                                }
+                                if (datePickerInstance) {
+                                    try {
+                                        datePickerInstance.destroy();
+                                    } catch (e) {}
+                                    datePickerInstance = null;
+                                }
+                                // flatpickr 클래스 제거
+                                dateInput.classList.remove('flatpickr-input');
+                                // readonly 속성 강제 설정
+                                dateInput.setAttribute('readonly', 'readonly');
+                                if (dateLabel) {
+                                    dateLabel.textContent = '날짜 : DATA';
                                 }
                             }
                         }
@@ -1275,8 +1299,13 @@
                         updateSaveButtonText();
                         checkCanSave();
                         
-                        if (updateNextProductButtonFn) {
+                        // 수정 모드일 때는 다음상품 버튼 숨김
+                        const isEditModeForOption = editId !== null || (optionDataSets.length > 0 && optionDataSets.some(d => d && d.dataSeq));
+                        if (!isEditModeForOption && updateNextProductButtonFn) {
                             updateNextProductButtonFn();
+                        } else {
+                            const nextProductBtn = document.getElementById('nextProductButton');
+                            if (nextProductBtn) nextProductBtn.style.display = 'none';
                         }
                         return;
                     }
@@ -1292,8 +1321,36 @@
                 if (r.date) {
                     formData.date = val(r.date);
                     const dateInput = document.getElementById('field-date');
-                    if (dateInput) dateInput.value = formData.date;
+                    const dateLabel = document.querySelector('[data-field="date"] .field-label');
+                    if (dateInput) {
+                        dateInput.value = formData.date;
+                        dateInput.readOnly = true;
+                        // flatpickr 인스턴스 완전히 제거
+                        if (dateInput._flatpickr) {
+                            try {
+                                dateInput._flatpickr.destroy();
+                            } catch (e) {}
+                            dateInput._flatpickr = null;
+                        }
+                        if (datePickerInstance) {
+                            try {
+                                datePickerInstance.destroy();
+                            } catch (e) {}
+                            datePickerInstance = null;
+                        }
+                        // flatpickr 클래스 제거
+                        dateInput.classList.remove('flatpickr-input');
+                        // readonly 속성 강제 설정
+                        dateInput.setAttribute('readonly', 'readonly');
+                    }
+                    if (dateLabel) {
+                        dateLabel.textContent = '날짜 : DATA';
+                    }
                 }
+                
+                // 수정 모드일 때는 다음상품 버튼 숨김
+                const nextProductBtn = document.getElementById('nextProductButton');
+                if (nextProductBtn) nextProductBtn.style.display = 'none';
 
                 ['sellingPrice','discountCoupon','priceFluctuation','salesQuantity','marginPerUnit','advertisingCost','adSales','organicSales'].forEach(function(k) {
                     const v = val(r[k]);
@@ -1424,11 +1481,14 @@
                                 return;
                             }
 
-                            // 날짜 필드는 엔터로 날짜 선택기 열기
+                            // 날짜 필드는 엔터로 날짜 선택기 열기 (readonly가 아닐 때만)
                             if (field === 'date' && e.key === 'Enter') {
-                                e.preventDefault();
-                                openDatePicker();
-                                return;
+                                const dateInput = document.getElementById('field-date');
+                                if (dateInput && !dateInput.readOnly) {
+                                    e.preventDefault();
+                                    openDatePicker();
+                                    return;
+                                }
                             }
 
                             if (e.key === 'Enter') {
@@ -1522,7 +1582,79 @@
                         await saveData(nextUrl);
                     }
                 });
-                updateNextProductButtonFn();
+                // 수정 모드가 아닐 때만 다음상품 버튼 업데이트
+                const isEditModeForNextBtn = editId !== null;
+                if (!isEditModeForNextBtn && updateNextProductButtonFn) {
+                    updateNextProductButtonFn();
+                } else {
+                    const nextProductBtn = document.getElementById('nextProductButton');
+                    if (nextProductBtn) nextProductBtn.style.display = 'none';
+                }
+            }
+            
+            // Delete Button
+            const deleteBtn = document.getElementById('deleteButton');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', async function() {
+                    if (!confirm('이 판매 데이터를 삭제하시겠습니까?')) return;
+                    const uid = localStorage.getItem('salesChart_userId');
+                    if (!uid) {
+                        alert('사용자 정보를 찾을 수 없습니다.');
+                        return;
+                    }
+                    // 옵션 모드: 여러 dataSeq가 있을 수 있음
+                    if (currentProductOptions.length > 0 && optionDataSets.length > 0) {
+                        var dataSeqs = optionDataSets.filter(function(d) { return d && d.dataSeq; }).map(function(d) { return d.dataSeq; });
+                        if (dataSeqs.length === 0) {
+                            alert('삭제할 데이터가 없습니다.');
+                            return;
+                        }
+                        var deleteCount = 0;
+                        var failCount = 0;
+                        for (var i = 0; i < dataSeqs.length; i++) {
+                            try {
+                                const res = await fetch('/api/margin-tracker/record/' + dataSeqs[i] + '?userId=' + encodeURIComponent(uid), {
+                                    method: 'DELETE'
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                    deleteCount++;
+                                } else {
+                                    failCount++;
+                                }
+                            } catch (e) {
+                                failCount++;
+                            }
+                        }
+                        if (failCount === 0) {
+                            alert('삭제되었습니다.');
+                            window.location.href = '/margin-tracker';
+                        } else {
+                            alert('일부 데이터 삭제에 실패했습니다.');
+                        }
+                    } else {
+                        // 레거시 모드: editId 사용
+                        if (!editId) {
+                            alert('삭제할 데이터가 없습니다.');
+                            return;
+                        }
+                        try {
+                            const res = await fetch('/api/margin-tracker/record/' + editId + '?userId=' + encodeURIComponent(uid), {
+                                method: 'DELETE'
+                            });
+                            const data = await res.json();
+                            if (data.success) {
+                                alert('삭제되었습니다.');
+                                window.location.href = '/margin-tracker';
+                            } else {
+                                alert(data.message || '삭제에 실패했습니다.');
+                            }
+                        } catch (e) {
+                            console.error(e);
+                            alert('삭제 중 오류가 발생했습니다.');
+                        }
+                    }
+                });
             }
 
             // Back to Tracker Button
@@ -1543,8 +1675,20 @@
                 const dateInput = document.getElementById('field-date');
                 const dateFieldContainer = document.querySelector('.date-field-container');
                 if (!dateInput) return;
+                
+                // readonly일 때는 이벤트 리스너를 아예 등록하지 않음
+                if (dateInput.readOnly) {
+                    return;
+                }
 
                 function openAndMaybePrevent(e) {
+                    // readonly일 때는 날짜 선택 라이브러리 열지 않음
+                    if (dateInput.readOnly) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.stopImmediatePropagation();
+                        return false;
+                    }
                     setCurrentStep(1);
                     openDatePicker();
                     e.preventDefault();
@@ -1553,14 +1697,30 @@
 
                 [dateInput, dateFieldContainer].filter(Boolean).forEach(function(el) {
                     el.addEventListener('click', function(e) {
+                        if (dateInput.readOnly) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            return false;
+                        }
                         openAndMaybePrevent(e);
                     }, true);
                     el.addEventListener('touchend', function(e) {
+                        if (dateInput.readOnly) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            e.stopImmediatePropagation();
+                            return false;
+                        }
                         openAndMaybePrevent(e);
                     }, { passive: false, capture: true });
                 });
             }
-            bindDateFieldOpen();
+            // readonly가 아닐 때만 날짜 필드 이벤트 바인딩
+            const dateInputCheck = document.getElementById('field-date');
+            if (!dateInputCheck || !dateInputCheck.readOnly) {
+                bindDateFieldOpen();
+            }
         }
 
         // 다음 입력 필드로 이동하는 함수
@@ -1605,6 +1765,11 @@
         function openDatePicker() {
             const dateInput = document.getElementById('field-date');
             if (!dateInput) {
+                return;
+            }
+            
+            // readonly일 때는 날짜 선택기 열지 않음
+            if (dateInput.readOnly) {
                 return;
             }
 
@@ -1667,6 +1832,11 @@
             if (!dateInput) {
                 return;
             }
+            
+            // readonly일 때는 날짜 선택기 초기화하지 않음
+            if (dateInput.readOnly) {
+                return;
+            }
 
             // 이미 초기화되어 있으면 제거 후 재초기화
             if (dateInput._flatpickr) {
@@ -1712,7 +1882,7 @@
                     locale: "ko",
                     dateFormat: "Y년 m월 d일",
                     defaultDate: today,
-                    clickOpens: true,
+                    clickOpens: !dateInput.readOnly,
                     allowInput: false,
                     inline: false,
                     static: false,
@@ -1723,7 +1893,10 @@
                     onReady: function(selectedDates, dateStr, instance) {
                         var input = instance.input;
                         if (input) {
-                            input.setAttribute('readonly', 'readonly');
+                            // readonly가 아닐 때만 readonly 속성 설정
+                            if (!input.readOnly) {
+                                input.setAttribute('readonly', 'readonly');
+                            }
                         }
                         if (instance.isOpen) {
                             instance.close();
