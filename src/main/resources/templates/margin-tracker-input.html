@@ -245,6 +245,33 @@
             color: var(--primary);
             font-weight: 600;
         }
+        
+        .sold-out-checkbox-wrap {
+            border-top: 1px solid var(--border);
+            padding: 1rem 0;
+            margin-top: 0.5rem;
+        }
+        
+        .sold-out-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .sold-out-checkbox input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #9C27B0;
+        }
+        
+        .sold-out-checkbox span {
+            font-size: 1.0625rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
 
         /* Save Button */
         .save-button-container {
@@ -710,7 +737,9 @@
                             organicSales: 0,
                             netProfit: 0,
                             marginRate: 0,
-                            roas: 0
+                            roas: 0,
+                            isSoldOut: false,
+                            lastValues: null
                         };
                     });
                     currentProductInfo = allRegisteredProducts.find(p => p.productNumber === productNumber) || { productNumber: productNumber, productName: '' };
@@ -884,16 +913,20 @@
                     organicSales: 0,
                     netProfit: 0,
                     marginRate: 0,
-                    roas: 0
+                    roas: 0,
+                    isSoldOut: false,
+                    lastValues: null
                 };
             }
             const data = optionDataSets[optionIdx];
+            const isSoldOut = data.isSoldOut === true;
             const sellingPrice = parseFloat(data.sellingPrice) || 0;
             const priceFluctuation = parseFloat(data.priceFluctuation) || 0;
             const finalPrice = sellingPrice + priceFluctuation;
-            const salesQty = parseFloat(data.salesQuantity) || 0;
-            const adCost = parseFloat(data.advertisingCost) || 0;
-            const adSalesQty = parseFloat(data.adSales) || 0;
+            // 품절인 경우 판매개수는 0으로 처리하되, 라스트값은 유지
+            const salesQty = isSoldOut ? 0 : (parseFloat(data.salesQuantity) || 0);
+            const adCost = isSoldOut ? 0 : (parseFloat(data.advertisingCost) || 0);
+            const adSalesQty = isSoldOut ? 0 : (parseFloat(data.adSales) || 0);
             const organicSalesQty = Math.max(0, salesQty - adSalesQty);
             const actualRevenue = finalPrice * salesQty;
             // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
@@ -939,6 +972,12 @@
                 '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">7</span><span class="field-label">자연판매개수 : 자동 (수정 불가)</span><div class="field-value opt-organic-sales">' + Math.max(0, Math.round(organicSalesQty)) + '</div></div></div>' +
                 '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">8</span><span class="field-label">순이익 (입력값 아님)</span><div class="field-value opt-net-profit">' + Math.round(netProfit).toLocaleString('ko-KR') + '원</div></div></div>' +
                 '<div class="input-field calculated-field"><div class="field-container"><span class="field-number">9</span><span class="field-label">ROAS (입력값아님)</span><div class="field-value opt-roas">' + (roas > 0 ? roas.toFixed(2) : '-') + '</div></div></div>' +
+                '<div class="sold-out-checkbox-wrap">' +
+                '<label class="sold-out-checkbox">' +
+                '<input type="checkbox" class="opt-sold-out" ' + (isSoldOut ? 'checked' : '') + '>' +
+                '<span>품절</span>' +
+                '</label>' +
+                '</div>' +
                 '</div>';
             const priceFluctuationInput = container.querySelector('.opt-price-fluctuation');
             const salesQtyInput = container.querySelector('.opt-sales-qty');
@@ -981,6 +1020,71 @@
                 addFocusBlurListeners(adSalesInput, document.getElementById('optionAdSalesField'));
             }
             
+            // 품절 체크박스 이벤트 핸들러
+            const soldOutCheckbox = container.querySelector('.opt-sold-out');
+            if (soldOutCheckbox) {
+                soldOutCheckbox.addEventListener('change', function() {
+                    const isChecked = this.checked;
+                    optionDataSets[optionIdx].isSoldOut = isChecked;
+                    
+                    if (isChecked) {
+                        // 품절 체크 시: 현재 입력값을 라스트값으로 저장하고 필드 비활성화
+                        optionDataSets[optionIdx].lastValues = {
+                            priceFluctuation: priceFluctuationInput ? priceFluctuationInput.value : '',
+                            salesQuantity: salesQtyInput ? salesQtyInput.value : '',
+                            advertisingCost: adCostInput ? adCostInput.value : '',
+                            adSales: adSalesInput ? adSalesInput.value : ''
+                        };
+                        
+                        // 모든 입력 필드 비활성화
+                        if (priceFluctuationInput) priceFluctuationInput.disabled = true;
+                        if (salesQtyInput) salesQtyInput.disabled = true;
+                        if (adCostInput) adCostInput.disabled = true;
+                        if (adSalesInput) adSalesInput.disabled = true;
+                        
+                        // 값들을 0으로 설정 (표시용)
+                        if (salesQtyInput) salesQtyInput.value = '';
+                        if (adCostInput) adCostInput.value = '';
+                        if (adSalesInput) adSalesInput.value = '';
+                        
+                        // 계산 업데이트 (품절 상태로)
+                        updateOptionCalculations(optionIdx);
+                    } else {
+                        // 품절 해제 시: 라스트값 복원하고 필드 활성화
+                        const lastValues = optionDataSets[optionIdx].lastValues;
+                        if (lastValues) {
+                            if (priceFluctuationInput) priceFluctuationInput.value = lastValues.priceFluctuation || '';
+                            if (salesQtyInput) salesQtyInput.value = lastValues.salesQuantity || '';
+                            if (adCostInput) adCostInput.value = lastValues.advertisingCost || '';
+                            if (adSalesInput) adSalesInput.value = lastValues.adSales || '';
+                            
+                            // optionDataSets에도 복원
+                            optionDataSets[optionIdx].priceFluctuation = lastValues.priceFluctuation || '';
+                            optionDataSets[optionIdx].salesQuantity = lastValues.salesQuantity || '';
+                            optionDataSets[optionIdx].advertisingCost = lastValues.advertisingCost || '';
+                            optionDataSets[optionIdx].adSales = lastValues.adSales || '';
+                        }
+                        
+                        // 모든 입력 필드 활성화
+                        if (priceFluctuationInput) priceFluctuationInput.disabled = false;
+                        if (salesQtyInput) salesQtyInput.disabled = false;
+                        if (adCostInput) adCostInput.disabled = false;
+                        if (adSalesInput) adSalesInput.disabled = false;
+                        
+                        // 계산 업데이트
+                        updateOptionCalculations(optionIdx);
+                    }
+                });
+                
+                // 초기 상태 설정 (품절인 경우 필드 비활성화)
+                if (isSoldOut) {
+                    if (priceFluctuationInput) priceFluctuationInput.disabled = true;
+                    if (salesQtyInput) salesQtyInput.disabled = true;
+                    if (adCostInput) adCostInput.disabled = true;
+                    if (adSalesInput) adSalesInput.disabled = true;
+                }
+            }
+            
             // 첫 번째 입력 필드에 포커스 (옵션 탭 클릭 시 호출되지 않도록 여기서는 제거)
         }
 
@@ -988,6 +1092,8 @@
             const container = document.getElementById('optionFieldsSection');
             const opt = currentProductOptions[optionIdx];
             if (!opt || !optionDataSets[optionIdx]) return;
+            const data = optionDataSets[optionIdx];
+            const isSoldOut = data.isSoldOut === true;
             var pfEl = container ? container.querySelector('.opt-price-fluctuation') : null;
             var sqEl = container ? container.querySelector('.opt-sales-qty') : null;
             var adEl = container ? container.querySelector('.opt-ad-cost') : null;
@@ -996,9 +1102,10 @@
             const sellingPrice = parseFloat(opt.sellingPrice) || 0;
             const priceFluctuation = parseFloat(pfEl.value) || 0;
             const finalPrice = sellingPrice + priceFluctuation;
-            const salesQty = parseFloat(sqEl.value) || 0;
-            const adCost = parseFloat(adEl.value) || 0;
-            const adSalesQty = parseFloat(adSalesEl.value) || 0;
+            // 품절인 경우 판매개수는 0으로 처리
+            const salesQty = isSoldOut ? 0 : (parseFloat(sqEl.value) || 0);
+            const adCost = isSoldOut ? 0 : (parseFloat(adEl.value) || 0);
+            const adSalesQty = isSoldOut ? 0 : (parseFloat(adSalesEl.value) || 0);
             const organicSalesQty = Math.max(0, salesQty - adSalesQty);
             const actualRevenue = finalPrice * salesQty;
             // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
@@ -1034,21 +1141,25 @@
             } else if (actualRevenue > 0) {
                 marginRate = (netProfit / actualRevenue) * 100;
             }
-            // 기존 dataSeq 유지 (수정 모드일 때)
+            // 기존 dataSeq 및 품절 상태 유지 (수정 모드일 때)
             const existingDataSeq = optionDataSets[optionIdx] ? optionDataSets[optionIdx].dataSeq : null;
+            const existingIsSoldOut = optionDataSets[optionIdx] ? optionDataSets[optionIdx].isSoldOut : false;
+            const existingLastValues = optionDataSets[optionIdx] ? optionDataSets[optionIdx].lastValues : null;
             optionDataSets[optionIdx] = {
                 sellingPrice: sellingPrice,
                 priceFluctuation: priceFluctuation,
                 finalSellingPrice: finalPrice,
-                salesQuantity: salesQty,
+                salesQuantity: isSoldOut ? (existingLastValues ? existingLastValues.salesQuantity : '') : salesQty,
                 actualSalesRevenue: actualRevenue,
-                advertisingCost: adCost,
-                adSales: adSalesQty,
+                advertisingCost: isSoldOut ? (existingLastValues ? existingLastValues.advertisingCost : '') : adCost,
+                adSales: isSoldOut ? (existingLastValues ? existingLastValues.adSales : '') : adSalesQty,
                 organicSales: organicSalesQty,
                 netProfit: netProfit,
                 marginRate: marginRate,
                 roas: roas,
-                dataSeq: existingDataSeq || null
+                dataSeq: existingDataSeq || null,
+                isSoldOut: existingIsSoldOut,
+                lastValues: existingLastValues
             };
             const finalPriceEl = container.querySelector('.opt-final-price');
             const organicSalesEl = container.querySelector('.opt-organic-sales');
@@ -1228,24 +1339,26 @@
                             if (existingRecord) usedRecordIds.add(existingRecord.id);
                             
                             if (existingRecord) {
+                                const isSoldOut = existingRecord.isSoldOut === true || existingRecord.isSoldOut === 1;
                                 const sellingPrice = parseFloat(existingRecord.sellingPrice) || opt.sellingPrice || 0;
                                 const priceFluctuation = (existingRecord.priceFluctuation !== undefined && existingRecord.priceFluctuation !== null && existingRecord.priceFluctuation !== '') ? parseFloat(existingRecord.priceFluctuation) : 0;
                                 const finalPrice = sellingPrice + priceFluctuation;
+                                // 품절인 경우에도 라스트값은 유지 (나중에 품절 해제 시 복원용)
                                 const salesQty = parseFloat(existingRecord.salesQuantity) || 0;
                                 const adCost = parseFloat(existingRecord.advertisingCost) || 0;
                                 const adSalesQty = parseFloat(existingRecord.adSales) || 0;
                                 const organicSalesQty = Math.max(0, salesQty - adSalesQty);
-                                const actualRevenue = finalPrice * salesQty;
+                                const actualRevenue = finalPrice * (isSoldOut ? 0 : salesQty);
                                 // 순이익 계산: (개당 마진 * 판매 수량) + (판매가 변동 * 판매 수량) - 광고비
                                 // 수수료 1.1배 보정: 상품 등록 페이지와 동일하게 적용
                                 let baseMarginPerUnit = 0;
                                 if (opt.marginPerUnit != null && opt.marginPerUnit !== undefined && opt.marginPerUnit !== '') {
                                     baseMarginPerUnit = getEffectiveMarginPerUnit(opt.marginPerUnit, finalPrice);
                                 }
-                                const marginFromBase = baseMarginPerUnit * salesQty;  // 개당 마진 * 판매 수량
-                                const marginFromFluctuation = priceFluctuation * salesQty;  // 판매가 변동 * 판매 수량
-                                const netProfit = marginFromBase + marginFromFluctuation - adCost;
-                                const roas = adCost > 0 ? actualRevenue / adCost : 0;
+                                const marginFromBase = baseMarginPerUnit * (isSoldOut ? 0 : salesQty);
+                                const marginFromFluctuation = priceFluctuation * (isSoldOut ? 0 : salesQty);
+                                const netProfit = marginFromBase + marginFromFluctuation - (isSoldOut ? 0 : adCost);
+                                const roas = (isSoldOut ? 0 : adCost) > 0 ? actualRevenue / (isSoldOut ? 1 : adCost) : 0;
                                 // 마진율 계산
                                 const adjustedMarginPerUnit = baseMarginPerUnit + priceFluctuation;
                                 let marginRate = parseFloat(existingRecord.marginRate) || 0;
@@ -1261,15 +1374,22 @@
                                     sellingPrice: sellingPrice,
                                     priceFluctuation: priceFluctuation,
                                     finalSellingPrice: finalPrice,
-                                    salesQuantity: salesQty,
+                                    salesQuantity: salesQty, // 라스트값 유지
                                     actualSalesRevenue: actualRevenue,
-                                    advertisingCost: adCost,
-                                    adSales: adSalesQty,
+                                    advertisingCost: adCost, // 라스트값 유지
+                                    adSales: adSalesQty, // 라스트값 유지
                                     organicSales: organicSalesQty,
                                     netProfit: netProfit,
                                     marginRate: marginRate,
                                     roas: roas,
-                                    dataSeq: existingRecord.id
+                                    dataSeq: existingRecord.id,
+                                    isSoldOut: isSoldOut,
+                                    lastValues: isSoldOut ? {
+                                        priceFluctuation: priceFluctuation.toString(),
+                                        salesQuantity: salesQty.toString(),
+                                        advertisingCost: adCost.toString(),
+                                        adSales: adSalesQty.toString()
+                                    } : null
                                 };
                             } else {
                                 var k = (opt.optionId != null ? opt.optionId : '') + '|' + (opt.optionAlias != null ? opt.optionAlias : '');
@@ -1285,7 +1405,9 @@
                                     netProfit: 0,
                                     marginRate: 0,
                                     roas: 0,
-                                    dataSeq: null
+                                    dataSeq: null,
+                                    isSoldOut: false,
+                                    lastValues: null
                                 };
                             }
                         });
@@ -2196,7 +2318,8 @@
                         organicSales: organicVal,
                         netProfit: netProfitVal,
                         marginRate: data.marginRate != null && data.marginRate !== '' ? data.marginRate : null,
-                        roas: data.roas != null && data.roas !== '' ? data.roas : null
+                        roas: data.roas != null && data.roas !== '' ? data.roas : null,
+                        isSoldOut: data.isSoldOut === true
                     };
                     if (data.dataSeq) {
                         payload.dataSeq = data.dataSeq;

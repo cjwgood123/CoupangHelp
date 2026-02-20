@@ -27,6 +27,7 @@ public class MarginTrackerDataDto {
     private BigDecimal organicSales;
     private BigDecimal organicSalesRatio;
     private BigDecimal roas;
+    private Boolean isSoldOut;
     private LocalDateTime regDate;
 
     public Long getDataSeq() { return dataSeq; }
@@ -75,6 +76,8 @@ public class MarginTrackerDataDto {
     public void setOrganicSalesRatio(BigDecimal organicSalesRatio) { this.organicSalesRatio = organicSalesRatio; }
     public BigDecimal getRoas() { return roas; }
     public void setRoas(BigDecimal roas) { this.roas = roas; }
+    public Boolean getIsSoldOut() { return isSoldOut; }
+    public void setIsSoldOut(Boolean isSoldOut) { this.isSoldOut = isSoldOut; }
     public LocalDateTime getRegDate() { return regDate; }
     public void setRegDate(LocalDateTime regDate) { this.regDate = regDate; }
 }

@@ -51,6 +51,12 @@ public class MarginTrackerDataService {
         dto.setOrganicSales(toBigDecimal(rs, "organic_sales"));
         dto.setOrganicSalesRatio(toBigDecimal(rs, "organic_sales_ratio"));
         dto.setRoas(toBigDecimal(rs, "roas"));
+        try {
+            int soldOut = rs.getInt("is_sold_out");
+            dto.setIsSoldOut(soldOut == 1);
+        } catch (Exception ignored) {
+            dto.setIsSoldOut(false);
+        }
         if (rs.getTimestamp("reg_date") != null) {
             dto.setRegDate(rs.getTimestamp("reg_date").toLocalDateTime());
         }
@@ -68,8 +74,8 @@ public class MarginTrackerDataService {
                 user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                 final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                 margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
         jdbcTemplate.update(sql,
             dto.getUserId(),
@@ -93,7 +99,8 @@ public class MarginTrackerDataService {
             dto.getAdSales(),
             dto.getOrganicSales(),
             dto.getOrganicSalesRatio(),
-            dto.getRoas()
+            dto.getRoas(),
+            dto.getIsSoldOut() != null && dto.getIsSoldOut() ? 1 : 0
         );
     }
 
@@ -102,7 +109,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE user_id = ?
             ORDER BY sale_date DESC, reg_date DESC
@@ -116,7 +123,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE user_id = ?
             ORDER BY sale_date DESC, reg_date DESC
@@ -136,7 +143,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE data_seq = ? AND user_id = ?
             """;
@@ -150,7 +157,7 @@ public class MarginTrackerDataService {
                 product_number = ?, product_name = ?, option_id = ?, option_alias = ?, sale_date = ?, selling_price = ?, discount_coupon = ?,
                 final_selling_price = ?, price_fluctuation = ?, sales_quantity = ?, actual_sales_revenue = ?,
                 margin_per_unit = ?, total_margin = ?, advertising_cost = ?, advertising_cost_adjusted = ?,
-                net_profit = ?, margin_rate = ?, ad_sales = ?, organic_sales = ?, organic_sales_ratio = ?, roas = ?
+                net_profit = ?, margin_rate = ?, ad_sales = ?, organic_sales = ?, organic_sales_ratio = ?, roas = ?, is_sold_out = ?
             WHERE data_seq = ? AND user_id = ?
             """;
         jdbcTemplate.update(sql,
@@ -175,6 +182,7 @@ public class MarginTrackerDataService {
             dto.getOrganicSales(),
             dto.getOrganicSalesRatio(),
             dto.getRoas(),
+            dto.getIsSoldOut() != null && dto.getIsSoldOut() ? 1 : 0,
             dto.getDataSeq(),
             dto.getUserId()
         );
@@ -199,7 +207,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE user_id = ? AND product_number = ? AND sale_date = ?
             ORDER BY reg_date ASC
@@ -216,7 +224,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE user_id = ? AND product_number = ?
             ORDER BY reg_date DESC
@@ -235,7 +243,7 @@ public class MarginTrackerDataService {
             SELECT data_seq, user_id, product_number, product_name, option_id, option_alias, sale_date, selling_price, discount_coupon,
                    final_selling_price, price_fluctuation, sales_quantity, actual_sales_revenue,
                    margin_per_unit, total_margin, advertising_cost, advertising_cost_adjusted,
-                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, reg_date
+                   net_profit, margin_rate, ad_sales, organic_sales, organic_sales_ratio, roas, is_sold_out, reg_date
             FROM margin_tracker_data
             WHERE user_id = ? AND product_number = ?
             ORDER BY reg_date DESC

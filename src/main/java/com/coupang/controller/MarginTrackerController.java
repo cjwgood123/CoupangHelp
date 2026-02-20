@@ -101,6 +101,22 @@ public class MarginTrackerController {
         dto.setOrganicSales(toBigDecimal(body, "organicSales"));
         dto.setOrganicSalesRatio(toBigDecimal(body, "organicSalesRatio"));
         dto.setRoas(toBigDecimal(body, "roas"));
+        
+        // 품절 정보 처리
+        Object soldOutObj = body.get("isSoldOut");
+        if (soldOutObj != null) {
+            if (soldOutObj instanceof Boolean) {
+                dto.setIsSoldOut((Boolean) soldOutObj);
+            } else if (soldOutObj instanceof String) {
+                dto.setIsSoldOut("true".equalsIgnoreCase((String) soldOutObj) || "1".equals(soldOutObj));
+            } else if (soldOutObj instanceof Number) {
+                dto.setIsSoldOut(((Number) soldOutObj).intValue() == 1);
+            } else {
+                dto.setIsSoldOut(false);
+            }
+        } else {
+            dto.setIsSoldOut(false);
+        }
 
         try {
             Object idObj = body.get("dataSeq");
@@ -532,6 +548,7 @@ public class MarginTrackerController {
         m.put("organicSales", dto.getOrganicSales());
         m.put("organicSalesRatio", dto.getOrganicSalesRatio());
         m.put("roas", dto.getRoas());
+        m.put("isSoldOut", dto.getIsSoldOut() != null && dto.getIsSoldOut());
         return m;
     }
 
